@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+    <Appenders>
+        <Console name="utillog" target="SYSTEM_OUT">
+            <PatternLayout pattern="%highlight{[%-5level]} %style{%d{HH:mm:ss.SSS}}{dim,white} %style{(LogUtil)}{blue}%style{%-28throwable{short.message}}{cyan}  %highlight{%msg}%n" />
+        </Console>
+        <Console name="debug" target="SYSTEM_OUT">
+            <PatternLayout pattern="%highlight{[%-5level]} %style{%d{HH:mm:ss.SSS} %-38c %msg%n%throwable{short.lineNumber}}{dim,white}" />
+        </Console>
+        <Console name="err" target="SYSTEM_OUT">
+            <PatternLayout pattern="%highlight{[%-5level]} %style{%d{HH:mm:ss.SSS} %-38c %msg%n%throwable}{dim,white}" />
+        </Console>
+        <!--
+        <Console name="console2" target="SYSTEM_OUT">%d{HH:mm:ss.SSS}
+            <PatternLayout pattern="%d %p [%t] %C{1.} %-5level %logger{36} - %msg%n" />
+        </Console>
+        -->
+        <!--
+        <File name="MyFile" fileName="log.log" immediateFlush="false" append="false">
+            <PatternLayout pattern="%d{yyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </File>
+        -->
+    </Appenders>
+    <Loggers>
+        <Logger name="net.ddns.lyr.utils.Log" level="debug">
+            <AppenderRef ref="utillog"/>
+        </Logger>
+        <Logger name="discord4j.core" level="debug">
+            <AppenderRef ref="debug"/>
+        </Logger>
+        <Logger name="reactor.netty" level="info">
+            <AppenderRef ref="debug"/>
+        </Logger>
+        <Logger name="reactor" level="info">
+            <AppenderRef ref="debug"/>
+        </Logger>
+        <Logger name="reactor" level="error">
+            <AppenderRef ref="err"/>
+        </Logger>
+        <Root level="info">
+            <!-- <AppenderRef ref="console" /> -->
+            <!-- <AppenderRef ref="console" /> -->
+            <!-- <AppenderRef ref="MyFile"/> -->
+        </Root>
+    </Loggers>
+</Configuration>
