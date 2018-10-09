@@ -21,7 +21,7 @@ public class CommandHandler {
 
     public CommandHandler(Map<String, Command> commands) {
         this.commands = commands;
-        prefix = Main.getConfig().getPrefix();
+        prefix = Main.getClient().getConfig().getPrefix();
         prefixLength = prefix.length();
     }
 

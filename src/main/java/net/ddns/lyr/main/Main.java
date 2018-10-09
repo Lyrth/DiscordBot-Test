@@ -19,12 +19,12 @@ import reactor.core.publisher.Mono;
 
 public class Main {
 
-    private static ClientObject client;
-    private static BotConfig config;
-    private static EventHandler eventHandler;
+    public static volatile ClientObject client;
+    private static volatile BotConfig config;
+    private static volatile EventHandler eventHandler;
 
     public static void main(String args[]) {
-        java.lang.System.setProperty("log4j.skipJansi","false");  // Color support for logging.
+        System.setProperty("log4j.skipJansi","false");  // Color support for logging.
         new Main();
     }
 
@@ -39,6 +39,10 @@ public class Main {
                 .setInitialPresence(Presence.doNotDisturb(Activity.listening("aaaa")))
                 .build(),
             config);
+        long st = System.nanoTime();
+        client.init();
+        long en = System.nanoTime();
+        Log.log(en-st+"ns");
 
         int retries = 3;
         while (retries>0)
@@ -55,6 +59,10 @@ public class Main {
 
     public static ClientObject getClient(){
         return client;
+    }
+
+    public static DiscordClient getDiscordClient(){
+        return client.getClient();
     }
 
     public static EventDispatcher getEventDispatcher() {

@@ -16,14 +16,15 @@ public class Test extends BotModule {
     public void on(TypingStartEvent event){
         event.getUser().flatMap(User::getPrivateChannel)
             .subscribe( ch ->
-                ch.createMessage("I saw you typing!").subscribe( m -> // On success
-                    m.edit(new MessageEditSpec().setContent("[REDACTED]"))
-                        .delaySubscription(Duration.ofSeconds(15))
-                        .subscribe()
-                ,err -> {
-                    Log.logError("REEEE CANNOT SEND MESSAGE ;-;");
-                    err.printStackTrace();
-                })
+                ch.createMessage("I saw you typing!").subscribe(
+                    m -> // On success
+                        m.edit(new MessageEditSpec().setContent("[REDACTED]"))
+                            .delaySubscription(Duration.ofSeconds(15))
+                            .subscribe()
+                    ,err -> {
+                        Log.logError("REEEE CANNOT SEND MESSAGE ;-;");
+                        err.printStackTrace();
+                    })
             );
     }
 
@@ -31,5 +32,4 @@ public class Test extends BotModule {
         return "test";
     }
 
-    public Test(){ register(this);}
 }

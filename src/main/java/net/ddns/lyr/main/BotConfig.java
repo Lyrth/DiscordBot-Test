@@ -27,6 +27,8 @@ public class BotConfig {
     @SerializedName("Owner ID")
     private String botOwner;
 
+    public BotConfig(){}
+
     private BotConfig(String token, String prefix){
         this.token  = token;
         this.prefix = prefix;

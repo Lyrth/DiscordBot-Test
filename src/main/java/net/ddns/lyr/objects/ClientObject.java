@@ -11,10 +11,10 @@ import net.ddns.lyr.main.Main;
 import java.util.HashMap;
 
 public class ClientObject {
-    private DiscordClient client;
-    private BotConfig config;
+    private volatile DiscordClient client;
+    private volatile BotConfig config;
     private EventDispatcher eventDispatcher;
-    private EventHandler eventHandler;
+    private volatile EventHandler eventHandler;
 
     private User botUser;
     private ApplicationInfo applicationInfo;
@@ -25,9 +25,12 @@ public class ClientObject {
         this.client = client;
         this.config = config;
         this.eventDispatcher = client.getEventDispatcher();
+    }
+
+    public void init(){
         this.eventHandler = new EventHandler(eventDispatcher);
-        botUser = client.getSelf().block();
-        applicationInfo = client.getApplicationInfo().block();
+        //botUser = client.getSelf().block();
+        //applicationInfo = client.getApplicationInfo().block();
     }
 
     public DiscordClient getClient() {
