@@ -7,6 +7,7 @@ import discord4j.core.object.entity.User;
 import net.ddns.lyr.handlers.EventHandler;
 import net.ddns.lyr.main.BotConfig;
 import net.ddns.lyr.main.Main;
+import net.ddns.lyr.modules.BotModules;
 
 import java.util.HashMap;
 
@@ -15,6 +16,7 @@ public class ClientObject {
     private volatile BotConfig config;
     private EventDispatcher eventDispatcher;
     private volatile EventHandler eventHandler;
+    private BotModules modules;
 
     private User botUser;
     private ApplicationInfo applicationInfo;
@@ -29,6 +31,7 @@ public class ClientObject {
 
     public void init(){
         this.eventHandler = new EventHandler(eventDispatcher);
+        modules = new BotModules();
         //botUser = client.getSelf().block();
         //applicationInfo = client.getApplicationInfo().block();
     }

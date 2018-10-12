@@ -1,9 +1,10 @@
 package net.ddns.lyr.modules;
 
+import net.ddns.lyr.main.Main;
 import net.ddns.lyr.modules.bot.*;
-import net.ddns.lyr.modules.guild.*;
 import net.ddns.lyr.templates.BotModule;
 import net.ddns.lyr.templates.Module;
+import net.ddns.lyr.utils.Log;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,7 +19,11 @@ public class BotModules {
     }
 
     private void add(BotModule module){
-        botModules.put(module.getName(),module);
+        if (!botModules.containsKey(module.getName())) {
+            botModules.put(module.getName(), module);
+            Log.log("> Module adding...");
+            Main.getEventHandler().registerBotEvent(module);
+        }
     }
 
     public Map<String, BotModule> get(){
