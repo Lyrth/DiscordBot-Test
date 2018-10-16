@@ -39,10 +39,7 @@ public class Main {
                 .setInitialPresence(Presence.doNotDisturb(Activity.listening("aaaa")))
                 .build(),
             config);
-        long st = System.nanoTime();
         client.init();
-        long en = System.nanoTime();
-        Log.log(en-st+"ns");
 
         int retries = 3;
         while (retries>0)

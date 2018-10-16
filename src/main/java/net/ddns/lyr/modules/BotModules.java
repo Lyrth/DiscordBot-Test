@@ -21,13 +21,13 @@ public class BotModules {
     private void add(BotModule module){
         if (!botModules.containsKey(module.getName())) {
             botModules.put(module.getName(), module);
-            Log.log("> Module adding...");
+            Log.logfDebug("> Adding module %s...", module.getName());
             Main.getEventHandler().registerBotEvent(module);
         }
     }
 
     public Map<String, BotModule> get(){
-        return Collections.unmodifiableMap(botModules);
+        return botModules;
     }
 
 }

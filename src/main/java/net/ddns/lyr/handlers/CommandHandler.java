@@ -25,7 +25,7 @@ public class CommandHandler {
         prefixLength = prefix.length();
     }
 
-    public Mono<Void> handle(MessageCreateEvent mEvent){
+    Mono<Void> handle(MessageCreateEvent mEvent){
         return Mono.just(mEvent)
             .map(e->{st = System.nanoTime(); return e;})
             .filter(this::shouldHandle)
@@ -45,7 +45,7 @@ public class CommandHandler {
                             )
                     );
             })
-            .map(e->{en = System.nanoTime(); Log.log(((en-st)/1000/1000f)+"ms"); /*System.gc();*/ return e;}).then();
+            .map(e->{en = System.nanoTime(); Log.logfDebug("> Command taken %.3fms",(en-st)/1000_000f); return e;}).then();
     }
 
     private boolean shouldHandle(MessageCreateEvent mEvent) {

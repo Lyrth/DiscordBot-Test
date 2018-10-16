@@ -21,6 +21,108 @@ public enum EventType {
         this.e = c;
     }
 
+    public enum All {
+
+        /** Other **/
+        PresenceUpdate(PresenceUpdateEvent.class),
+        UserUpdate(UserUpdateEvent.class),
+        VoiceServerUpdate(VoiceServerUpdateEvent.class),
+        VoiceStateUpdate(VoiceStateUpdateEvent.class),
+        WebhooksUpdate(WebhooksUpdateEvent.class),
+
+
+        /** Lifecycle **/
+        GatewayLifecycle(discord4j.core.event.domain.lifecycle.GatewayLifecycleEvent.class),
+
+        Ready(ReadyEvent.class),
+        Resume(ResumeEvent.class),
+        Connect(ConnectEvent.class),
+        Disconnect(DisconnectEvent.class),
+        Reconnect(ReconnectEvent.class),
+        ReconnectStart(ReconnectStartEvent.class),
+        ReconnectFail(ReconnectFailEvent.class),
+
+
+        /** Guild **/
+        Guild(discord4j.core.event.domain.guild.GuildEvent.class),
+
+        // Other
+        EmojisUpdate(EmojisUpdateEvent.class),
+        IntegrationsUpdate(IntegrationsUpdateEvent.class),
+
+        // Guild updates
+        GuildCreate(GuildCreateEvent.class),
+        GuildDelete(GuildDeleteEvent.class),
+        GuildUpdate(GuildUpdateEvent.class),
+
+        // Member updates
+        MemberJoin(MemberJoinEvent.class),
+        MemberLeave(MemberLeaveEvent.class),
+        MemberUpdate(MemberUpdateEvent.class),
+        MemberChunk(MemberChunkEvent.class),
+
+        // Bans/Unbans
+        Ban(BanEvent.class),
+        Unban(UnbanEvent.class),
+
+
+        /** Role **/
+        Role(discord4j.core.event.domain.role.RoleEvent.class),
+
+        // Role updates
+        RoleCreate(RoleCreateEvent.class),
+        RoleDelete(RoleDeleteEvent.class),
+        RoleUpdate(RoleUpdateEvent.class),
+
+
+        /** Channel **/
+        Channel(discord4j.core.event.domain.channel.ChannelEvent.class),
+
+        // Other
+        PinsUpdate(PinsUpdateEvent.class),
+        TypingStart(TypingStartEvent.class),
+
+        // Private Channels / DMs
+        PrivateChannelCreate(PrivateChannelCreateEvent.class),
+        PrivateChannelDelete(PrivateChannelDeleteEvent.class),
+
+        // Guild Categories
+        CategoryCreate(CategoryCreateEvent.class),
+        CategoryDelete(CategoryDeleteEvent.class),
+        CategoryUpdate(CategoryUpdateEvent.class),
+
+        // Text Channels
+        TextChannelCreate(TextChannelCreateEvent.class),
+        TextChannelDelete(TextChannelDeleteEvent.class),
+        TextChannelUpdate(TextChannelUpdateEvent.class),
+
+        // Voice Channels
+        VoiceChannelCreate(VoiceChannelCreateEvent.class),
+        VoiceChannelDelete(VoiceChannelDeleteEvent.class),
+        VoiceChannelUpdate(VoiceChannelUpdateEvent.class),
+
+
+        /** Message **/
+        Message(discord4j.core.event.domain.message.MessageEvent.class),
+
+        // Message updates
+        MessageCreate(MessageCreateEvent.class),
+        MessageDelete(MessageDeleteEvent.class),
+        MessageUpdate(MessageUpdateEvent.class),
+
+        ReactionAdd(ReactionAddEvent.class),
+        ReactionRemove(ReactionRemoveEvent.class),
+        ReactionRemoveAll(ReactionRemoveAllEvent.class),
+
+        MessageBulkDelete(MessageBulkDeleteEvent.class),
+        ;
+
+        public Class<? extends Event> e;
+        <T extends Event> All(Class<T> c){
+            this.e = c;
+        }
+    }
+
     public enum Lifecycle {
 
         // Generic Lifecycle event
