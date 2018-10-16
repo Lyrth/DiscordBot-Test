@@ -24,13 +24,11 @@ public class EventHandler {
     private EventDispatcher eventDispatcher;
     private CommandHandler commandHandler;
 
-    //private List<BotModule> activeBotModules;
-    //volatile?
     private HashMap<String, // K: EventName, V:
         HashMap<String,     //  K: ModuleName
             BotModule>>     //  V: Module
         activeBotModules = new HashMap<>();
-    private HashMap<Snowflake,List<GuildModule>> activeGuildModules;
+    //private HashMap<Snowflake,List<GuildModule>> activeGuildModules;
 
     public EventHandler(EventDispatcher eventDispatcher) {
         this.eventDispatcher = eventDispatcher;

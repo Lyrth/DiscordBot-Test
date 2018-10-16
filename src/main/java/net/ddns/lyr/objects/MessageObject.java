@@ -6,39 +6,7 @@ import discord4j.core.object.util.Snowflake;
 import reactor.core.publisher.Mono;
 
 public abstract class MessageObject {
-/**
-    Mono<Message> M;
 
-    public Snowflake id;
-    public String contents;
-
-    public Snowflake channelId;
-    public Snowflake guildId;
-    public GuildMemberObject member;
-    public UserObject user;
-    public Snowflake userId;
-
-    MessageObject(){}
-
-    MessageObject(Mono<Message> message){
-        M = message;
-        message.subscribe(m -> {
-            id = m.getId();
-            contents = m.getContent().orElse("");
-            channelId = m.getChannelId();
-            // guildId =
-            userId = m.getAuthorId().orElse(m.getWebhookId().orElse(null));
-            user = new UserObject(m.getAuthor());
-        });
-    }
-
-    public GuildMemberObject getAuthor() {
-        M.subscribe(m ->
-            member = new GuildMemberObject(m.getAuthorAsMember())
-        );
-        return member;
-    }
-    */
     Mono<Message> M;
 
     public Mono<Snowflake> id;

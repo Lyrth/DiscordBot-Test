@@ -6,7 +6,6 @@ import reactor.core.publisher.Mono;
 
 public abstract class Command {
 
-
     public abstract String getName();
     protected abstract CommandType getType();
     protected abstract String getDesc();

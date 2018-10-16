@@ -1,7 +1,5 @@
 package net.ddns.lyr.annotations;
 
-import discord4j.core.event.domain.Event;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

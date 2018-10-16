@@ -3,19 +3,12 @@ package net.ddns.lyr.main;
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.event.EventDispatcher;
-import discord4j.core.event.domain.channel.TypingStartEvent;
-import discord4j.core.event.domain.lifecycle.ReadyEvent;
-import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
 import discord4j.store.jdk.JdkStoreService;
-import net.ddns.lyr.commands.Commands;
-import net.ddns.lyr.handlers.CommandHandler;
 import net.ddns.lyr.handlers.EventHandler;
-import net.ddns.lyr.modules.bot.Test;
 import net.ddns.lyr.objects.ClientObject;
 import net.ddns.lyr.utils.Log;
-import reactor.core.publisher.Mono;
 
 public class Main {
 

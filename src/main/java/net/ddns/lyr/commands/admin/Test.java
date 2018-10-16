@@ -1,6 +1,5 @@
 package net.ddns.lyr.commands.admin;
 
-
 import net.ddns.lyr.enums.CommandType;
 import net.ddns.lyr.objects.CommandObject;
 import net.ddns.lyr.templates.Command;

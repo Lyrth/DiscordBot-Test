@@ -1,6 +1,5 @@
 package net.ddns.lyr.commands.general;
 
-import discord4j.core.object.entity.User;
 import discord4j.core.spec.MessageEditSpec;
 import net.ddns.lyr.enums.CommandType;
 import net.ddns.lyr.objects.CommandObject;

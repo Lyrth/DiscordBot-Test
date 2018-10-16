@@ -7,10 +7,6 @@ import reactor.core.publisher.Mono;
 
 public class Me extends Command {
 
-    /*public Mono<String> execute(CommandObject c){
-        return Mono.just(c).flatMap(this::run);
-    }*/
-
     public Mono<String> execute(CommandObject command){
         return command.member.map(member ->
             String.format("ID: %s\nUsername: %s\nNickname: %s\nDiscrim: %s\n"+

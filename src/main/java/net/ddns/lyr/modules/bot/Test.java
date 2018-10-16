@@ -5,7 +5,6 @@ import discord4j.core.object.entity.User;
 import discord4j.core.spec.MessageEditSpec;
 import net.ddns.lyr.annotations.ModuleEvent;
 import net.ddns.lyr.templates.BotModule;
-import net.ddns.lyr.utils.AnnotationUtil;
 import net.ddns.lyr.utils.Log;
 
 import java.time.Duration;

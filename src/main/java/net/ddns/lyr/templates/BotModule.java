@@ -6,22 +6,11 @@ import discord4j.core.event.domain.guild.*;
 import discord4j.core.event.domain.lifecycle.*;
 import discord4j.core.event.domain.message.*;
 import discord4j.core.event.domain.role.*;
-
-import discord4j.core.event.EventDispatcher;
-import discord4j.core.event.domain.Event;
 import discord4j.core.event.domain.channel.ChannelEvent;
 import discord4j.core.event.domain.channel.TypingStartEvent;
 import net.ddns.lyr.annotations.Excluded;
-import net.ddns.lyr.annotations.ModuleEvent;
-import net.ddns.lyr.main.Main;
-import net.ddns.lyr.modules.bot.Test;
-import net.ddns.lyr.utils.AnnotationUtil;
-import net.ddns.lyr.utils.Log;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
-
-import java.lang.reflect.Method;
-import java.util.stream.Stream;
 
 public abstract class BotModule implements Module {
 

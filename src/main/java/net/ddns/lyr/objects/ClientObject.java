@@ -6,10 +6,7 @@ import discord4j.core.object.entity.ApplicationInfo;
 import discord4j.core.object.entity.User;
 import net.ddns.lyr.handlers.EventHandler;
 import net.ddns.lyr.main.BotConfig;
-import net.ddns.lyr.main.Main;
 import net.ddns.lyr.modules.BotModules;
-
-import java.util.HashMap;
 
 public class ClientObject {
     private volatile DiscordClient client;

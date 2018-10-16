@@ -3,10 +3,8 @@ package net.ddns.lyr.modules;
 import net.ddns.lyr.main.Main;
 import net.ddns.lyr.modules.bot.*;
 import net.ddns.lyr.templates.BotModule;
-import net.ddns.lyr.templates.Module;
 import net.ddns.lyr.utils.Log;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
