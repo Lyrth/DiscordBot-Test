@@ -40,13 +40,9 @@ public class EventHandler {
     private void onReady(ReadyEvent event){
         Log.log("> Logged in as " + event.getSelf().getUsername());
         System.gc();
-        if(activeBotModules.get("ReadyEvent") != null)
-            activeBotModules.get("ReadyEvent").forEach( (moduleName,module) -> module.on(event) );
     }
     private void onMessageCreate(MessageCreateEvent event){
-        commandHandler.handle(event).subscribe();
-        if(activeBotModules.get("MessageCreateEvent") != null)
-            activeBotModules.get("MessageCreateEvent").forEach( (moduleName,module) -> module.on(event) );
+        commandHandler.handle(event).subscribe(i->{},err->Log.logError(err.getMessage()));
     }
 
     private void subscribe(){   // Please collapse this method

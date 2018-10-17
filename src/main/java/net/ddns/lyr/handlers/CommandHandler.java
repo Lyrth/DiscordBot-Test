@@ -27,25 +27,28 @@ public class CommandHandler {
 
     Mono<Void> handle(MessageCreateEvent mEvent){
         return Mono.just(mEvent)
-            .map(e->{st = System.nanoTime(); return e;})
+            .map(e->{st = System.nanoTime(); return e;})  //  <timeLogging>
             .filter(this::shouldHandle)
-            .flatMap(event -> {
-                Optional<Command> command = event.getMessage().getContent()
-                    .map(this::getCommandName)
-                    .flatMap(this::getCommand);
-
-                return Mono.justOrEmpty(command)
-                    .flatMap(cmd ->
-                        event.getMessage().getChannel()
-                            .map(ch ->
-                                cmd.execute(new CommandObject(event)).defaultIfEmpty("")
-                                    .subscribe(m ->
-                                        ch.createMessage(m).subscribe(i->{},err->Log.logError(err.getMessage()))
-                                    )
-                            )
-                    );
-            })
-            .map(e->{en = System.nanoTime(); Log.logfDebug("> Command taken %.3fms",(en-st)/1000_000f); return e;}).then();
+            .flatMap(event ->
+                Mono.justOrEmpty(
+                    event.getMessage().getContent()
+                        .map(this::getCommandName)
+                        .flatMap(this::getCommand)    // Optional<Command>
+                )
+                .flatMap(cmd ->
+                    event.getMessage().getChannel()
+                        .flatMap(ch ->
+                            cmd.execute(new CommandObject(event))
+                                .filter(s -> (s!=null && !s.isEmpty()))
+                                .flatMap(ch::createMessage)
+                        )
+                )
+            )
+            .map(e->{    //  </timeLogging>
+                en = System.nanoTime();
+                Log.logfDebug("> Command taken %.3fms",(en-st)/1000_000f);
+                return e;
+            }).then();
     }
 
     private boolean shouldHandle(MessageCreateEvent mEvent) {

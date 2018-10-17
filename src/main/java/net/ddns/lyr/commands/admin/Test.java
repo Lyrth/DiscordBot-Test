@@ -6,21 +6,8 @@ import net.ddns.lyr.templates.Command;
 import reactor.core.publisher.Mono;
 
 public class Test extends Command {
-    public Mono<String> execute(CommandObject c){
-        return Mono.just(c).flatMap(this::run);
-    }
 
-    /*
     public Mono<String> execute(CommandObject command){
-        return command.member.map(member ->
-            String.format("ID: %s\nNickname Direct Access: %s",
-                member.getId(),
-                member.getDisplayName())
-        );
-    }
-     */
-
-    private Mono<String> run(CommandObject command){
         return command.member.map(member ->
             String.format("ID: %s\nNickname Direct Access: %s",
                 member.getId(),
@@ -32,7 +19,7 @@ public class Test extends Command {
         return "test";
     }
     public CommandType getType(){
-        return CommandType.GENERAL;
+        return CommandType.ADMIN;
     }
     public String getDesc(){
         return "Show some test.";
