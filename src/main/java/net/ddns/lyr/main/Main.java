@@ -9,6 +9,11 @@ import discord4j.store.jdk.JdkStoreService;
 import net.ddns.lyr.handlers.EventHandler;
 import net.ddns.lyr.objects.ClientObject;
 import net.ddns.lyr.utils.Log;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.time.Duration;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
 
@@ -42,6 +47,11 @@ public class Main {
             if (e.getMessage().matches(".*java\\.net\\..*?Exception.*")) {
                 retries--;
                 Log.logWarn("> Trying to log in again. Internet dropped? Retries: " + retries);
+                final int r = retries;
+                for (AtomicInteger i = new AtomicInteger(3*(3-r));i.get()>-1;i.set(i.get()-1)) //TODO: log spam
+                    Mono.delay(Duration.ofSeconds(1))
+                        .doOnNext(n -> Log.logfDebug("> Retrying in %s",i.get()))
+                        .block();
             } else retries = 0;
         }
         Log.log("> End.");

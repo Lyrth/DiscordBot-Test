@@ -45,7 +45,7 @@ public class EventHandler {
         commandHandler.handle(event).subscribe(i->{},err->Log.logError(err.getMessage()));
     }
 
-    private void subscribe(){   // Please collapse this method
+    private void subscribe(){   // Please collapse this method for your sanity, maybe.
 
         eventDispatcher.on(ReadyEvent.class).subscribe(event -> {
             onReady(event);
@@ -290,7 +290,7 @@ public class EventHandler {
                     Log.logfDebug("> | Event name %s invalid.",eventNameTrunc);
                     return 0;                                  // ^ No. [0: Invalid Event name.]
                 }
-                if (activeBotModules.get(eventName) != null){  // containsKey not applicable
+                if (activeBotModules.get(eventName) != null){  // containsKey not applicable here
                     Log.logfDebug("> | Registering %s...",eventName);
                     if (activeBotModules.get(eventName).get(moduleName) != null)
                         return 2;                              // [2: Module already registered.]

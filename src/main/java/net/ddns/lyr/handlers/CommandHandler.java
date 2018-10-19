@@ -27,7 +27,7 @@ public class CommandHandler {
 
     Mono<Void> handle(MessageCreateEvent mEvent){
         return Mono.just(mEvent)
-            .map(e->{st = System.nanoTime(); return e;})  //  <timeLogging>
+            .map(e->{st = System.nanoTime(); return e;})   //  <timeLogging>
             .filter(this::shouldHandle)
             .flatMap(event ->
                 Mono.justOrEmpty(
@@ -44,10 +44,10 @@ public class CommandHandler {
                         )
                 )
             )
-            .map(e->{    //  </timeLogging>
+            .map(e->{
                 en = System.nanoTime();
                 Log.logfDebug("> Command taken %.3fms",(en-st)/1000_000f);
-                return e;
+                return e;    //  </timeLogging>
             }).then();
     }
 

@@ -13,7 +13,7 @@ public class Test extends BotModule {
 
     @ModuleEvent
     public void on(TypingStartEvent event){
-        event.getUser()
+        /*event.getUser()
             .flatMap(User::getPrivateChannel)
             .flatMap( ch -> ch.createMessage("I saw you typing!"))
             .delayElement(Duration.ofSeconds(15))
@@ -21,7 +21,7 @@ public class Test extends BotModule {
             .subscribe(m -> {},err -> {
                 Log.logError("> REEEE CANNOT SEND MESSAGE ;-;");
                 err.printStackTrace();
-            });
+            });*/
     }
 
     public String getName() {
