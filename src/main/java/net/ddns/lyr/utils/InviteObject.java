@@ -2,7 +2,7 @@ package net.ddns.lyr.utils;
 
 import java.util.Collection;
 
-public class InviteObject {
+public final class InviteObject {
 
     public int approximate_presence_count;
     public int approximate_member_count;

@@ -5,8 +5,12 @@ import discord4j.core.event.EventDispatcher;
 import discord4j.core.object.entity.ApplicationInfo;
 import discord4j.core.object.entity.User;
 import net.ddns.lyr.handlers.EventHandler;
-import net.ddns.lyr.main.BotConfig;
+import net.ddns.lyr.utils.Log;
+import net.ddns.lyr.utils.config.BotConfig;
 import net.ddns.lyr.modules.BotModules;
+import reactor.core.publisher.Mono;
+
+import java.time.Duration;
 
 public class ClientObject {
     private volatile DiscordClient client;
@@ -26,9 +30,11 @@ public class ClientObject {
         this.eventDispatcher = client.getEventDispatcher();
     }
 
-    public void init(){
+    public void init(){  // Can block, would not affect login.
         this.eventHandler = new EventHandler(eventDispatcher);
         modules = new BotModules();
+        Mono.delay(Duration.ofSeconds(10)).block();
+        Log.logDebug("thonk");
         //botUser = client.getSelf().block();
         //applicationInfo = client.getApplicationInfo().block();
     }

@@ -3,7 +3,7 @@ package net.ddns.lyr.utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class Log {
+public class Log {
 
     private static final Logger logger = LoggerFactory.getLogger(Log.class);
     private static final int LEN = 27; // Class name length in Debug logs.

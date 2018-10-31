@@ -6,10 +6,10 @@ import discord4j.core.event.EventDispatcher;
 import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
 import discord4j.store.jdk.JdkStoreService;
+import net.ddns.lyr.utils.config.BotConfig;
 import net.ddns.lyr.handlers.EventHandler;
 import net.ddns.lyr.objects.ClientObject;
 import net.ddns.lyr.utils.Log;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
@@ -29,7 +29,7 @@ public class Main {
     private Main(){
         Log.log("> Starting...");
         config = BotConfig.readConfig();
-        if (config.getToken().isEmpty()) return;
+        if (config==null || config.getToken().isEmpty()) return;
 
         client = new ClientObject(
             new DiscordClientBuilder(config.getToken())
@@ -37,18 +37,21 @@ public class Main {
                 .setInitialPresence(Presence.doNotDisturb(Activity.listening("aaaa")))
                 .build(),
             config);
-        client.init();
 
-        int retries = 3;
-        while (retries>0)
+
+        int retries = 0;
+        final int maxRetries = 3;
+        while (retries<maxRetries)
         try {
-            client.getClient().login().block();
+            Mono.when(
+                client.getClient().login(),
+                Mono.fromRunnable(client::init))
+                .block();
         } catch (Exception e) {
             if (e.getMessage().matches(".*java\\.net\\..*?Exception.*")) {
-                retries--;
-                Log.logWarn("> Trying to log in again. Internet dropped? Retries: " + retries);
-                final int r = retries;
-                for (AtomicInteger i = new AtomicInteger(3*(3-r));i.get()>-1;i.set(i.get()-1)) //TODO: log spam
+                retries++;
+                Log.logWarn("> Trying to log in again. Internet dropped? Retries: " + (maxRetries - retries));
+                for (AtomicInteger i = new AtomicInteger(3^(retries));i.get()<1;i.set(i.get()-1))
                     Mono.delay(Duration.ofSeconds(1))
                         .doOnNext(n -> Log.logfDebug("> Retrying in %s",i.get()))
                         .block();
