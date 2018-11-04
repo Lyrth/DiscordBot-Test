@@ -58,8 +58,8 @@ public class CommandHandler {
     }
 
     private String getCommandName(String content) {
-        int end = content.contains(" ") ? content.indexOf(" ", prefixLength) : content.length();
-        return content.substring(prefixLength, end);
+        return content.replaceFirst("^<@!?"+0+">\\s+?((\\S+)\\s?.*)|(^(\\S+)\\s?.*)","$2$4")
+            .substring(content.matches("<@!?"+0+"> .*") ? 0 : prefixLength);
     }
 
     public Optional<Command> getCommand(String name) {

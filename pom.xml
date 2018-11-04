@@ -6,7 +6,7 @@
 
     <groupId>net.ddns.lyr</groupId>
     <artifactId>DiscordBot-Test</artifactId>
-    <version>0.6.0</version>
+    <version>0.6.4</version>
 
     <!--  Compiler level  -->
     <properties>

@@ -37,6 +37,9 @@
         <Logger name="reactor" level="error">
             <AppenderRef ref="err"/>
         </Logger>
+        <Logger name="reactor.netty.resources.PooledConnectionProvider" level="error">
+
+        </Logger>
         <Root level="info">
             <!-- <AppenderRef ref="console" /> -->
             <!-- <AppenderRef ref="console" /> -->
