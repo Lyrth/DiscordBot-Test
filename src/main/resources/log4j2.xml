@@ -28,7 +28,7 @@
         <Logger name="discord4j.core" level="debug">
             <AppenderRef ref="debug"/>
         </Logger>
-        <Logger name="reactor.netty" level="info">
+        <Logger name="reactor.netty" level="error">
             <AppenderRef ref="debug"/>
         </Logger>
         <Logger name="reactor" level="info">

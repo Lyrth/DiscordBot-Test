@@ -5,7 +5,7 @@ import discord4j.core.DiscordClientBuilder;
 import discord4j.core.event.EventDispatcher;
 import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
-import discord4j.store.jdk.JdkStoreService;
+import discord4j.store.redis.RedisStoreService;
 import net.ddns.lyr.utils.config.BotConfig;
 import net.ddns.lyr.handlers.EventHandler;
 import net.ddns.lyr.objects.ClientObject;
@@ -33,7 +33,7 @@ public class Main {
 
         client = new ClientObject(
             new DiscordClientBuilder(config.getToken())
-                .setStoreService(new JdkStoreService())
+                .setStoreService(new RedisStoreService())
                 .setInitialPresence(Presence.doNotDisturb(Activity.listening("aaaa")))
                 .build(),
             config);

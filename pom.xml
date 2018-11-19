@@ -6,14 +6,14 @@
 
     <groupId>net.ddns.lyr</groupId>
     <artifactId>DiscordBot-Test</artifactId>
-    <version>0.6.4</version>
+    <version>0.6.9b</version>
 
     <!--  Compiler level  -->
     <properties>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
-        <discord4j.version>b8cd6f9</discord4j.version>
-        <discord4j.stores.version>fc5db5c</discord4j.stores.version>
+        <discord4j.version>279450a</discord4j.version>
+        <discord4j.stores.version>2ce222b</discord4j.stores.version>
     </properties>
 
     <repositories>
@@ -36,6 +36,11 @@
         <dependency>
             <groupId>com.github.Discord4J.Stores</groupId>
             <artifactId>stores-jdk</artifactId>
+            <version>${discord4j.stores.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.Discord4J.Stores</groupId>
+            <artifactId>stores-redis</artifactId>
             <version>${discord4j.stores.version}</version>
         </dependency>
         <dependency>

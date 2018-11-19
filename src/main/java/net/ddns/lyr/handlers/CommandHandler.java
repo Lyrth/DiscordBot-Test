@@ -25,7 +25,7 @@ public class CommandHandler {
         prefixLength = prefix.length();
     }
 
-    Mono<Void> handle(MessageCreateEvent mEvent){
+    public Mono<Void> handle(MessageCreateEvent mEvent){
         return Mono.just(mEvent)
             .map(e->{st = System.nanoTime(); return e;})   //  <timeLogging>
             .filter(this::shouldHandle)
