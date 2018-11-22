@@ -12,7 +12,7 @@ import net.ddns.lyr.annotations.Excluded;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 
-public abstract class BotModule implements Module {
+public abstract class BotModule extends Module {
 
     /** Other Events **/
     @Excluded public void on(PresenceUpdateEvent e){}
@@ -23,8 +23,6 @@ public abstract class BotModule implements Module {
 
 
     /** LifecycleEvents **/
-    @Excluded public void on(GatewayLifecycleEvent e){}
-
     @Excluded public void on(ReadyEvent e){}
     @Excluded public void on(ResumeEvent e){}
     @Excluded public void on(ConnectEvent e){}
@@ -35,8 +33,6 @@ public abstract class BotModule implements Module {
 
 
     /** GuildEvents **/
-    @Excluded public void on(GuildEvent e){}
-
     // Other
     @Excluded public void on(EmojisUpdateEvent e){}
     @Excluded public void on(IntegrationsUpdateEvent e){}
@@ -58,8 +54,6 @@ public abstract class BotModule implements Module {
 
 
     /** RoleEvents **/
-    @Excluded public void on(RoleEvent e){}
-
     // Role updates
     @Excluded public void on(RoleCreateEvent e){}
     @Excluded public void on(RoleDeleteEvent e){}
@@ -67,8 +61,6 @@ public abstract class BotModule implements Module {
 
 
     /** ChannelEvents **/
-    @Excluded public void on(ChannelEvent e){}
-
     // Other
     @Excluded public void on(PinsUpdateEvent e){}
     @Excluded public void on(TypingStartEvent e){}
@@ -94,8 +86,6 @@ public abstract class BotModule implements Module {
 
 
     /** MessageEvents **/
-    @Excluded public void on(MessageEvent e){}
-
     // Message updates
     @Excluded public void on(MessageCreateEvent e){}
     @Excluded public void on(MessageDeleteEvent e){}

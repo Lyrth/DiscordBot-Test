@@ -24,7 +24,7 @@ public class Core extends BotModule {
 
     @ModuleEvent
     public void on(ReadyEvent event){
-        Log.log("> Logged in as " + event.getSelf().getUsername());
+        Log.logf("> Logged in as %s#%s.", event.getSelf().getUsername(), event.getSelf().getDiscriminator());
         System.gc();
     }
 

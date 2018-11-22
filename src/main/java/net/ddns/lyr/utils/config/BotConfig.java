@@ -14,7 +14,9 @@ import java.nio.file.Paths;
 
 public class BotConfig {
 
-    private static final String CONFIG_FILE = "config.json";
+    public static final String ROOT_FILE_FOLDER = "DiscordBot-Test";
+
+    private static final String CONFIG_FILE = ROOT_FILE_FOLDER + "/config.json";
 
     @SerializedName("Bot Token")
     private String token;
@@ -36,6 +38,7 @@ public class BotConfig {
         BotConfig config = FileUtil.readFile(CONFIG_FILE,BotConfig.class);
         if (config == null) {
             Log.log("> No config detected, creating one.");
+            FileUtil.createDir(ROOT_FILE_FOLDER);
             config = new BotConfig("","!");
             if (!FileUtil.createFile(CONFIG_FILE,config)) {
                 Log.logfError(">>> Cannot create config file %s.", CONFIG_FILE);

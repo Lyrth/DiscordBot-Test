@@ -21,13 +21,16 @@ public class CommandHandler {
 
     public CommandHandler(Map<String, Command> commands) {
         this.commands = commands;
-        prefix = Main.getClient().getConfig().getPrefix();
+        prefix = Main.getClient().getBotConfig().getPrefix();
         prefixLength = prefix.length();
     }
 
     public Mono<Void> handle(MessageCreateEvent mEvent){
         return Mono.just(mEvent)
-            .map(e->{st = System.nanoTime(); return e;})   //  <timeLogging>
+            .map(e -> {
+                st = System.nanoTime();
+                return e;    //  <timeLogging>
+            })
             .filter(this::shouldHandle)
             .flatMap(event ->
                 Mono.justOrEmpty(
@@ -48,7 +51,8 @@ public class CommandHandler {
                 en = System.nanoTime();
                 Log.logfDebug("> Command taken %.3fms",(en-st)/1000_000f);
                 return e;    //  </timeLogging>
-            }).then();
+            })
+            .then();
     }
 
     private boolean shouldHandle(MessageCreateEvent mEvent) {

@@ -4,12 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.ddns.lyr.utils.Log;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 public class FileUtil {
 
@@ -18,9 +16,9 @@ public class FileUtil {
     public static <T> T readFile(String fileName, Class<T> clazz){
         try {
             String json = new String(Files.readAllBytes(Paths.get(fileName)));
-            Log.logf("> Reading config from %s...",fileName);
+            Log.logfDebug("> Reading from %s...",fileName);
             return gson.fromJson(json,clazz);
-        } catch(IOException e) {
+        } catch(Exception e) {
             return null;
         }
     }
@@ -30,7 +28,7 @@ public class FileUtil {
         try(PrintStream ps = new PrintStream(fileName)) {
             ps.print(json);
             return true;
-        } catch(FileNotFoundException ee){
+        } catch(Exception e){
             return false;
         }
     }
@@ -59,5 +57,18 @@ public class FileUtil {
             err = err + 8;
         }
         return err;
+    }
+
+    public static String[] listDirs(String path){
+        try {
+            return new File(path).list(
+                (current, name) -> new File(current, name).isDirectory());
+        } catch(Exception e){
+            return null;
+        }
+    }
+
+    public static boolean createDir(String path){
+        return new File(path).mkdirs();
     }
 }

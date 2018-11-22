@@ -10,6 +10,7 @@ import net.ddns.lyr.utils.config.BotConfig;
 import net.ddns.lyr.handlers.EventHandler;
 import net.ddns.lyr.objects.ClientObject;
 import net.ddns.lyr.utils.Log;
+import net.ddns.lyr.utils.config.GuildConfig;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
@@ -28,8 +29,9 @@ public class Main {
 
     private Main(){
         Log.log("> Starting...");
+        GuildConfig.readAllConfig();
         config = BotConfig.readConfig();
-        if (config==null || config.getToken().isEmpty()) return;
+        if (config == null || config.getToken().isEmpty()) return;
 
         client = new ClientObject(
             new DiscordClientBuilder(config.getToken())
@@ -37,14 +39,14 @@ public class Main {
                 .setInitialPresence(Presence.doNotDisturb(Activity.listening("aaaa")))
                 .build(),
             config);
-
+        Log.log("> | Config done.");
 
         int retries = 0;
         final int maxRetries = 3;
         while (retries<maxRetries)
         try {
             Mono.when(
-                client.getClient().login(),
+                client.getDiscordClient().login(),
                 Mono.fromRunnable(client::init))
                 .block();
         } catch (Exception e) {
@@ -65,7 +67,7 @@ public class Main {
     }
 
     public static DiscordClient getDiscordClient(){
-        return client.getClient();
+        return client.getDiscordClient();
     }
 
     public static EventDispatcher getEventDispatcher() {
@@ -77,6 +79,6 @@ public class Main {
     }
 
     public static BotConfig getConfig(){
-        return client.getConfig();
+        return client.getBotConfig();
     }
 }

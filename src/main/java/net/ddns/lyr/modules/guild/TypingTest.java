@@ -12,6 +12,7 @@ import java.time.Duration;
 
 public class TypingTest extends GuildModule {
 
+    /*
     @ModuleEvent
     public void on(TypingStartEvent event){
         event.getUser().flatMap(User::getPrivateChannel)
@@ -25,13 +26,13 @@ public class TypingTest extends GuildModule {
                     err.printStackTrace();
                 })
             );
-    }
+    }*/
 
     public String getName() {
         return "test";
     }
 
     public TypingTest(){
-        methodsStream = AnnotationUtil.getAnnotatedMethods(this.getClass(),ModuleEvent.class).stream();
+
     }
 }

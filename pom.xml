@@ -6,14 +6,17 @@
 
     <groupId>net.ddns.lyr</groupId>
     <artifactId>DiscordBot-Test</artifactId>
-    <version>0.6.9b</version>
+    <version>${bot.version}</version>
 
-    <!--  Compiler level  -->
+    <!--  Compiler level, versions  -->
     <properties>
+        <bot.version>0.6.9c</bot.version>
+
+        <discord4j.version>1e20c38</discord4j.version>
+        <discord4j.stores.version>2ce222b</discord4j.stores.version>
+
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
-        <discord4j.version>279450a</discord4j.version>
-        <discord4j.stores.version>2ce222b</discord4j.stores.version>
     </properties>
 
     <repositories>
@@ -21,16 +24,12 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
-        <repository>  <!-- d4j, d4j deps -->
-            <id>repository.spring.milestone</id>
-            <url>http://repo.spring.io/milestone</url>
-        </repository>
     </repositories>
 
     <dependencies>
         <dependency>
-            <groupId>com.github.Discord4J</groupId>
-            <artifactId>Discord4j</artifactId>
+            <groupId>com.discord4j.discord4j</groupId>
+            <artifactId>discord4j-core</artifactId>
             <version>${discord4j.version}</version>
         </dependency>
         <dependency>
@@ -83,8 +82,27 @@
             <artifactId>log4j-slf4j-impl</artifactId>
             <version>2.11.1</version>
         </dependency>
-
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>write-project-properties</goal>
+                        </goals>
+                        <configuration>
+                            <outputFile>${project.build.sourceDirectory}/main/resources/my.properties</outputFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
 

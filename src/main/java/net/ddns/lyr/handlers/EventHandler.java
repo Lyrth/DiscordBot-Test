@@ -18,6 +18,7 @@ import net.ddns.lyr.templates.GuildModule;
 import net.ddns.lyr.utils.Log;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 
 import java.util.*;
 
@@ -25,15 +26,16 @@ public class EventHandler {
     private EventDispatcher eventDispatcher;
     private CommandHandler commandHandler;
 
-    private HashMap<String,BotModule>
+    private HashMap<String, BotModule>
         activeBotModules = new HashMap<>();
-    //private HashMap<Snowflake,List<GuildModule>> activeGuildModules;
+    private HashMap<String, Tuple2<GuildModule, List<Snowflake>>>
+        activeGuildModules = new HashMap<>();
 
     public EventHandler(EventDispatcher eventDispatcher) {
         this.eventDispatcher = eventDispatcher;
-        Mono.fromRunnable(()->{
+        Mono.fromRunnable(() -> {
             subscribe();
-            Log.logDebug("> Finished subscribing bot modules.");
+            Log.logDebug("> Finished subscribing bot events.");
         }).subscribe();
     }
 
@@ -50,8 +52,6 @@ public class EventHandler {
             .subscribe(event -> activeBotModules.forEach((moduleName,module) -> module.on(event)));
 
         /* LifecycleEvents */
-        eventDispatcher.on(GatewayLifecycleEvent.class)
-            .subscribe(event -> activeBotModules.forEach((moduleName,module) -> module.on(event)));
         eventDispatcher.on(ReadyEvent.class)
             .subscribe(event -> activeBotModules.forEach((moduleName,module) -> module.on(event)));
         eventDispatcher.on(ResumeEvent.class)
@@ -68,8 +68,6 @@ public class EventHandler {
             .subscribe(event -> activeBotModules.forEach((moduleName,module) -> module.on(event)));
 
         /* GuildEvents */
-        eventDispatcher.on(GuildEvent.class)
-            .subscribe(event -> activeBotModules.forEach((moduleName,module) -> module.on(event)));
         // Other
         eventDispatcher.on(EmojisUpdateEvent.class)
             .subscribe(event -> activeBotModules.forEach((moduleName,module) -> module.on(event)));
@@ -98,8 +96,6 @@ public class EventHandler {
             .subscribe(event -> activeBotModules.forEach((moduleName,module) -> module.on(event)));
 
         /* RoleEvents */
-        eventDispatcher.on(RoleEvent.class)
-            .subscribe(event -> activeBotModules.forEach((moduleName,module) -> module.on(event)));
         // Role updates
         eventDispatcher.on(RoleCreateEvent.class)
             .subscribe(event -> activeBotModules.forEach((moduleName,module) -> module.on(event)));
@@ -109,8 +105,6 @@ public class EventHandler {
             .subscribe(event -> activeBotModules.forEach((moduleName,module) -> module.on(event)));
 
         /* ChannelEvents */
-        eventDispatcher.on(ChannelEvent.class)
-            .subscribe(event -> activeBotModules.forEach((moduleName,module) -> module.on(event)));
         // Other
         eventDispatcher.on(PinsUpdateEvent.class)
             .subscribe(event -> activeBotModules.forEach((moduleName,module) -> module.on(event)));
@@ -144,8 +138,6 @@ public class EventHandler {
             .subscribe(event -> activeBotModules.forEach((moduleName,module) -> module.on(event)));
 
         /* MessageEvents */
-        eventDispatcher.on(MessageEvent.class)
-            .subscribe(event -> activeBotModules.forEach((moduleName,module) -> module.on(event)));
         eventDispatcher.on(MessageCreateEvent.class)
             .subscribe(event -> activeBotModules.forEach((moduleName,module) -> module.on(event)));
         eventDispatcher.on(MessageDeleteEvent.class)
@@ -171,10 +163,14 @@ public class EventHandler {
         }).then();
     }
 
-    public Mono<Void> unregisterBotEvent(BotModule m){
-        return Mono.just(m).doOnNext(module -> {
-            Log.logfDebug("> Unregistering %s...", module.getName());
-            activeBotModules.remove(module.getClass().getName());
+    public Mono<Void> unregisterBotEvent(BotModule module){
+        return unregisterBotEvent(module.getClass().getName());
+    }
+
+    public Mono<Void> unregisterBotEvent(String moduleName){
+        return Mono.fromRunnable(() -> {
+            Log.logfDebug("> Unregistering %s...", moduleName);
+            activeBotModules.remove(moduleName);
         }).then();
     }
 
