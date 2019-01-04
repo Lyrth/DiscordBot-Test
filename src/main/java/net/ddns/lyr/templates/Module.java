@@ -8,7 +8,7 @@ import discord4j.core.event.domain.lifecycle.*;
 import discord4j.core.event.domain.message.*;
 import discord4j.core.event.domain.role.*;
 
-abstract class Module {
+public abstract class Module {
     public abstract String getName();
 
     /** Other Events **/

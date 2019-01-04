@@ -17,15 +17,17 @@ public class BotModules {
         // Core module.
         add(new Core());
 
+        add(new GuildModuleCore());
+
         add(new Test());
     }
 
     private void add(BotModule m){
         Mono.just(m).flatMap(module -> {
-            if (!botModules.containsKey(module.getName())) {
+            if (!botModules.containsKey(module.getName())) {  // TODO: read config en/disable
                 botModules.put(module.getName(), module);
                 Log.logfDebug("> Adding module %s...", module.getName());
-                return Main.getEventHandler().registerBotEvent(module);
+                return Main.client.getEventHandler().registerBotEvent(module);
             }
             return Mono.empty();
         }).subscribe();

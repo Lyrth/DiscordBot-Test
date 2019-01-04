@@ -12,21 +12,25 @@ import net.ddns.lyr.utils.config.BotConfig;
 import net.ddns.lyr.modules.BotModules;
 import net.ddns.lyr.utils.config.GuildConfig;
 import net.ddns.lyr.utils.config.GuildSetting;
+import reactor.core.publisher.Flux;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ClientObject {
-    private volatile DiscordClient client;
-    private volatile BotConfig config;
+    private DiscordClient client;
+
+    public BotConfig config;
     private EventDispatcher eventDispatcher;
-    private volatile EventHandler eventHandler;
+    private EventHandler eventHandler;
     private BotModules modules;
 
     private User botUser;
     private ApplicationInfo applicationInfo;
 
-    public HashMap<Snowflake, GuildSetting> guildSettings;
+    private Flux<Guild> guilds;
+
+    private HashMap<Snowflake, GuildSetting> guildSettings;
 
 
     public ClientObject(DiscordClient client, BotConfig config){
@@ -37,16 +41,16 @@ public class ClientObject {
 
     public void init(){
         this.eventHandler = new EventHandler(eventDispatcher);
-        modules = new BotModules();
         Log.logDebug("thonk");
+        guilds = client.getGuilds();
         HashMap<Snowflake,GuildSetting> configs = GuildConfig.readAllConfig();
         guildSettings = (HashMap<Snowflake, GuildSetting>)
-            client.getGuilds()
-            .map(Guild::getId)
+            guilds.map(Guild::getId)
             .collectMap(
-                guildId -> guildId,
-                guildId -> configs.getOrDefault(guildId, new GuildSetting())
+                guildId -> /* Key */ guildId,
+                guildId -> /*Value*/ configs.getOrDefault(guildId, new GuildSetting())
             ).block();
+        modules = new BotModules();
         //botUser = client.getSelf().block();
         //applicationInfo = client.getApplicationInfo().block();
         Log.logDebug("thonkang");
@@ -70,5 +74,13 @@ public class ClientObject {
 
     public User getBotUser() {
         return botUser;
+    }
+
+    public Flux<Guild> getGuilds() {
+        return guilds;
+    }
+
+    public HashMap<Snowflake, GuildSetting> getGuildSettings() {
+        return guildSettings;
     }
 }

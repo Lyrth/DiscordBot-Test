@@ -21,7 +21,7 @@ public class CommandHandler {
 
     public CommandHandler(Map<String, Command> commands) {
         this.commands = commands;
-        prefix = Main.getClient().getBotConfig().getPrefix();
+        prefix = Main.client.config.getPrefix();
         prefixLength = prefix.length();
     }
 
@@ -49,7 +49,7 @@ public class CommandHandler {
             )
             .map(e->{
                 en = System.nanoTime();
-                Log.logfDebug("> Command taken %.3fms",(en-st)/1000_000f);
+                Log.logfDebug("> Command taken %.3fms",(en-st)/1_000_000f);
                 return e;    //  </timeLogging>
             })
             .then();

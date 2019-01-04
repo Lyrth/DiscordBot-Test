@@ -18,9 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
 
-    public static volatile ClientObject client;
-    private static volatile BotConfig config;
-    private static volatile EventHandler eventHandler;
+    public static ClientObject client;
 
     public static void main(String args[]) {
         System.setProperty("log4j.skipJansi","false");  // Color support for logging.
@@ -30,7 +28,7 @@ public class Main {
     private Main(){
         Log.log("> Starting...");
         GuildConfig.readAllConfig();
-        config = BotConfig.readConfig();
+        BotConfig config = BotConfig.readConfig();
         if (config == null || config.getToken().isEmpty()) return;
 
         client = new ClientObject(
@@ -62,23 +60,4 @@ public class Main {
         Log.log("> End.");
     }
 
-    public static ClientObject getClient(){
-        return client;
-    }
-
-    public static DiscordClient getDiscordClient(){
-        return client.getDiscordClient();
-    }
-
-    public static EventDispatcher getEventDispatcher() {
-        return client.getEventDispatcher();
-    }
-
-    public static EventHandler getEventHandler() {
-        return client.getEventHandler();
-    }
-
-    public static BotConfig getConfig(){
-        return client.getBotConfig();
-    }
 }

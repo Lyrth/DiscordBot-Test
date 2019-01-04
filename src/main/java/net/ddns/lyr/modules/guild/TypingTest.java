@@ -29,7 +29,7 @@ public class TypingTest extends GuildModule {
     }*/
 
     public String getName() {
-        return "test";
+        return "TypingTest";
     }
 
     public TypingTest(){

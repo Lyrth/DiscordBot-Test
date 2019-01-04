@@ -29,7 +29,7 @@ public class Core extends BotModule {
     }
 
     public String getName() {
-        return "test";
+        return this.getClass().getName();
     }
 
 }
