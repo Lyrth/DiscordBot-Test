@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import net.ddns.lyr.utils.Log;
 
 import java.io.*;
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -18,6 +19,16 @@ public class FileUtil {
             String json = new String(Files.readAllBytes(Paths.get(fileName)));
             Log.logfDebug("> Reading from %s...",fileName);
             return gson.fromJson(json,clazz);
+        } catch(Exception e) {
+            return null;
+        }
+    }
+
+    public static <T> T readFile(String fileName, Type type){
+        try {
+            String json = new String(Files.readAllBytes(Paths.get(fileName)));
+            Log.logfDebug("> Reading from %s...",fileName);
+            return gson.fromJson(json,type);
         } catch(Exception e) {
             return null;
         }
@@ -59,6 +70,19 @@ public class FileUtil {
         return err;
     }
 
+    public static String[] listFiles(String path){
+        try {
+            return new File(path).list(
+                (current, name) -> new File(current, name).isFile());
+        } catch(Exception e){
+            return null;
+        }
+    }
+
+    public static boolean isFile(String path){
+        return new File(path).isFile();
+    }
+
     public static String[] listDirs(String path){
         try {
             return new File(path).list(
@@ -66,6 +90,10 @@ public class FileUtil {
         } catch(Exception e){
             return null;
         }
+    }
+
+    public static boolean isDirectory(String path){
+        return new File(path).isDirectory();
     }
 
     public static boolean createDir(String path){

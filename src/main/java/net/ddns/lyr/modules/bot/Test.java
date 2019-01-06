@@ -25,7 +25,7 @@ public class Test extends BotModule {
     }
 
     public String getName() {
-        return "Test";
+        return this.getClass().getSimpleName();
     }
 
 }

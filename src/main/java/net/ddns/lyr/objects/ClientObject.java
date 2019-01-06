@@ -7,6 +7,7 @@ import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Snowflake;
 import net.ddns.lyr.handlers.EventHandler;
+import net.ddns.lyr.modules.GuildModules;
 import net.ddns.lyr.utils.Log;
 import net.ddns.lyr.utils.config.BotConfig;
 import net.ddns.lyr.modules.BotModules;
@@ -14,21 +15,21 @@ import net.ddns.lyr.utils.config.GuildConfig;
 import net.ddns.lyr.utils.config.GuildSetting;
 import reactor.core.publisher.Flux;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ClientObject {
     private DiscordClient client;
 
     public BotConfig config;
+    public BotModules botModules;
+    public GuildModules availableGuildModules;
     private EventDispatcher eventDispatcher;
     private EventHandler eventHandler;
-    private BotModules modules;
 
     private User botUser;
     private ApplicationInfo applicationInfo;
 
-    private Flux<Guild> guilds;
+    public Flux<Guild> guilds;
 
     private HashMap<Snowflake, GuildSetting> guildSettings;
 
@@ -37,6 +38,7 @@ public class ClientObject {
         this.client = client;
         this.config = config;
         this.eventDispatcher = client.getEventDispatcher();
+        availableGuildModules = new GuildModules();
     }
 
     public void init(){
@@ -48,9 +50,9 @@ public class ClientObject {
             guilds.map(Guild::getId)
             .collectMap(
                 guildId -> /* Key */ guildId,
-                guildId -> /*Value*/ configs.getOrDefault(guildId, new GuildSetting())
+                guildId -> /*Value*/ configs.getOrDefault(guildId, new GuildSetting(guildId))
             ).block();
-        modules = new BotModules();
+        botModules = new BotModules();
         //botUser = client.getSelf().block();
         //applicationInfo = client.getApplicationInfo().block();
         Log.logDebug("thonkang");

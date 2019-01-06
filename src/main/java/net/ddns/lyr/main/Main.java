@@ -27,7 +27,6 @@ public class Main {
 
     private Main(){
         Log.log("> Starting...");
-        GuildConfig.readAllConfig();
         BotConfig config = BotConfig.readConfig();
         if (config == null || config.getToken().isEmpty()) return;
 

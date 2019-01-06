@@ -6,6 +6,7 @@ import net.ddns.lyr.templates.BotModule;
 import net.ddns.lyr.utils.Log;
 import reactor.core.publisher.Mono;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,7 +35,7 @@ public class BotModules {
     }
 
     public Map<String, BotModule> get(){
-        return botModules;
+        return Collections.unmodifiableMap(botModules);
     }
 
 }

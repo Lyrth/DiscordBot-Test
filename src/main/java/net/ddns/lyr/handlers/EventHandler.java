@@ -158,13 +158,13 @@ public class EventHandler {
 
     public Mono<Void> registerBotEvent(BotModule m){
         return Mono.just(m).doOnNext(module -> {
-            activeBotModules.putIfAbsent(module.getClass().getName(), module);
+            activeBotModules.putIfAbsent(module.getName(), module);
             Log.logDebug("> | Registered.");
         }).then();
     }
 
     public Mono<Void> unregisterBotEvent(BotModule module){
-        return unregisterBotEvent(module.getClass().getName());
+        return unregisterBotEvent(module.getName());
     }
 
     public Mono<Void> unregisterBotEvent(String moduleName){

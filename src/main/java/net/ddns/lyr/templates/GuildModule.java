@@ -6,12 +6,24 @@ import discord4j.core.event.domain.guild.*;
 import discord4j.core.event.domain.lifecycle.*;
 import discord4j.core.event.domain.message.*;
 import discord4j.core.event.domain.role.*;
+import discord4j.core.object.entity.Guild;
+import discord4j.core.object.util.Snowflake;
+import net.ddns.lyr.utils.config.GuildSetting;
+import reactor.core.publisher.Mono;
 
 public abstract class GuildModule extends Module {
 
+    protected Mono<Guild> guild;
+    protected Snowflake guildId;
+    protected GuildSetting guildSettings;
 
-
-
+    public abstract GuildModule newInstance(Mono<Guild> guild, GuildSetting guildSettings);
+    public GuildModule(Mono<Guild> guild, GuildSetting guildSettings){
+        this.guild = guild;
+        this.guildSettings = guildSettings;
+        this.guildId = Snowflake.of(guildSettings.guildId);
+    }
+    public GuildModule(){}
 
     /** Other Events **/
     void on(PresenceUpdateEvent e){}

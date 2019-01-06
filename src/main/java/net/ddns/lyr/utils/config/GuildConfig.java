@@ -1,22 +1,27 @@
 package net.ddns.lyr.utils.config;
 
 
+import com.google.gson.reflect.TypeToken;
 import discord4j.core.object.util.Snowflake;
+import net.ddns.lyr.main.Main;
+import net.ddns.lyr.modules.GuildModules;
 import net.ddns.lyr.utils.Log;
 
+import java.lang.reflect.Type;
 import java.util.HashMap;
 
 public class GuildConfig {
 
     private static final String GUILDS_FOLDER = BotConfig.ROOT_FILE_FOLDER + "/guilds";
     private static final String GUILD_CONFIG_FILENAME = "guild.json";
+    private static final String MODULE_CONFIG_DIR = "/modules";
 
     public static HashMap<Snowflake, GuildSetting> readAllConfig(){
         HashMap<Snowflake,GuildSetting> map = new HashMap<>();
 
         String[] dirs = FileUtil.listDirs(GUILDS_FOLDER);
         if (dirs == null) {
-            Log.log("> No 'guild' folder found. Creating one.");
+            Log.log("> No 'guilds' folder found. Creating one.");
             FileUtil.createDir(GUILDS_FOLDER);
             return map;
         }
@@ -28,16 +33,40 @@ public class GuildConfig {
             } catch(NumberFormatException e){  // Not a guild folder?
                 continue;
             }
-            final String configFile = String.format("%s/%s/%s",GUILDS_FOLDER,dir,GUILD_CONFIG_FILENAME);
+            final String guildDir = String.format("%s/%s",GUILDS_FOLDER,dir);
+            final String configFile = String.format("%s/%s",guildDir,GUILD_CONFIG_FILENAME);
             GuildSetting guildSetting = FileUtil.readFile(configFile, GuildSetting.class);
             if (guildSetting == null) {  // File doesn't exist.
-                Log.logf("> Creating new config for guild %s", dir);
-                FileUtil.createDir(GUILDS_FOLDER + "/" + dir);
-                guildSetting = new GuildSetting();
+                Log.logf("> Creating new config for guild %s...", dir);
+                FileUtil.createDir(guildDir);
+                guildSetting = new GuildSetting(guildId);
                 if (!FileUtil.createFile(configFile,guildSetting))
                     Log.logfError(">>> Cannot create config file for guild %s.", dir);
             }
+            guildSetting.setModulesSettings(readModulesSettings(guildDir));
             map.put(guildId,guildSetting);
+        }
+        return map;
+    }
+
+    //   ModuleName, <SettingKey, SettingValue>
+    public static HashMap<String,HashMap<String,String>> readModulesSettings(String guildDir){
+        HashMap<String,HashMap<String,String>> map = new HashMap<>();
+        GuildModules availableGuildModules = Main.client.availableGuildModules;
+
+        String[] files = FileUtil.listFiles(guildDir + MODULE_CONFIG_DIR);
+        if (files == null){  // modules dir doesn't exist
+            Log.logf("> Creating modules config dir at %s...", guildDir);
+            FileUtil.createDir(guildDir + MODULE_CONFIG_DIR);
+            return map;
+        }
+        if (files.length == 0) return map;  // no configs inside
+        for (String file : files){
+            String moduleName = file.replaceAll(".*?([^\\\\/]+).json$","$1");
+            if (!availableGuildModules.get().containsKey(moduleName)) continue;
+            map.put(moduleName, (HashMap<String,String>) FileUtil.readFile(String.format("%s%s/%s",guildDir,MODULE_CONFIG_DIR,file),HashMap.class));
+            // Type type = new TypeToken<HashMap<String, String>>(){}.getType();
+            // map.put(moduleName, FileUtil.readFile(String.format("%s%s/%s",guildDir,MODULE_CONFIG_DIR,file),type));
         }
         return map;
     }
