@@ -21,91 +21,91 @@ public abstract class GuildModule extends Module {
     public GuildModule(Mono<Guild> guild, GuildSetting guildSettings){
         this.guild = guild;
         this.guildSettings = guildSettings;
-        this.guildId = Snowflake.of(guildSettings.guildId);
+        this.guildId = guildSettings.guildId;
     }
     public GuildModule(){}
 
     /** Other Events **/
-    void on(PresenceUpdateEvent e){}
-    void on(UserUpdateEvent e){}
-    void on(VoiceServerUpdateEvent e){}
-    void on(VoiceStateUpdateEvent e){}
-    void on(WebhooksUpdateEvent e){}
+    public void on(PresenceUpdateEvent e){}
+    public void on(UserUpdateEvent e){}
+    public void on(VoiceServerUpdateEvent e){}
+    public void on(VoiceStateUpdateEvent e){}
+    public void on(WebhooksUpdateEvent e){}
 
 
     /** LifecycleEvents **/
-    void on(ReadyEvent e){}
-    void on(ResumeEvent e){}
-    void on(ConnectEvent e){}
-    void on(DisconnectEvent e){}
-    void on(ReconnectEvent e){}
-    void on(ReconnectStartEvent e){}
-    void on(ReconnectFailEvent e){}
+    public void on(ReadyEvent e){}
+    public void on(ResumeEvent e){}
+    public void on(ConnectEvent e){}
+    public void on(DisconnectEvent e){}
+    public void on(ReconnectEvent e){}
+    public void on(ReconnectStartEvent e){}
+    public void on(ReconnectFailEvent e){}
 
 
     /** GuildEvents **/
     // Other
-    void on(EmojisUpdateEvent e){}
-    void on(IntegrationsUpdateEvent e){}
+    public void on(EmojisUpdateEvent e){}
+    public void on(IntegrationsUpdateEvent e){}
 
     // Guild updates
-    void on(GuildCreateEvent e){}
-    void on(GuildDeleteEvent e){}
-    void on(GuildUpdateEvent e){}
+    public void on(GuildCreateEvent e){}
+    public void on(GuildDeleteEvent e){}
+    public void on(GuildUpdateEvent e){}
 
     // Member updates
-    void on(MemberJoinEvent e){}
-    void on(MemberLeaveEvent e){}
-    void on(MemberUpdateEvent e){}
-    void on(MemberChunkEvent e){}
+    public void on(MemberJoinEvent e){}
+    public void on(MemberLeaveEvent e){}
+    public void on(MemberUpdateEvent e){}
+    public void on(MemberChunkEvent e){}
 
     // Bans/Unbans
-    void on(BanEvent e){}
-    void on(UnbanEvent e){}
+    public void on(BanEvent e){}
+    public void on(UnbanEvent e){}
 
 
     /** RoleEvents **/
     // Role updates
-    void on(RoleCreateEvent e){}
-    void on(RoleDeleteEvent e){}
-    void on(RoleUpdateEvent e){}
+    public void on(RoleCreateEvent e){}
+    public void on(RoleDeleteEvent e){}
+    public void on(RoleUpdateEvent e){}
 
 
     /** ChannelEvents **/
     // Other
-    void on(PinsUpdateEvent e){}
-    void on(TypingStartEvent e){}
+    public void on(PinsUpdateEvent e){}
+    public void on(TypingStartEvent e){}
 
-    // Private Channels / DMs
-    void on(PrivateChannelCreateEvent e){}
-    void on(PrivateChannelDeleteEvent e){}
+    // Private Channels / DMs  (Useless for GuildModules, right?)
+    public final void on(PrivateChannelCreateEvent e){}
+    public final void on(PrivateChannelDeleteEvent e){}
 
     // Guild Categories
-    void on(CategoryCreateEvent e){}
-    void on(CategoryDeleteEvent e){}
-    void on(CategoryUpdateEvent e){}
+    public void on(CategoryCreateEvent e){}
+    public void on(CategoryDeleteEvent e){}
+    public void on(CategoryUpdateEvent e){}
 
     // Text Channels
-    void on(TextChannelCreateEvent e){}
-    void on(TextChannelDeleteEvent e){}
-    void on(TextChannelUpdateEvent e){}
+    public void on(TextChannelCreateEvent e){}
+    public void on(TextChannelDeleteEvent e){}
+    public void on(TextChannelUpdateEvent e){}
 
     // Voice Channels
-    void on(VoiceChannelCreateEvent e){}
-    void on(VoiceChannelDeleteEvent e){}
-    void on(VoiceChannelUpdateEvent e){}
+    public void on(VoiceChannelCreateEvent e){}
+    public void on(VoiceChannelDeleteEvent e){}
+    public void on(VoiceChannelUpdateEvent e){}
 
 
     /** MessageEvents **/
     // Message updates
-    void on(MessageCreateEvent e){}
-    void on(MessageDeleteEvent e){}
-    void on(MessageUpdateEvent e){}
+    public void on(MessageCreateEvent e){}
+    public void on(MessageDeleteEvent e){}
+    public void on(MessageUpdateEvent e){}
 
-    void on(ReactionAddEvent e){}
-    void on(ReactionRemoveEvent e){}
-    void on(ReactionRemoveAllEvent e){}
+    public void on(ReactionAddEvent e){}
+    public void on(ReactionRemoveEvent e){}
+    public void on(ReactionRemoveAllEvent e){}
 
-    void on(MessageBulkDeleteEvent e){}
+    public void on(MessageBulkDeleteEvent e){}
 
 }

@@ -16,6 +16,7 @@ public class Commands {
         add(new Ping());
         add(new Me());
         add(new Test());
+        add(new Module());
     }
 
     private void add(Command command){

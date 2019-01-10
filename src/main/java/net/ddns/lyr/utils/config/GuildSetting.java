@@ -6,19 +6,20 @@ import net.ddns.lyr.templates.ModuleSettings;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class GuildSetting {
 
-    public final String guildId;
+    public final Snowflake guildId;
 
-    public Collection<String> enabledModules = Collections.emptyList();
+    public HashSet<String> enabledModules = new HashSet<>();
 
     // Each module has its own config file, hence transient.
     //   ModuleName, <SettingKey, SettingValue>
     public transient HashMap<String, HashMap<String,String>> modulesSettings = new HashMap<>();
 
     public GuildSetting(Snowflake guildId){
-        this.guildId = guildId.asString();
+        this.guildId = guildId;
     }
 
     public void setModulesSettings(HashMap<String, HashMap<String, String>> modulesSettings) {
@@ -27,6 +28,25 @@ public class GuildSetting {
 
     public boolean isModuleEnabled(String moduleName){
         return enabledModules.contains(moduleName);
+    }
+
+    public boolean enableModule(String moduleName){
+        return enabledModules.add(moduleName);
+    }
+
+    public boolean disableModule(String moduleName){
+        return enabledModules.remove(moduleName);
+    }
+
+    // returns: true if module just activated, false if not.
+    public boolean toggleModule(String moduleName){
+        if(isModuleEnabled(moduleName)){
+            disableModule(moduleName);
+            return false;
+        } else {
+            enableModule(moduleName);
+            return true;
+        }
     }
 
     public boolean hasSettings(String moduleName){
@@ -38,6 +58,14 @@ public class GuildSetting {
         return modulesSettings.get(moduleName).get(key);
     }
 
-    //public String setSetting(){ } // TODO add setSetting and update file accordingly. (have interval between writes?) Also, MULTIPLE MODULE CONFIIIIIGS
-
+    //public String setSetting(){ } // TODO  update file accordingly. (have interval between writes?)
+    public void setSetting(String moduleName, String key, String value){
+        if (hasSettings(moduleName)) {
+            modulesSettings.get(moduleName).put(key,value);
+        } else {
+            HashMap<String,String> map = new HashMap<>();
+            map.put(key,value);
+            modulesSettings.put(moduleName,map);
+        }
+    }
 }

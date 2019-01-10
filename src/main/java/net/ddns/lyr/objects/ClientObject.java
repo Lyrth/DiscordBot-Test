@@ -4,6 +4,7 @@ import discord4j.core.DiscordClient;
 import discord4j.core.event.EventDispatcher;
 import discord4j.core.object.entity.ApplicationInfo;
 import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.GuildChannel;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Snowflake;
 import net.ddns.lyr.handlers.EventHandler;
@@ -14,6 +15,7 @@ import net.ddns.lyr.modules.BotModules;
 import net.ddns.lyr.utils.config.GuildConfig;
 import net.ddns.lyr.utils.config.GuildSetting;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
 
@@ -23,13 +25,17 @@ public class ClientObject {
     public BotConfig config;
     public BotModules botModules;
     public GuildModules availableGuildModules;
+    public EventHandler eventHandler;
     private EventDispatcher eventDispatcher;
-    private EventHandler eventHandler;
 
-    private User botUser;
-    private ApplicationInfo applicationInfo;
+    public Snowflake selfId;
+
+    private Mono<User> botUser;
+    private Mono<ApplicationInfo> applicationInfo;
 
     public Flux<Guild> guilds;
+
+    public HashMap<Snowflake,Snowflake> channelToGuildMapping = new HashMap<>();
 
     private HashMap<Snowflake, GuildSetting> guildSettings;
 
@@ -42,20 +48,25 @@ public class ClientObject {
     }
 
     public void init(){
+        Log.log("> Doing client init things.");
         this.eventHandler = new EventHandler(eventDispatcher);
-        Log.logDebug("thonk");
         guilds = client.getGuilds();
+        botUser = client.getSelf();
+        botUser.doOnNext(user -> selfId = user.getId()).block();
         HashMap<Snowflake,GuildSetting> configs = GuildConfig.readAllConfig();
         guildSettings = (HashMap<Snowflake, GuildSetting>)
-            guilds.map(Guild::getId)
-            .collectMap(
-                guildId -> /* Key */ guildId,
-                guildId -> /*Value*/ configs.getOrDefault(guildId, new GuildSetting(guildId))
-            ).block();
+            guilds
+                .map(Guild::getId)
+                .collectMap(
+                    guildId -> /* Key */ guildId,
+                    guildId -> /*Value*/ configs.getOrDefault(guildId, new GuildSetting(guildId))
+                ).block();
         botModules = new BotModules();
-        //botUser = client.getSelf().block();
+        guilds.flatMap(Guild::getChannels)
+            .collectMap(GuildChannel::getId, GuildChannel::getGuildId,() -> channelToGuildMapping)
+            .block();
         //applicationInfo = client.getApplicationInfo().block();
-        Log.logDebug("thonkang");
+        Log.log("> Done client init.");
     }
 
     public DiscordClient getDiscordClient() {
@@ -74,7 +85,7 @@ public class ClientObject {
         return eventHandler;
     }
 
-    public User getBotUser() {
+    public Mono<User> getBotUser() {
         return botUser;
     }
 

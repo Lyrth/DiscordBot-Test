@@ -26,9 +26,12 @@ public class EventHandler {
     private EventDispatcher eventDispatcher;
     private CommandHandler commandHandler;
 
+    // <moduleName, module>
     private HashMap<String, BotModule>
         activeBotModules = new HashMap<>();
-    private HashMap<String, Tuple2<GuildModule, List<Snowflake>>>
+
+    // <guildId, <moduleName, module>>
+    public HashMap<Snowflake, HashMap<String, GuildModule>>
         activeGuildModules = new HashMap<>();
 
     public EventHandler(EventDispatcher eventDispatcher) {

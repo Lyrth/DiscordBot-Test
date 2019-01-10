@@ -23,10 +23,9 @@ public class GuildModules {
 
     private void add(GuildModule m){
         Mono.just(m).flatMap(module -> {
-            if (!guildModules.containsKey(module.getName())) {  // TODO: read config en/disable
+            if (!guildModules.containsKey(module.getName())) {
                 guildModules.put(module.getName(), module);
                 Log.logfDebug("> Adding module %s...", module.getName());
-                //return Main.client.getEventHandler().registerBotEvent(module);
             }
             return Mono.empty();
         }).subscribe();

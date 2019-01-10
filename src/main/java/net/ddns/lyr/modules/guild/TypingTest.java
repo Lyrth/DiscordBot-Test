@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono;
 import java.time.Duration;
 
 public class TypingTest extends GuildModule {
-    /*
+
     @ModuleEvent
     public void on(TypingStartEvent event){
         event.getUser().flatMap(User::getPrivateChannel)
@@ -28,7 +28,7 @@ public class TypingTest extends GuildModule {
                     err.printStackTrace();
                 })
             );
-    }*/
+    }
 
     public String getName() {
         return this.getClass().getSimpleName();

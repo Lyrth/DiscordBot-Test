@@ -1,6 +1,8 @@
 package net.ddns.lyr.templates;
 
 import net.ddns.lyr.enums.CommandType;
+import net.ddns.lyr.main.Main;
+import net.ddns.lyr.objects.ClientObject;
 import net.ddns.lyr.objects.CommandObject;
 import reactor.core.publisher.Mono;
 
@@ -13,5 +15,9 @@ public abstract class Command {
     protected abstract int getNumArgs();
 
     public abstract Mono<String> execute(CommandObject command);
+
+    protected ClientObject getClient(){
+        return Main.client;
+    }
 
 }
