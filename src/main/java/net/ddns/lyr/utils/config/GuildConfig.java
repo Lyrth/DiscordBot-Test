@@ -5,10 +5,12 @@ import com.google.gson.reflect.TypeToken;
 import discord4j.core.object.util.Snowflake;
 import net.ddns.lyr.main.Main;
 import net.ddns.lyr.modules.GuildModules;
+import net.ddns.lyr.templates.GuildModule;
 import net.ddns.lyr.utils.Log;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.Map;
 
 public class GuildConfig {
 
@@ -52,18 +54,18 @@ public class GuildConfig {
     //   ModuleName, <SettingKey, SettingValue>
     public static HashMap<String,HashMap<String,String>> readModulesSettings(String guildDir){
         HashMap<String,HashMap<String,String>> map = new HashMap<>();
-        GuildModules availableGuildModules = Main.client.availableGuildModules;
+        Map<String, GuildModule> availableGuildModules = Main.client.availableGuildModules;
 
-        String[] files = FileUtil.listFiles(guildDir + MODULE_CONFIG_DIR);
+        String[] files = FileUtil.listFiles(guildDir + "/" + MODULE_CONFIG_DIR);
         if (files == null){  // modules dir doesn't exist
             Log.logf("> Creating modules config dir at %s...", guildDir);
-            FileUtil.createDir(guildDir + MODULE_CONFIG_DIR);
+            FileUtil.createDir(guildDir + "/" + MODULE_CONFIG_DIR);
             return map;
         }
         if (files.length == 0) return map;  // no configs inside
         for (String file : files){
             String moduleName = file.replaceAll(".*?([^\\\\/]+).json$","$1");
-            if (!availableGuildModules.get().containsKey(moduleName)) continue;
+            if (!availableGuildModules.containsKey(moduleName)) continue;
             map.put(moduleName, (HashMap<String,String>)
                 FileUtil.readFile(String.format("%s/%s/%s",guildDir,MODULE_CONFIG_DIR,file), HashMap.class));
             // Type type = new TypeToken<HashMap<String, String>>(){}.getType();
@@ -75,6 +77,7 @@ public class GuildConfig {
     //   ModuleName, <SettingKey, SettingValue>
     public static void updateModulesSettings(HashMap<String,HashMap<String,String>> settings, String guildId){
         final String dir = String.format("%s/%s/%s", GUILDS_FOLDER, guildId, MODULE_CONFIG_DIR);
+        FileUtil.createDir(dir);  // make sure dir exists
         settings.forEach((moduleName,map) -> {
             int err = FileUtil.updateFile(String.format("%s/%s.json",dir,moduleName), map);
             if ((err & 1) > 0) Log.logfWarn(">> Cannot delete backup %s settings file for %s.",moduleName,guildId);
@@ -86,15 +89,29 @@ public class GuildConfig {
         });
     }
 
+    public static void updateModuleSettings(String moduleName, HashMap<String,String> settings, String guildId){
+        final String dir = String.format("%s/%s/%s", GUILDS_FOLDER, guildId, MODULE_CONFIG_DIR);
+        FileUtil.createDir(dir);  // make sure dir exists
+        int err = FileUtil.updateFile(String.format("%s/%s.json",dir,moduleName), settings);
+        if ((err & 1) > 0) Log.logfWarn(">> Cannot delete backup %s settings file for %s.",moduleName,guildId);
+        if ((err & 2) > 0) Log.logWarn(">> Cannot rename settings. Overwriting.");
+        if ((err & 4) > 0) Log.logError(">>> Cannot modify settings.");
+        if ((err & 8) > 0) Log.logfError(">>> Cannot create settings file %s.json.", moduleName);
+        if ((err & 12) > 0) return;        // Error
+        Log.logfDebug("> %s config for guild %s updated.", moduleName, guildId);
+        ;
+    }
+
     public static void updateGuildSettings(GuildSetting setting){
-        final String dir = String.format("%s/%s", GUILDS_FOLDER, setting.guildId);
+        final String dir = String.format("%s/%s", GUILDS_FOLDER, setting.guildId.asString());
+        FileUtil.createDir(dir);  // make sure dir exists
         int err = FileUtil.updateFile(String.format("%s/%s",dir,GUILD_CONFIG_FILENAME), setting);
-        if ((err&1) > 0) Log.logfWarn(">> Cannot delete backup config for guild %s.", setting.guildId);
-        if ((err&2) > 0) Log.logfWarn(">> Cannot rename config for guild %s. Overwriting.", setting.guildId);
+        if ((err&1) > 0) Log.logfWarn(">> Cannot delete backup config for guild %s.", setting.guildId.asString());
+        if ((err&2) > 0) Log.logfWarn(">> Cannot rename config for guild %s. Overwriting.", setting.guildId.asString());
         if ((err&4) > 0) Log.logError(">>> Cannot modify config.");
-        if ((err&8) > 0) Log.logfError(">>> Cannot create config file for guild %s.", setting.guildId);
+        if ((err&8) > 0) Log.logfError(">>> Cannot create config file for guild %s.", setting.guildId.asString());
         if ((err&12)> 0) return;        // Error
-        Log.logfDebug("> Config for %s updated.", setting.guildId);
+        Log.logfDebug("> Config for %s updated.", setting.guildId.asString());
     }
 
 }

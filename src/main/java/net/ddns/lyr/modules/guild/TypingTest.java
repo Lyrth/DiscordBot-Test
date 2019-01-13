@@ -18,16 +18,14 @@ public class TypingTest extends GuildModule {
     @ModuleEvent
     public void on(TypingStartEvent event){
         event.getUser().flatMap(User::getPrivateChannel)
-            .subscribe( ch ->
-                ch.createMessage("I saw you typing!").subscribe( m -> // On success
+            .flatMap( ch ->
+                ch.createMessage("I saw you typing! On <#" + event.getChannelId().asString() + ">").flatMap( m ->
                     m.edit(new MessageEditSpec().setContent("[REDACTED]"))
                         .delaySubscription(Duration.ofSeconds(15))
-                        .subscribe()
-                ,err -> {
-                    Log.logError("REEEE CANNOT SEND MESSAGE ;-;");
-                    err.printStackTrace();
-                })
-            );
+                )
+            ).doOnError(err ->
+                Log.logfError("REEEE CANNOT SEND MESSAGE TO %s ;-;", event.getUserId().asString())
+            ).subscribe();
     }
 
     public String getName() {

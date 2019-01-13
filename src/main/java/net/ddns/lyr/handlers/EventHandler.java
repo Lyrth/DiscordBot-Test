@@ -9,13 +9,16 @@ import discord4j.core.event.domain.message.*;
 import discord4j.core.event.domain.role.*;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.MessageEvent;
+import discord4j.core.object.entity.Guild;
 import discord4j.core.object.util.Snowflake;
 import net.ddns.lyr.annotations.ModuleEvent;
 import net.ddns.lyr.commands.Commands;
 import net.ddns.lyr.enums.EventType;
+import net.ddns.lyr.main.Main;
 import net.ddns.lyr.templates.BotModule;
 import net.ddns.lyr.templates.GuildModule;
 import net.ddns.lyr.utils.Log;
+import net.ddns.lyr.utils.config.GuildSetting;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
@@ -41,6 +44,70 @@ public class EventHandler {
             Log.logDebug("> Finished subscribing bot events.");
         }).subscribe();
     }
+
+    public Mono<Void> registerBotEvent(BotModule m){
+        return Mono.just(m).doOnNext(module -> {
+            activeBotModules.putIfAbsent(module.getName(), module);
+            Log.logDebug("> | Registered.");
+        }).then();
+    }
+
+    public Mono<Void> unregisterBotEvent(BotModule module){
+        return unregisterBotEvent(module.getName());
+    }
+
+    public Mono<Void> unregisterBotEvent(String moduleName){
+        return Mono.fromRunnable(() -> {
+            Log.logfDebug("> Unregistering %s...", moduleName);
+            activeBotModules.remove(moduleName);
+        }).then();
+    }
+
+
+    public void updateGuildModules(GuildSetting setting){
+        Map<String,GuildModule> availableGuildModules = Main.client.availableGuildModules;
+        Snowflake guildId = setting.guildId;
+        activeGuildModules.computeIfAbsent(guildId, id -> new HashMap<>());
+        availableGuildModules.forEach((moduleName,module) -> {
+            if (setting.enabledModules.contains(moduleName)){  // It should be enabled
+                if (activeGuildModules.get(guildId).containsKey(moduleName))  // Already enabled
+                    return;
+                Log.logfDebug("> | Enabling module %s...", moduleName);
+                GuildModule guildModule =
+                    module.newInstance(
+                        Main.client.guilds
+                            .filter(guild -> guildId.equals(guild.getId())).single(),  // or .last()
+                        setting
+                    );
+                activeGuildModules.get(guildId).put(moduleName,guildModule);
+            } else { // Should be disabled.
+                if (!activeGuildModules.get(guildId).containsKey(moduleName))  // Already disabled
+                    return;
+                Log.logfDebug("> | Disabling module %s...", moduleName);
+                activeGuildModules.get(guildId).remove(moduleName);
+            }
+
+            /*
+            if (availableGuildModules.containsKey(moduleName)) {  // is valid guildModule?
+                if () {
+                    Log.logfDebug("> | Module %s...", moduleName);
+                    GuildModule module1 = availableGuildModules.get(moduleName)
+                        .newInstance(
+                            guilds.filter(guild -> guildId.equals(guild.getId())).single(),  // or .last()
+                            setting
+                        );
+                    if (activeGuildModules.get(guildId) != null) {
+                        activeGuildModules.get(guildId).put(module1.getName(), module1);
+                    } else {
+                        HashMap<String, GuildModule> map = new HashMap<>();
+                        map.put(module1.getName(), module1);
+                        activeGuildModules.put(guildId, map);
+                    }
+                }
+            }*/
+        });
+    }
+
 
     private void subscribe(){   // Please collapse this method for your sanity, maybe.
         eventDispatcher.on(PresenceUpdateEvent.class)
@@ -157,24 +224,4 @@ public class EventHandler {
             .subscribe(event -> activeBotModules.forEach((moduleName,module) -> module.on(event)));
 
     }
-
-
-    public Mono<Void> registerBotEvent(BotModule m){
-        return Mono.just(m).doOnNext(module -> {
-            activeBotModules.putIfAbsent(module.getName(), module);
-            Log.logDebug("> | Registered.");
-        }).then();
-    }
-
-    public Mono<Void> unregisterBotEvent(BotModule module){
-        return unregisterBotEvent(module.getName());
-    }
-
-    public Mono<Void> unregisterBotEvent(String moduleName){
-        return Mono.fromRunnable(() -> {
-            Log.logfDebug("> Unregistering %s...", moduleName);
-            activeBotModules.remove(moduleName);
-        }).then();
-    }
-
 }

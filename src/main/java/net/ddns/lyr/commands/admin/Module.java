@@ -16,12 +16,9 @@ public class Module extends Command {
     }
 
     private String execute(Guild guild, String arg){
-        String[] args = arg.split(" ");
+        String[] args = arg.toLowerCase().split(" ");
         if (args[0].isEmpty()){
             return "Usage: " + getUsage();
-        }
-        if (!getClient().availableGuildModules.get().containsKey(args[0])) {
-            return String.format("Module **%s** not found.", args[0]);
         }
         if (args[0].equals("enable") && args.length > 1) {
             if (getClient().getGuildSettings().get(guild.getId())
@@ -37,6 +34,8 @@ public class Module extends Command {
             } else {
                 return String.format("Module **%s** was already disabled.", args[0]);
             }
+        } else if (!getClient().availableGuildModules.containsKey(args[0])) {  // TODO: case insensitive search
+            return String.format("Module **%s** not found.", args[0]);
         } else {
             return (getClient().getGuildSettings().get(guild.getId())
                 .toggleModule(args[0])) ?

@@ -1,6 +1,7 @@
 package net.ddns.lyr.modules;
 
 import net.ddns.lyr.main.Main;
+import net.ddns.lyr.modules.guild.SettingTest;
 import net.ddns.lyr.modules.guild.TypingTest;
 import net.ddns.lyr.templates.GuildModule;
 import net.ddns.lyr.utils.Log;
@@ -18,6 +19,7 @@ public class GuildModules {
     public GuildModules(){
 
         add(new TypingTest());
+        add(new SettingTest());
 
     }
 

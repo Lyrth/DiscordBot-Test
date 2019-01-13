@@ -1,10 +1,8 @@
 package net.ddns.lyr.utils.config;
 
 import discord4j.core.object.util.Snowflake;
-import net.ddns.lyr.templates.ModuleSettings;
+import net.ddns.lyr.main.Main;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -22,8 +20,15 @@ public class GuildSetting {
         this.guildId = guildId;
     }
 
+    private boolean updateEnabledModules(){
+        Main.client.eventHandler.updateGuildModules(this);
+        GuildConfig.updateGuildSettings(this);
+        return true;
+    }
+
     public void setModulesSettings(HashMap<String, HashMap<String, String>> modulesSettings) {
         this.modulesSettings = modulesSettings;
+        GuildConfig.updateModulesSettings(modulesSettings,guildId.asString());
     }
 
     public boolean isModuleEnabled(String moduleName){
@@ -31,11 +36,11 @@ public class GuildSetting {
     }
 
     public boolean enableModule(String moduleName){
-        return enabledModules.add(moduleName);
+        return enabledModules.add(moduleName) && updateEnabledModules();
     }
 
     public boolean disableModule(String moduleName){
-        return enabledModules.remove(moduleName);
+        return enabledModules.remove(moduleName) && updateEnabledModules();
     }
 
     // returns: true if module just activated, false if not.
@@ -49,23 +54,23 @@ public class GuildSetting {
         }
     }
 
-    public boolean hasSettings(String moduleName){
+    public boolean hasModuleSettings(String moduleName){
         return modulesSettings.get(moduleName) != null; //&& !modulesSettings.get(moduleName).isEmpty(); // possible that a module has no settings
     }
 
-    public String getSetting(String moduleName, String key){
-        if (!hasSettings(moduleName)) return null;
+    public String getModuleSetting(String moduleName, String key){
+        if (!hasModuleSettings(moduleName)) return null;
         return modulesSettings.get(moduleName).get(key);
     }
 
-    //public String setSetting(){ } // TODO  update file accordingly. (have interval between writes?)
-    public void setSetting(String moduleName, String key, String value){
-        if (hasSettings(moduleName)) {
+    public void setModuleSetting(String moduleName, String key, String value){
+        if (hasModuleSettings(moduleName)) {
             modulesSettings.get(moduleName).put(key,value);
         } else {
             HashMap<String,String> map = new HashMap<>();
             map.put(key,value);
             modulesSettings.put(moduleName,map);
         }
+        GuildConfig.updateModuleSettings(moduleName, modulesSettings.get(moduleName), guildId.asString());
     }
 }

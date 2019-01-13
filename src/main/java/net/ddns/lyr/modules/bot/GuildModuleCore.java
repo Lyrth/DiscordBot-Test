@@ -33,7 +33,7 @@ public class GuildModuleCore extends BotModule {
 
     public GuildModuleCore() {
         guildSettings = Main.client.getGuildSettings();  // to get the list of guilds w/ config = possible activated module
-        availableGuildModules = Main.client.availableGuildModules.get();
+        availableGuildModules = Main.client.availableGuildModules;
         activeGuildModules = Main.client.eventHandler.activeGuildModules;
         guilds = Main.client.guilds;
         chToGuildMap = Main.client.channelToGuildMapping;
@@ -54,32 +54,11 @@ public class GuildModuleCore extends BotModule {
             guildSettings.forEach((guildId, setting) -> {
                 if (!ids.contains(guildId)) return;
                 Log.logfDebug("> Setting up modules for guild %s", guildId.asString());
-                setting.enabledModules.forEach(module -> {
-                    if (availableGuildModules.containsKey(module)) {
-                        Log.logfDebug("> | Module %s...", module);
-                        GuildModule module1 = availableGuildModules.get(module)
-                            .newInstance(
-                                guilds.filter(guild -> guildId.equals(guild.getId())).single(),  // or .last()
-                                setting
-                            );
-                        if (activeGuildModules.get(guildId) != null) {
-                            activeGuildModules.get(guildId).put(module1.getName(), module1);
-                        } else {
-                            HashMap<String, GuildModule> map = new HashMap<>();
-                            map.put(module1.getName(), module1);
-                            activeGuildModules.put(guildId, map);
-                        }
-                    }
-                });
+                Main.client.eventHandler.updateGuildModules(setting);
             });
             onReadyEvent(e);
         });
     }
-
-    public void updateGuildModules(Snowflake guildId, HashSet<String> enabledModules){
-
-    }
-
 
     /*
     public void on(PresenceUpdateEvent event){
