@@ -1,14 +1,11 @@
 package net.ddns.lyr.utils.config;
 
 
-import com.google.gson.reflect.TypeToken;
 import discord4j.core.object.util.Snowflake;
 import net.ddns.lyr.main.Main;
-import net.ddns.lyr.modules.GuildModules;
 import net.ddns.lyr.templates.GuildModule;
 import net.ddns.lyr.utils.Log;
 
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,6 +49,7 @@ public class GuildConfig {
     }
 
     //   ModuleName, <SettingKey, SettingValue>
+    @SuppressWarnings("unchecked")  // Gson casts to HashMap<String,String> just fine
     public static HashMap<String,HashMap<String,String>> readModulesSettings(String guildDir){
         HashMap<String,HashMap<String,String>> map = new HashMap<>();
         Map<String, GuildModule> availableGuildModules = Main.client.availableGuildModules;

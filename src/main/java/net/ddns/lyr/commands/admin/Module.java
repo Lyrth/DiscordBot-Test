@@ -1,8 +1,6 @@
 package net.ddns.lyr.commands.admin;
 
 import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.User;
-import discord4j.core.object.util.Snowflake;
 import net.ddns.lyr.enums.CommandType;
 import net.ddns.lyr.objects.CommandObject;
 import net.ddns.lyr.templates.Command;

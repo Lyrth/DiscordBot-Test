@@ -6,11 +6,7 @@ import discord4j.core.event.domain.guild.*;
 import discord4j.core.event.domain.lifecycle.*;
 import discord4j.core.event.domain.message.*;
 import discord4j.core.event.domain.role.*;
-import discord4j.core.event.domain.channel.ChannelEvent;
-import discord4j.core.event.domain.channel.TypingStartEvent;
 import net.ddns.lyr.annotations.Excluded;
-import reactor.core.Disposable;
-import reactor.core.publisher.Flux;
 
 public abstract class BotModule extends Module {
 

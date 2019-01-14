@@ -5,13 +5,15 @@ import discord4j.core.object.entity.*;
 import discord4j.core.object.util.Snowflake;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 public abstract class MessageObject {
 
     Mono<Message> M;
 
     public Mono<Snowflake> id;
     public Mono<String> contents;
-    public Mono<Embed> embed;
+    public Mono<List<Embed>> embeds;
 
     public Mono<Snowflake> channelId;
     public Mono<Snowflake> guildId;
@@ -26,7 +28,7 @@ public abstract class MessageObject {
 
         id = message.map(Message::getId);
         contents = message.map(m -> m.getContent().orElse(null));
-        embed = message.map(m -> m.getEmbeds().get(0));
+        embeds = message.map(Message::getEmbeds);
 
         channelId = message.map(Message::getChannelId);
         // guildId

@@ -7,27 +7,18 @@ import discord4j.core.event.domain.guild.*;
 import discord4j.core.event.domain.lifecycle.*;
 import discord4j.core.event.domain.message.*;
 import discord4j.core.event.domain.role.*;
-import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Guild;
 import discord4j.core.object.util.Snowflake;
-import net.ddns.lyr.annotations.ModuleEvent;
-import net.ddns.lyr.commands.Commands;
-import net.ddns.lyr.enums.EventType;
 import net.ddns.lyr.main.Main;
 import net.ddns.lyr.templates.BotModule;
 import net.ddns.lyr.templates.GuildModule;
 import net.ddns.lyr.utils.Log;
 import net.ddns.lyr.utils.config.GuildSetting;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.util.function.Tuple2;
 
 import java.util.*;
 
 public class EventHandler {
     private EventDispatcher eventDispatcher;
-    private CommandHandler commandHandler;
 
     // <moduleName, module>
     private HashMap<String, BotModule>
@@ -86,25 +77,6 @@ public class EventHandler {
                 Log.logfDebug("> | Disabling module %s...", moduleName);
                 activeGuildModules.get(guildId).remove(moduleName);
             }
-
-            /*
-            if (availableGuildModules.containsKey(moduleName)) {  // is valid guildModule?
-                if () {
-                    Log.logfDebug("> | Module %s...", moduleName);
-                    GuildModule module1 = availableGuildModules.get(moduleName)
-                        .newInstance(
-                            guilds.filter(guild -> guildId.equals(guild.getId())).single(),  // or .last()
-                            setting
-                        );
-                    if (activeGuildModules.get(guildId) != null) {
-                        activeGuildModules.get(guildId).put(module1.getName(), module1);
-                    } else {
-                        HashMap<String, GuildModule> map = new HashMap<>();
-                        map.put(module1.getName(), module1);
-                        activeGuildModules.put(guildId, map);
-                    }
-                }
-            }*/
         });
     }
 

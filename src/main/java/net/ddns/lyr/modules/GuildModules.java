@@ -1,6 +1,5 @@
 package net.ddns.lyr.modules;
 
-import net.ddns.lyr.main.Main;
 import net.ddns.lyr.modules.guild.SettingTest;
 import net.ddns.lyr.modules.guild.TypingTest;
 import net.ddns.lyr.templates.GuildModule;
@@ -17,10 +16,8 @@ public class GuildModules {
     private Map<String, GuildModule> guildModules = new HashMap<>();
 
     public GuildModules(){
-
         add(new TypingTest());
         add(new SettingTest());
-
     }
 
     private void add(GuildModule m){

@@ -21,7 +21,7 @@ public class CommandObject extends MessageObject {
         id = M.map(Message::getId);
         contents = M.map(m -> m.getContent().orElse(""));
         args = M.map(m -> m.getContent().map(s->s.replaceFirst("^[^\\s]+\\s*","")).orElse(""));
-        //embed = M.map(m -> m.getEmbeds().get(0));
+        embeds = M.map(Message::getEmbeds);
 
         guildId = Mono.just(event.getGuildId()).map(e -> e.orElse(null));
         channelId = Mono.just(event.getMessage().getChannelId());

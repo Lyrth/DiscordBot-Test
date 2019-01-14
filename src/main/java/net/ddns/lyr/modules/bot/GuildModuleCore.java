@@ -6,18 +6,15 @@ import discord4j.core.event.domain.guild.*;
 import discord4j.core.event.domain.lifecycle.*;
 import discord4j.core.event.domain.message.*;
 import discord4j.core.event.domain.role.*;
-import discord4j.core.object.entity.Guild;
 import discord4j.core.object.util.Snowflake;
 import net.ddns.lyr.main.Main;
 import net.ddns.lyr.templates.BotModule;
 import net.ddns.lyr.templates.GuildModule;
 import net.ddns.lyr.utils.Log;
 import net.ddns.lyr.utils.config.GuildSetting;
-import reactor.core.publisher.Flux;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
@@ -25,17 +22,13 @@ import java.util.stream.Collectors;
 public class GuildModuleCore extends BotModule {
 
     private HashMap<Snowflake, GuildSetting> guildSettings;
-    private Map<String, GuildModule> availableGuildModules;
     // <guildID, <moduleName, module>>
     private HashMap<Snowflake, HashMap<String, GuildModule>> activeGuildModules;
-    private Flux<Guild> guilds;
     private HashMap<Snowflake,Snowflake> chToGuildMap;
 
     public GuildModuleCore() {
         guildSettings = Main.client.getGuildSettings();  // to get the list of guilds w/ config = possible activated module
-        availableGuildModules = Main.client.availableGuildModules;
         activeGuildModules = Main.client.eventHandler.activeGuildModules;
-        guilds = Main.client.guilds;
         chToGuildMap = Main.client.channelToGuildMapping;
     }
     

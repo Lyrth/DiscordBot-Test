@@ -1,16 +1,12 @@
 package net.ddns.lyr.main;
 
-import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
-import discord4j.core.event.EventDispatcher;
 import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
 import discord4j.store.redis.RedisStoreService;
 import net.ddns.lyr.utils.config.BotConfig;
-import net.ddns.lyr.handlers.EventHandler;
 import net.ddns.lyr.objects.ClientObject;
 import net.ddns.lyr.utils.Log;
-import net.ddns.lyr.utils.config.GuildConfig;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
@@ -40,23 +36,26 @@ public class Main {
 
         int retries = 0;
         final int maxRetries = 3;
-        while (retries<maxRetries)
-        try {
-            Mono.when(
-                client.getDiscordClient().login(),
-                Mono.fromRunnable(client::init))
-                .block();
-        } catch (Exception e) {
-            if (e.getMessage().matches(".*java\\.net\\..*?Exception.*")) {
-                retries++;
-                Log.logWarn("> Trying to log in again. Internet dropped? Retries: " + (maxRetries - retries));
-                for (AtomicInteger i = new AtomicInteger(3^(retries));i.get()<1;i.set(i.get()-1))
-                    Mono.delay(Duration.ofSeconds(1))
-                        .doOnNext(n -> Log.logfDebug("> Retrying in %s",i.get()))
-                        .block();
-            } else retries = 0;
+        while (retries < maxRetries) {
+            try {
+                Mono.when(
+                    client.getDiscordClient().login(),
+                    Mono.fromRunnable(client::init))
+                    .block();
+            } catch (Exception e) {
+                if (e.getMessage().matches(".*java\\.net\\..*?Exception.*")) {
+                    retries++;
+                    Log.logWarn("> Trying to log in again. Internet dropped? Retries: " + (maxRetries - retries));
+                    for (AtomicInteger i = new AtomicInteger(3 ^ (retries)); i.get() < 1; i.set(i.get() - 1))
+                        Mono.delay(Duration.ofSeconds(1))
+                            .doOnNext(n -> Log.logfDebug("> Retrying in %s", i.get()))
+                            .block();
+                } else {
+                    retries = 0;
+                }
+            }
         }
-        Log.log("> End.");
+        Log.log("> Exceeded maximum retries.");
     }
 
 }

@@ -19,7 +19,11 @@ public class Core extends BotModule {
     @ModuleEvent
     public void on(MessageCreateEvent event){
         commandHandler.handle(event)
-            .subscribe( i -> {}, err -> { Log.logError(err.getMessage()); err.printStackTrace();});
+            .doOnError(err -> {
+                Log.logError(err.getMessage());
+                err.printStackTrace();
+            })
+            .subscribe();
     }
 
     @ModuleEvent

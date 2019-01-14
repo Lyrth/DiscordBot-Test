@@ -18,6 +18,7 @@ public class BotModules {
         // Core module.
         add(new Core());
 
+        // Helper for GuildModules
         add(new GuildModuleCore());
 
         add(new Test());
