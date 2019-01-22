@@ -6,7 +6,6 @@ import discord4j.core.object.entity.User;
 import discord4j.core.spec.MessageEditSpec;
 import net.ddns.lyr.annotations.ModuleEvent;
 import net.ddns.lyr.templates.GuildModule;
-import net.ddns.lyr.utils.AnnotationUtil;
 import net.ddns.lyr.utils.Log;
 import net.ddns.lyr.utils.config.GuildSetting;
 import reactor.core.publisher.Mono;
@@ -28,12 +27,9 @@ public class TypingTest extends GuildModule {
             ).subscribe();
     }
 
-    public String getName() {
-        return this.getClass().getSimpleName();
-    }
     public TypingTest(){}
-    public TypingTest(Mono<Guild> guild, GuildSetting guildSettings){ super(guild,guildSettings); }
-    public TypingTest newInstance(Mono<Guild> guild, GuildSetting guildSettings){
-        return new TypingTest(guild,guildSettings);
+    public TypingTest(GuildSetting guildSettings){ super(guildSettings); }
+    public TypingTest newInstance(GuildSetting guildSettings){
+        return new TypingTest(guildSettings);
     }
 }

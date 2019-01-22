@@ -14,7 +14,7 @@ public class Module extends Command {
     }
 
     private String execute(Guild guild, String arg){
-        String[] args = arg.toLowerCase().split(" ");
+        String[] args = arg.split(" ");
         if (args[0].isEmpty()){
             return "Usage: " + getUsage();
         }

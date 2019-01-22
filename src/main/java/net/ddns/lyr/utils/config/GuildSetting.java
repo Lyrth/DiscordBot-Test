@@ -1,7 +1,9 @@
 package net.ddns.lyr.utils.config;
 
+import discord4j.core.object.entity.Guild;
 import discord4j.core.object.util.Snowflake;
 import net.ddns.lyr.main.Main;
+import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,8 +18,12 @@ public class GuildSetting {
     //   ModuleName, <SettingKey, SettingValue>
     public transient HashMap<String, HashMap<String,String>> modulesSettings = new HashMap<>();
 
+    // For Main.client.eventHandler.updateGuildModules use.
+    public transient Mono<Guild> guild;
+
     public GuildSetting(Snowflake guildId){
         this.guildId = guildId;
+        this.guild = Main.client.guilds.filter(guild -> guildId.equals(guild.getId())).single();
     }
 
     private boolean updateEnabledModules(){

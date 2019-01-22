@@ -37,12 +37,9 @@ public class SettingTest extends GuildModule {
         }
     }
 
-    public String getName() {
-        return this.getClass().getSimpleName();
-    }
     public SettingTest(){}
-    public SettingTest(Mono<Guild> guild, GuildSetting guildSettings){ super(guild,guildSettings); }
-    public SettingTest newInstance(Mono<Guild> guild, GuildSetting guildSettings){
-        return new SettingTest(guild,guildSettings);
+    public SettingTest(GuildSetting guildSettings){ super(guildSettings); }
+    public SettingTest newInstance(GuildSetting guildSettings){
+        return new SettingTest(guildSettings);
     }
 }

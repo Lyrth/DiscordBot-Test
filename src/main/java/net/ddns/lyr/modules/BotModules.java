@@ -4,7 +4,7 @@ import net.ddns.lyr.main.Main;
 import net.ddns.lyr.modules.bot.*;
 import net.ddns.lyr.templates.BotModule;
 import net.ddns.lyr.utils.Log;
-import reactor.core.publisher.Mono;
+import reactor.core.publisher.Flux;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,23 +15,21 @@ public class BotModules {
     private Map<String, BotModule> botModules = new HashMap<>();
 
     public BotModules(){
-        // Core module.
-        add(new Core());
+        add(
+            // Core module.
+            new Core(),
 
-        // Helper for GuildModules
-        add(new GuildModuleCore());
-
-        add(new Test());
+            new Test()
+        );
     }
 
-    private void add(BotModule m){
-        Mono.just(m).flatMap(module -> {
-            if (!botModules.containsKey(module.getName())) {  // TODO: read config en/disable
+    private void add(BotModule... m){
+        Flux.just(m).doOnNext(module -> {
+            if (!botModules.containsKey(module.getName())) {
                 botModules.put(module.getName(), module);
                 Log.logfDebug("> Adding module %s...", module.getName());
-                return Main.client.getEventHandler().registerBotEvent(module);
+                Main.client.getEventHandler().registerBotEvent(module);  // TODO: read config en/disable
             }
-            return Mono.empty();
         }).subscribe();
     }
 

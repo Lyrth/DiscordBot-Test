@@ -17,9 +17,9 @@ public abstract class GuildModule extends Module {
     protected Snowflake guildId;
     protected GuildSetting guildSettings;
 
-    public abstract GuildModule newInstance(Mono<Guild> guild, GuildSetting guildSettings);
-    public GuildModule(Mono<Guild> guild, GuildSetting guildSettings){
-        this.guild = guild;
+    public abstract GuildModule newInstance(GuildSetting guildSettings);
+    public GuildModule(GuildSetting guildSettings){
+        this.guild = guildSettings.guild;
         this.guildSettings = guildSettings;
         this.guildId = guildSettings.guildId;
     }
