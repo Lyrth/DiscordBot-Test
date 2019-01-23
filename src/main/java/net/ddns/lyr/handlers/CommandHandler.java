@@ -1,6 +1,7 @@
 package net.ddns.lyr.handlers;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.rest.http.client.ClientException;
 import net.ddns.lyr.main.Main;
 import net.ddns.lyr.objects.CommandObject;
 import net.ddns.lyr.templates.Command;
@@ -45,7 +46,7 @@ public class CommandHandler {
                         .flatMap(ch ->
                             cmd.execute(new CommandObject(event))
                                 .filter(s -> (s!=null && !s.isEmpty()))
-                                .flatMap(ch::createMessage)
+                                .flatMap(m -> ch.createMessage(m).retry(3,t -> !(t instanceof ClientException)))
                         )
                 )
             )

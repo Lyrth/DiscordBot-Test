@@ -3,6 +3,7 @@ package net.ddns.lyr.main;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
+import discord4j.core.util.VersionUtil;
 import discord4j.store.redis.RedisStoreService;
 import net.ddns.lyr.utils.config.BotConfig;
 import net.ddns.lyr.objects.ClientObject;
@@ -18,6 +19,7 @@ public class Main {
 
     public static void main(String args[]) {
         System.setProperty("log4j.skipJansi","false");  // Color support for logging.
+        System.out.println(VersionUtil.getProperties().getProperty(VersionUtil.GIT_COMMIT_ID));
         new Main();
     }
 
