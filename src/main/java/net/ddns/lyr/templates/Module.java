@@ -8,7 +8,11 @@ import discord4j.core.event.domain.guild.*;
 import discord4j.core.event.domain.lifecycle.*;
 import discord4j.core.event.domain.message.*;
 import discord4j.core.event.domain.role.*;
+import net.ddns.lyr.event.TenSecondEvent;
+import net.ddns.lyr.main.Main;
 import reactor.core.Disposable;
+
+import java.util.concurrent.TimeUnit;
 
 public abstract class Module {
 
@@ -115,10 +119,16 @@ public abstract class Module {
                 return dispatcher.on(ReactionRemoveAllEvent.class).doOnNext(this::on).subscribe();
             case "MessageBulkDeleteEvent":
                 return dispatcher.on(MessageBulkDeleteEvent.class).doOnNext(this::on).subscribe();
+            case "TenSecondEvent":
+                return Main.client.eventHandler.scheduler
+                    .schedulePeriodically(()->on(new TenSecondEvent()),10,10, TimeUnit.SECONDS);
             default:
                 throw new IllegalArgumentException("Event " + eventName + " does not exist.");
         }
     }
+
+    // TODO: reee
+    public void on(TenSecondEvent e){}
 
     /** Other Events **/
     abstract void on(PresenceUpdateEvent e);

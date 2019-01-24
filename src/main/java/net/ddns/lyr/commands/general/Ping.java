@@ -22,7 +22,7 @@ public class Ping extends Command {
                     "Pong! Took " + (m.getTimestamp().toEpochMilli()-start.get()) + "ms."
                 ))
             )
-            .then(Mono.empty());
+            .thenReturn("");
     }
 
     public String getName(){

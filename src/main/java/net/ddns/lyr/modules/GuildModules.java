@@ -1,7 +1,6 @@
 package net.ddns.lyr.modules;
 
-import net.ddns.lyr.modules.guild.SettingTest;
-import net.ddns.lyr.modules.guild.TypingTest;
+import net.ddns.lyr.modules.guild.*;
 import net.ddns.lyr.templates.GuildModule;
 import net.ddns.lyr.utils.Log;
 import reactor.core.publisher.Flux;
@@ -17,7 +16,8 @@ public class GuildModules {
     public GuildModules(){
         add(
             new TypingTest(),
-            new SettingTest()
+            new SettingTest(),
+            new IntervalTest()
         );
     }
 

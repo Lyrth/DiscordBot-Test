@@ -1,12 +1,6 @@
 package net.ddns.lyr.handlers;
 
 import discord4j.core.event.EventDispatcher;
-import discord4j.core.event.domain.*;
-import discord4j.core.event.domain.channel.*;
-import discord4j.core.event.domain.guild.*;
-import discord4j.core.event.domain.lifecycle.*;
-import discord4j.core.event.domain.message.*;
-import discord4j.core.event.domain.role.*;
 import discord4j.core.object.util.Snowflake;
 import net.ddns.lyr.main.Main;
 import net.ddns.lyr.templates.BotModule;
@@ -17,13 +11,15 @@ import net.ddns.lyr.utils.Log;
 import net.ddns.lyr.utils.config.GuildSetting;
 import reactor.core.Disposable;
 import reactor.core.Disposables;
-import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
 
 import java.lang.reflect.Method;
 import java.util.*;
 
 public class EventHandler {
     private EventDispatcher eventDispatcher;
+    public Scheduler scheduler = Schedulers.single();
 
     // <moduleName, module>
     private HashMap<String, Disposable.Composite>

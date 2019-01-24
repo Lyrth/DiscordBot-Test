@@ -19,8 +19,6 @@ public class CommandHandler {
     private String selfId;
     private int prefixLength;
 
-    long st, en;
-
     public CommandHandler(Map<String, Command> commands) {
         this.commands = commands;
         prefix = Main.client.config.getPrefix();
@@ -30,10 +28,6 @@ public class CommandHandler {
 
     public Mono<Void> handle(MessageCreateEvent mEvent){
         return Mono.just(mEvent)
-            .map(e -> {
-                st = System.nanoTime();
-                return e;    //  <timeLogging>
-            })
             .filter(this::shouldHandle)
             .flatMap(event ->
                 Mono.justOrEmpty(
@@ -45,16 +39,11 @@ public class CommandHandler {
                     event.getMessage().getChannel()
                         .flatMap(ch ->
                             cmd.execute(new CommandObject(event))
-                                .filter(s -> (s!=null && !s.isEmpty()))
+                                .filter(s -> !s.isEmpty())
                                 .flatMap(m -> ch.createMessage(m).retry(3,t -> !(t instanceof ClientException)))
                         )
                 )
             )
-            .map(e->{
-                en = System.nanoTime();
-                Log.logfDebug("> Command taken %.3fms",(en-st)/1_000_000f);
-                return e;    //  </timeLogging>
-            })
             .then();
     }
 
