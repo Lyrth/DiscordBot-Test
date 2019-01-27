@@ -22,7 +22,7 @@
         -->
     </Appenders>
     <Loggers>
-        <Logger name="net.ddns.lyr.utils.Log" level="debug">
+        <Logger name="lyr.testbot.util.Log" level="debug">
             <AppenderRef ref="utillog"/>
         </Logger>
         <Logger name="discord4j.core" level="debug">
