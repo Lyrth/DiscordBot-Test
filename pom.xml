@@ -10,7 +10,7 @@
 
     <!--  Compiler level, versions  -->
     <properties>
-        <bot.version>0.7.5</bot.version>
+        <bot.version>0.7.6</bot.version>
 
         <discord4j.version>873de1d</discord4j.version>
         <discord4j.stores.version>ce145d2</discord4j.stores.version>

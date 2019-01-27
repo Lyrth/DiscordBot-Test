@@ -1,20 +1,16 @@
 package net.ddns.lyr.modules.guild;
 
 import discord4j.core.event.domain.channel.TypingStartEvent;
-import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.spec.MessageEditSpec;
-import net.ddns.lyr.annotations.ModuleEvent;
 import net.ddns.lyr.templates.GuildModule;
 import net.ddns.lyr.utils.Log;
 import net.ddns.lyr.utils.config.GuildSetting;
-import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 
 public class TypingTest extends GuildModule {
 
-    @ModuleEvent
     public void on(TypingStartEvent event){
         event.getUser().flatMap(User::getPrivateChannel)
             .flatMap( ch ->

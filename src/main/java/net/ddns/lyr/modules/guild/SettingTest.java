@@ -1,18 +1,14 @@
 package net.ddns.lyr.modules.guild;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.Guild;
-import net.ddns.lyr.annotations.ModuleEvent;
 import net.ddns.lyr.templates.GuildModule;
 import net.ddns.lyr.utils.Log;
 import net.ddns.lyr.utils.config.GuildSetting;
-import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 
 public class SettingTest extends GuildModule {
 
-    @ModuleEvent
     public void on(MessageCreateEvent event){
         if (!event.getMessage().getContent().isPresent()) return;
         String msg = event.getMessage().getContent().get();

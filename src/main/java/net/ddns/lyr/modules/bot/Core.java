@@ -4,7 +4,6 @@ import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.util.Snowflake;
-import net.ddns.lyr.annotations.ModuleEvent;
 import net.ddns.lyr.commands.Commands;
 import net.ddns.lyr.handlers.CommandHandler;
 import net.ddns.lyr.main.Main;
@@ -22,7 +21,6 @@ public class Core extends BotModule {
         commandHandler = new CommandHandler(new Commands().getCommands());
     }
 
-    @ModuleEvent
     public void on(MessageCreateEvent event){
         commandHandler.handle(event)
             .doOnError(err -> {
@@ -32,7 +30,6 @@ public class Core extends BotModule {
             .subscribe();
     }
 
-    @ModuleEvent
     public void on(ReadyEvent event){
         Log.logf("> Logged in as %s#%s.", event.getSelf().getUsername(), event.getSelf().getDiscriminator());
 
