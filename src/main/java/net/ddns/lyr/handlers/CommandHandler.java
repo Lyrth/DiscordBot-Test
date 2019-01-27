@@ -17,13 +17,11 @@ public class CommandHandler {
     private final Map<String, Command> commands;
     private String prefix;
     private String selfId;
-    private int prefixLength;
 
     public CommandHandler(Map<String, Command> commands) {
         this.commands = commands;
         prefix = Main.client.config.getPrefix();
-        prefixLength = prefix.length();
-        selfId = Main.client.selfId.toString();
+        selfId = Main.client.selfId.asString();
     }
 
     public Mono<Void> handle(MessageCreateEvent mEvent){
@@ -49,13 +47,13 @@ public class CommandHandler {
 
     private boolean shouldHandle(MessageCreateEvent mEvent) {
         return mEvent.getMessage().getContent()
-            .map(c -> c.startsWith(prefix)||c.matches("^<@!?"+selfId+"> .*"))
+            .map(c -> c.startsWith(prefix)||c.startsWith("<@!"+selfId+"> ")||c.startsWith("<@"+selfId+"> "))
             .orElse(false);
     }
 
     private String getCommandName(String content) {
-        return content.replaceFirst("^<@!?"+selfId+">\\s+?((\\S+)\\s?.*)|(^(\\S+)\\s?.*)","$2$4")
-            .substring(content.matches("<@!?"+selfId+"> .*") ? 0 : prefixLength);
+        return content.replaceFirst("(^<@!?"+selfId+">\\s+?|^\\Q"+prefix+"\\E)(\\S+).*$","$2");
+            //.substring(content.matches("^<@!?"+selfId+">\\s+?.*") ? 0 : prefixLength);
     }
 
     public Optional<Command> getCommand(String name) {

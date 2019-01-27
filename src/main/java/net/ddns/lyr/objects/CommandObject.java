@@ -20,7 +20,10 @@ public class CommandObject extends MessageObject {
 
         id = M.map(Message::getId);
         contents = M.map(m -> m.getContent().orElse(""));
-        args = M.map(m -> m.getContent().map(s->s.replaceFirst("^[^\\s]+\\s*","")).orElse(""));
+        args = M.map(m ->m.getContent()
+            .map(s -> s.replaceFirst("(^<@!?\\d+>\\s+\\S+|^\\S+)\\s*",""))
+            .orElse("")
+        );
         embeds = M.map(Message::getEmbeds);
 
         guildId = Mono.just(event.getGuildId()).map(e -> e.orElse(null));
