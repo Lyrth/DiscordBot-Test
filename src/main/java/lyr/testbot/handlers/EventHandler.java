@@ -50,7 +50,7 @@ public class EventHandler {
 
 
     public void updateGuildModules(GuildSetting setting){
-        Map<String, GuildModule> availableGuildModules = Main.client.availableGuildModules;
+        Map<String, GuildModule> availableGuildModules = Main.client.availableGuildModules.get();
         Snowflake guildId = setting.guildId;
         activeGuildModules.computeIfAbsent(guildId, (id) -> new HashMap<>());
         availableGuildModules.forEach((moduleName,module) -> {

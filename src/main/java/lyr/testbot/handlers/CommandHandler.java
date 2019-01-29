@@ -41,7 +41,6 @@ public class CommandHandler {
                         )
                 )
             )
-            .log("lyr.testbot.util.Log")
             .then();
     }
 

@@ -15,31 +15,35 @@ public class Module extends Command {
 
     private String execute(Guild guild, String arg){
         String[] args = arg.split(" ");
-        if (args[0].isEmpty()){
+        if ( args[0].isEmpty() ||
+            (args.length == 1 && args[0].matches("(enable|disable)"))){
             return "Usage: " + getUsage();
         }
-        if (args[0].equals("enable") && args.length > 1) {
-            if (getClient().getGuildSettings().get(guild.getId())
-                .enableModule(args[1])){
-                return String.format("Module **%s** enabled.", args[0]);
-            } else {
-                return String.format("Module **%s** was already enabled.", args[0]);
-            }
-        } else if (args[0].equals("disable") && args.length > 1) {
-            if (getClient().getGuildSettings().get(guild.getId())
-                .disableModule(args[1])){
-                return String.format("Module **%s** disabled.", args[0]);
-            } else {
-                return String.format("Module **%s** was already disabled.", args[0]);
-            }
-        } else if (!getClient().availableGuildModules.containsKey(args[0])) {  // TODO: case insensitive search
-            return String.format("Module **%s** not found.", args[0]);
-        } else {
+        String name;
+        if (!(name = getClient().availableGuildModules.getProperName(args[0])).isEmpty()) {
             return (getClient().getGuildSettings().get(guild.getId())
-                .toggleModule(args[0])) ?
-                String.format("Module **%s** enabled.", args[0]) :
-                String.format("Module **%s** disabled.", args[0]);
+                .toggleModule(name) ?
+                String.format("Module **%s** enabled.", name) :
+                String.format("Module **%s** disabled.", name));
+        } else if (args.length > 1 && !(name = getClient().availableGuildModules.getProperName(args[1])).isEmpty()) {
+            if (args[0].equals("enable")) {
+                if (getClient().getGuildSettings().get(guild.getId())
+                    .enableModule(name)) {
+                    return String.format("Module **%s** enabled.", name);
+                } else {
+                    return String.format("Module **%s** was already enabled.", name);
+                }
+            } else if (args[0].equals("disable")) {
+                if (getClient().getGuildSettings().get(guild.getId())
+                    .disableModule(name)) {
+                    return String.format("Module **%s** disabled.", name);
+                } else {
+                    return String.format("Module **%s** was already disabled.", name);
+                }
+            }
         }
+        return String.format("Module **%s** not found.",
+            arg.replaceFirst("^((enable|disable)\\s+)?(\\S+).*", "$3"));
     }
 
     public String getName(){

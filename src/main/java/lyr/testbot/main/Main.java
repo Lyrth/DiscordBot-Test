@@ -8,7 +8,6 @@ import discord4j.store.redis.RedisStoreService;
 import lyr.testbot.util.Log;
 import lyr.testbot.util.config.BotConfig;
 import lyr.testbot.objects.ClientObject;
-import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
@@ -21,7 +20,6 @@ public class Main {
     public static void main(String args[]) {
         System.setProperty("log4j.skipJansi","false");  // Color support for logging.
         System.out.println(VersionUtil.getProperties().getProperty(VersionUtil.GIT_COMMIT_ID));
-        Hooks.onOperatorDebug();
         new Main();
     }
 
