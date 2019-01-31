@@ -2,20 +2,20 @@ package lyr.testbot.commands.admin;
 
 import discord4j.core.object.entity.User;
 import lyr.testbot.enums.CommandType;
+import lyr.testbot.objects.Reply;
 import lyr.testbot.templates.Command;
 import lyr.testbot.objects.CommandObject;
 import reactor.core.publisher.Mono;
 
 public class Test extends Command {
 
-    public Mono<String> execute(CommandObject command){
-
+    public Mono<Reply> execute(CommandObject command){
         return Mono.zip(
             command.user.map(User::getMention),
             command.contents,
             command.args
         ).map(T ->
-            String.format("%s, you said `%s`,\n with args `%s`",T.getT1(),T.getT2(),T.getT3())
+            Reply.format("%s, you said `%s`,\n with args `%s`",T.getT1(),T.getT2(),T.getT3())
         );
 
         /*

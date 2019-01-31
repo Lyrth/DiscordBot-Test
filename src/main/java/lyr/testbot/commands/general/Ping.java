@@ -1,6 +1,7 @@
 package lyr.testbot.commands.general;
 
 import lyr.testbot.enums.CommandType;
+import lyr.testbot.objects.Reply;
 import lyr.testbot.templates.Command;
 import lyr.testbot.objects.CommandObject;
 import reactor.core.publisher.Mono;
@@ -9,7 +10,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class Ping extends Command {
 
-    public Mono<String> execute(CommandObject command){
+    public Mono<Reply> execute(CommandObject command){
         AtomicLong start = new AtomicLong(0L);
         return command.getChannel()
             .zipWith(command.message,(ch,ms)-> {
@@ -22,7 +23,7 @@ public class Ping extends Command {
                     "Pong! Took " + (m.getTimestamp().toEpochMilli()-start.get()) + "ms."
                 ))
             )
-            .thenReturn("");
+            .thenReturn(Reply.empty());
     }
 
     public String getName(){

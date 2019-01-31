@@ -1,15 +1,16 @@
 package lyr.testbot.commands.general;
 
 import lyr.testbot.enums.CommandType;
+import lyr.testbot.objects.Reply;
 import lyr.testbot.templates.Command;
 import lyr.testbot.objects.CommandObject;
 import reactor.core.publisher.Mono;
 
 public class Me extends Command {
 
-    public Mono<String> execute(CommandObject command){
+    public Mono<Reply> execute(CommandObject command){
         return command.member.map(member ->
-            String.format("ID: %s\nUsername: %s\nNickname: %s\nDiscrim: %s\n"+
+            Reply.format("ID: %s\nUsername: %s\nNickname: %s\nDiscrim: %s\n"+
                     "Mention: %s\nGuild ID: %s\nJoin Time: %s",
                 member.getId(),
                 member.getUsername(),

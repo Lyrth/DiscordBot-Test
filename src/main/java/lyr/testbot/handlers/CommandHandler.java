@@ -36,8 +36,7 @@ public class CommandHandler {
                     event.getMessage().getChannel()
                         .flatMap(ch ->
                             cmd.execute(new CommandObject(event))
-                                .filter(s -> !s.isEmpty())
-                                .flatMap(m -> ch.createMessage(m).retry(3,t -> !(t instanceof ClientException)))
+                                .flatMap(r -> ch.createMessage(r).retry(3,t -> !(t instanceof ClientException)))
                         )
                 )
             )
