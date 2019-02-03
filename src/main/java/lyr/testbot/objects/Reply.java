@@ -14,9 +14,7 @@ public class Reply extends MessageCreateSpec {
     
     public EmbedCreateSpec embed;
     
-    Reply(){
-        embed = new EmbedCreateSpec();
-    }
+    Reply(){}
 
     public static Reply empty(){
         return new Reply();
@@ -44,64 +42,78 @@ public class Reply extends MessageCreateSpec {
         return new Reply().setIntEmbed(mutatedSpec);
     }
 
+    private void checkEmbed(){
+        if (embed == null) embed = new EmbedCreateSpec();
+    }
+
     private Reply setIntEmbed(EmbedCreateSpec embed){
         this.embed = embed;
         return this;
     }
 
     public Reply setEmbedTitle(String title){
+        checkEmbed();
         embed.setTitle(title);
         return this;
     }
 
     public Reply setEmbedDescription(String description){
+        checkEmbed();
         embed.setDescription(description);
         return this;
     }
 
     public Reply setEmbedUrl(String url){
+        checkEmbed();
         embed.setUrl(url);
         return this;
     }
 
     public Reply setEmbedTimestamp(Instant timestamp){
+        checkEmbed();
         embed.setTimestamp(timestamp);
         return this;
     }
 
     public Reply setEmbedColor(Color color){
+        checkEmbed();
         embed.setColor(color);
         return this;
     }
 
     public Reply setEmbedFooter(String text, @Nullable String iconUrl) {
+        checkEmbed();
         embed.setFooter(text, iconUrl);
         return this;
     }
 
     public Reply setEmbedImage(String url){
+        checkEmbed();
         embed.setImage(url);
         return this;
     }
 
     public Reply setEmbedThumbnail(String url){
+        checkEmbed();
         embed.setThumbnail(url);
         return this;
     }
 
     public Reply setEmbedAuthor(String name, @Nullable String url, @Nullable String iconUrl) {
+        checkEmbed();
         embed.setAuthor(name, url, iconUrl);
         return this;
     }
 
     public Reply addEmbedField(String name, String value, boolean inline) {
+        checkEmbed();
         embed.addField(name, value, inline);
         return this;
     }
 
     @Override
     public MultipartRequest asRequest() {
-        this.setEmbed(embed);
+        if (embed != null) this.setEmbed(embed);
         return super.asRequest();
     }
 }
