@@ -19,7 +19,7 @@ public class Main {
 
     public static void main(String args[]) {
         System.setProperty("log4j.skipJansi","false");  // Color support for logging.
-        System.out.println(VersionUtil.getProperties().getProperty(VersionUtil.GIT_COMMIT_ID));
+        Log.logfDebug("> Running on Discord4j version %s",VersionUtil.getProperties().getProperty(VersionUtil.GIT_COMMIT_ID));
         new Main();
     }
 

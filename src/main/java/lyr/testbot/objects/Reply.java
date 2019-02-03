@@ -13,11 +13,15 @@ import java.util.function.Consumer;
 public class Reply extends MessageCreateSpec {
     
     public EmbedCreateSpec embed;
+    private boolean empty = false;
     
     Reply(){}
+    Reply(boolean empty){
+        this.empty = empty;
+    }
 
     public static Reply empty(){
-        return new Reply();
+        return new Reply(true);
     }
 
     public static Reply with(String reply){
@@ -40,6 +44,10 @@ public class Reply extends MessageCreateSpec {
         EmbedCreateSpec mutatedSpec = new EmbedCreateSpec();
         spec.accept(mutatedSpec);
         return new Reply().setIntEmbed(mutatedSpec);
+    }
+
+    public boolean isEmpty(){
+        return embed == null && empty;
     }
 
     private void checkEmbed(){

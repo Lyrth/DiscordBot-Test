@@ -20,7 +20,7 @@ public class SettingTest extends GuildModule {
             event.getMessage().getChannel()
                 .flatMap(ch ->
                     ch.createMessage(
-                        Optional.of(guildSettings.getModuleSetting(this.getName(), "value"))
+                        Optional.ofNullable(guildSettings.getModuleSetting(this.getName(), "value"))
                             .filter(s -> !s.isEmpty())
                             .orElse("Empty.")
                     )
