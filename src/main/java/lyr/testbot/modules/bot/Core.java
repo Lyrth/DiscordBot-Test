@@ -3,12 +3,15 @@ package lyr.testbot.modules.bot;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.ReactionAddEvent;
+import discord4j.core.event.domain.message.ReactionRemoveEvent;
 import discord4j.core.object.util.Snowflake;
 import lyr.testbot.commands.Commands;
 import lyr.testbot.handlers.CommandHandler;
 import lyr.testbot.main.Main;
 import lyr.testbot.templates.BotModule;
 import lyr.testbot.util.Log;
+import lyr.testbot.util.pagination.Paginator;
 
 import java.util.HashSet;
 import java.util.stream.Collectors;
@@ -28,6 +31,15 @@ public class Core extends BotModule {
                 err.printStackTrace();
             })
             .subscribe();
+    }
+
+    public void on(ReactionAddEvent e) {
+        if (e.getUserId().equals(Main.client.selfId)) return;
+        Paginator.onReact(e);
+    }
+
+    public void on(ReactionRemoveEvent e) {
+        if (e.getUserId().equals(Main.client.selfId)) return;
     }
 
     public void on(ReadyEvent event){
