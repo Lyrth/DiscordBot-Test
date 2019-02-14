@@ -40,6 +40,7 @@ public class Core extends BotModule {
 
     public void on(ReactionRemoveEvent e) {
         if (e.getUserId().equals(Main.client.selfId)) return;
+        Paginator.onReactRemove(e);
     }
 
     public void on(ReadyEvent event){

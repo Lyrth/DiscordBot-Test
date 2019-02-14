@@ -4,7 +4,7 @@ import lyr.testbot.enums.CommandType;
 import lyr.testbot.main.Main;
 import lyr.testbot.objects.ClientObject;
 import lyr.testbot.objects.CommandObject;
-import lyr.testbot.objects.Reply;
+import lyr.testbot.objects.builder.Reply;
 import reactor.core.publisher.Mono;
 
 public abstract class Command {

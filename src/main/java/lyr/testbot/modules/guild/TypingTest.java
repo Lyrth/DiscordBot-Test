@@ -2,7 +2,6 @@ package lyr.testbot.modules.guild;
 
 import discord4j.core.event.domain.channel.TypingStartEvent;
 import discord4j.core.object.entity.User;
-import discord4j.core.spec.MessageEditSpec;
 import lyr.testbot.templates.GuildModule;
 import lyr.testbot.util.Log;
 import lyr.testbot.util.config.GuildSetting;
@@ -15,7 +14,7 @@ public class TypingTest extends GuildModule {
         event.getUser().flatMap(User::getPrivateChannel)
             .flatMap( ch ->
                 ch.createMessage("I saw you typing! On <#" + event.getChannelId().asString() + ">").flatMap( m ->
-                    m.edit(new MessageEditSpec().setContent("[REDACTED]"))
+                    m.edit(msg -> msg.setContent("[REDACTED]"))
                         .delaySubscription(Duration.ofSeconds(15))
                 )
             ).doOnError(err ->

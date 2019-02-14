@@ -10,10 +10,10 @@
 
     <!--  Compiler level, versions  -->
     <properties>
-        <bot.version>0.8.1</bot.version>
+        <bot.version>0.8.4</bot.version>
 
-        <discord4j.version>3d3beff</discord4j.version>
-        <discord4j.stores.version>738f</discord4j.stores.version>
+        <discord4j.version>b62d43a</discord4j.version>
+        <discord4j.stores.version>be6cf3b</discord4j.stores.version>
 
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>

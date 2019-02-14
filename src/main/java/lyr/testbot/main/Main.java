@@ -3,7 +3,6 @@ package lyr.testbot.main;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
-import discord4j.core.util.VersionUtil;
 import discord4j.store.redis.RedisStoreService;
 import lyr.testbot.util.Log;
 import lyr.testbot.util.config.BotConfig;
@@ -19,7 +18,7 @@ public class Main {
 
     public static void main(String args[]) {
         System.setProperty("log4j.skipJansi","false");  // Color support for logging.
-        Log.logfDebug("> Running on Discord4j version %s",VersionUtil.getProperties().getProperty(VersionUtil.GIT_COMMIT_ID));
+        //Log.logfDebug("> Running on Discord4j version %s",VersionUtil.getProperties().getProperty(VersionUtil.GIT_COMMIT_ID));
         new Main();
     }
 

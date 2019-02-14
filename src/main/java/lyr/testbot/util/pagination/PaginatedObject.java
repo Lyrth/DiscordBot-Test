@@ -2,27 +2,27 @@ package lyr.testbot.util.pagination;
 
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.reaction.ReactionEmoji;
-import discord4j.core.spec.EmbedCreateSpec;
+import lyr.testbot.objects.builder.Embed;
 import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 class PaginatedObject {
     private Message message;
-    private List<EmbedCreateSpec> pages;
+    private List<Embed> pages;
     private String pageMessage;
     private ButtonSet buttonSet;
 
     private HashMap<ReactionEmoji, Function<Message, Mono<Message>>> actions = new HashMap<>();
 
+    public HashSet<ReactionEmoji> toggleReactions = new HashSet<>();
+
     private int page = 0;
 
-
-
-    PaginatedObject(Message m, List<EmbedCreateSpec> pages, String pageMessage, ButtonSet buttonSet){
+    PaginatedObject(Message m, List<Embed> pages, String pageMessage, ButtonSet buttonSet){
         this.message = m;
         this.pages = pages;
         this.pageMessage = pageMessage;
@@ -41,22 +41,10 @@ class PaginatedObject {
             Mono.empty();
     }
 
-    public void setAction(ReactionEmoji reaction, Consumer<Message> action){
-        if (reaction == null) return;
-        actions.put(reaction, m -> Mono.fromRunnable(() -> action.accept(m)).thenReturn(m));
-    }
-
-    public void setAction(String reaction, Consumer<Message> action){
-        setAction(buttonSet.reaction(reaction),action);
-    }
-
-    public void setAction(ReactionEmoji reaction, Function<Message,Mono<Message>> action){
-        if (reaction == null) return;
-        actions.put(reaction,action);
-    }
-
     public void setAction(String reaction, Function<Message,Mono<Message>> action){
-        setAction(buttonSet.reaction(reaction),action);
+        ReactionEmoji reactionEmoji = buttonSet.reaction(reaction);
+        if (reactionEmoji == null) return;
+        actions.put(reactionEmoji,action);
     }
 
     public Mono<Message> prev(Message message){
