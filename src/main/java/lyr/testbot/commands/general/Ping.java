@@ -2,7 +2,8 @@ package lyr.testbot.commands.general;
 
 import discord4j.core.spec.EmbedCreateSpec;
 import lyr.testbot.enums.CommandType;
-import lyr.testbot.objects.Reply;
+import lyr.testbot.objects.builder.Embed;
+import lyr.testbot.objects.builder.Reply;
 import lyr.testbot.templates.Command;
 import lyr.testbot.objects.CommandObject;
 import lyr.testbot.util.pagination.Paginator;
@@ -16,10 +17,10 @@ public class Ping extends Command {
 
     public Mono<Reply> execute(CommandObject command){
         AtomicLong start = new AtomicLong(0L);
-        List<EmbedCreateSpec> pages = new ArrayList<>();
-        pages.add(new EmbedCreateSpec().setDescription("aaa"));
-        pages.add(new EmbedCreateSpec().setDescription("bbb"));
-        pages.add(new EmbedCreateSpec().setDescription("ccc"));
+        List<Embed> pages = new ArrayList<>();
+        pages.add(Embed.withDesc("aaa"));
+        pages.add(Embed.withDesc("bbb"));
+        pages.add(Embed.withDesc("ccc"));
         return command.getChannel()
             .zipWith(command.message,(ch,ms)-> {
                 start.set(ms.getTimestamp().toEpochMilli());

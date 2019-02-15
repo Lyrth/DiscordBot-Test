@@ -31,8 +31,8 @@ public class CommandObject extends MessageObject {
 
         guild = M.flatMap(Message::getGuild);
         author = member = Mono.just(event.getMember()).map(e -> e.orElse(null));
-        user = member.map(m->m);
-        userId = M.map(e->e.getAuthorId().orElse(null));
+        user = M.map(Message::getAuthor);
+        userId = M.map(m -> m.getAuthor().map(User::getId).orElse(null));
     }
 
     public Mono<Guild> getGuild() {

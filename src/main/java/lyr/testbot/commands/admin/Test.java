@@ -2,7 +2,7 @@ package lyr.testbot.commands.admin;
 
 import discord4j.core.object.entity.User;
 import lyr.testbot.enums.CommandType;
-import lyr.testbot.objects.Reply;
+import lyr.testbot.objects.builder.Reply;
 import lyr.testbot.templates.Command;
 import lyr.testbot.objects.CommandObject;
 import reactor.core.publisher.Mono;
@@ -11,7 +11,7 @@ public class Test extends Command {
 
     public Mono<Reply> execute(CommandObject command){
         return Mono.zip(
-            command.user.map(User::getMention),
+            command.user.map(ou -> ou.map(User::getMention).orElse("")),
             command.contents,
             command.args
         ).map(T ->
