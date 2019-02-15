@@ -43,19 +43,27 @@ public class Paginator {
 
     public static void onReactRemove(ReactionRemoveEvent e){
         pagMessages.computeIfPresent(e.getMessageId(), (id,pag) -> {
-            //pag.onReact(e.getEmoji())
-            //    .subscribe();
+            Mono.just(e.getEmoji())
+                .filter(pag::isToggle)
+                .doOnNext(r -> pag.setToggleState(r,false))
+                .flatMap(pag::onReact)
+                .subscribe();
             return pag;
         });
     }
 
     public static void onReact(ReactionAddEvent e){
         pagMessages.computeIfPresent(e.getMessageId(), (id,pag) -> {
-            pag.onReact(e.getEmoji())
-                .then(e.getMessage())  // TODO Remove reaction first?
-                .filter(m -> !pag.toggleReactions.contains(e.getEmoji()))   // not a toggle?
-                .flatMap(m -> m.removeReaction(e.getEmoji(),e.getUserId())) // then remove
-                .subscribe();  // TODO RETURN THIS MONO
+            Mono.when(
+                e.getMessage()
+                    .filter(m -> !pag.isToggle(e.getEmoji()))
+                    .flatMap(m -> m.removeReaction(e.getEmoji(),e.getUserId())),
+                Mono.just(e.getEmoji())
+                    .doOnNext(r -> {
+                        if (pag.isToggle(r)) pag.setToggleState(r,true);
+                    })
+                    .flatMap(pag::onReact)
+            ).subscribe();  // TODO RETURN THIS MONO
             return pag;
         });
     }

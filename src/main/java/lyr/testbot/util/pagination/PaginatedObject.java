@@ -18,7 +18,8 @@ class PaginatedObject {
 
     private HashMap<ReactionEmoji, Function<Message, Mono<Message>>> actions = new HashMap<>();
 
-    public HashSet<ReactionEmoji> toggleReactions = new HashSet<>();
+    // keyExists : reaction is toggle ; value : toggle state, false: not pressed
+    private HashMap<ReactionEmoji,Boolean> toggleReactions = new HashMap<>();
 
     private int page = 0;
 
@@ -33,6 +34,22 @@ class PaginatedObject {
             setAction("fast_forward", this::next);
         }
 
+    }
+
+    public void addToggle(ReactionEmoji reaction){
+        toggleReactions.put(reaction,false);
+    }
+
+    public boolean getToggleState(ReactionEmoji reaction){
+        return toggleReactions.getOrDefault(reaction,false);
+    }
+
+    public void setToggleState(ReactionEmoji reaction, boolean state){
+        toggleReactions.put(reaction,state);
+    }
+
+    public boolean isToggle(ReactionEmoji reactionEmoji){
+        return toggleReactions.containsKey(reactionEmoji);
     }
 
     public Mono<Void> onReact(ReactionEmoji emoji){

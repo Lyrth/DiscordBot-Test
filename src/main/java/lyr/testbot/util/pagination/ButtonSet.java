@@ -21,20 +21,13 @@ public enum ButtonSet {
 
     private LinkedHashMap<String, ReactionEmoji> reactions;
     ButtonSet(String... buttons){
-        reactions = new LinkedHashMap<>();
-        for (String b : buttons) {
-            reactions.put(
-                b, ReactionEmoji.unicode(StringUtil.getEmoji(b))
-            );
-        }
+        this.customize(buttons);
     }
 
     public ButtonSet customize(String... buttons){
         reactions = new LinkedHashMap<>();
         for (String b : buttons) {
-            reactions.put(
-                b, ReactionEmoji.unicode(StringUtil.getEmoji(b))
-            );
+            reactions.put(b, StringUtil.getReactionEmoji(b));
         }
         return this;
     }
