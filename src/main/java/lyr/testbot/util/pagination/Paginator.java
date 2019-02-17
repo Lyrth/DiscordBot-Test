@@ -8,13 +8,20 @@ import discord4j.core.object.util.Snowflake;
 import lyr.testbot.objects.builder.Reply;
 import lyr.testbot.objects.builder.Embed;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class Paginator {
 
+    public static final long CANCEL_DELAY = 30; // Seconds
+
     // <MessageID,pagobject>
     private static Map<Snowflake,PaginatedObject> pagMessages = Collections.synchronizedMap(new HashMap<>());
+
+    private static Scheduler scheduler = Schedulers.single();
 
     public static Mono<Message> paginate(Mono<MessageChannel> channel, List<Embed> pages){
         return paginate(channel, pages, "");
@@ -37,7 +44,16 @@ public class Paginator {
                 chan.createMessage(
                     Reply.format(pageMessage,1,pages.size())
                     .setEmbed(pages.get(0))))
-            .doOnNext(m -> pagMessages.put(m.getId(), new PaginatedObject(m, pages, pageMessage, buttonSet)))
+            .doOnNext(m ->
+                pagMessages.put(m.getId(),
+                    new PaginatedObject(m, pages, pageMessage, buttonSet,
+                        pag -> scheduler.schedule(() -> {
+                            pagMessages.remove(pag.getId());
+                            pag.cancel();
+                        }, CANCEL_DELAY, TimeUnit.SECONDS)
+                    )
+                )
+            )
             .publish(buttonSet::reactTo);
     }
 

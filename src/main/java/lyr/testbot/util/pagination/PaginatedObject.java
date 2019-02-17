@@ -2,11 +2,12 @@ package lyr.testbot.util.pagination;
 
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.reaction.ReactionEmoji;
+import discord4j.core.object.util.Snowflake;
 import lyr.testbot.objects.builder.Embed;
+import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.function.Function;
 
@@ -16,6 +17,9 @@ class PaginatedObject {
     private String pageMessage;
     private ButtonSet buttonSet;
 
+    private Function<PaginatedObject, Disposable> cancelTask;
+    private Disposable cancelTimer;
+
     private HashMap<ReactionEmoji, Function<Message, Mono<Message>>> actions = new HashMap<>();
 
     // keyExists : reaction is toggle ; value : toggle state, false: not pressed
@@ -23,17 +27,17 @@ class PaginatedObject {
 
     private int page = 0;
 
-    PaginatedObject(Message m, List<Embed> pages, String pageMessage, ButtonSet buttonSet){
+    PaginatedObject(Message m, List<Embed> pages, String pageMessage, ButtonSet buttonSet, Function<PaginatedObject, Disposable> cancelTask){
         this.message = m;
         this.pages = pages;
         this.pageMessage = pageMessage;
         this.buttonSet = buttonSet;
-
+        this.cancelTask = cancelTask;
         if (buttonSet == ButtonSet.PAGE_NAV){
             setAction("rewind", this::prev);
             setAction("fast_forward", this::next);
         }
-
+        cancelTimer = cancelTask.apply(this);
     }
 
     public void addToggle(ReactionEmoji reaction){
@@ -52,7 +56,17 @@ class PaginatedObject {
         return toggleReactions.containsKey(reactionEmoji);
     }
 
+    public void resetCancelTimer(){
+        cancelTimer.dispose();
+        cancelTimer = cancelTask.apply(this);
+    }
+
+    public void cancel(){
+        message.removeAllReactions().subscribe();
+    }
+
     public Mono<Void> onReact(ReactionEmoji emoji){
+        resetCancelTimer();
         return actions.containsKey(emoji) ?
             Mono.from(actions.get(emoji).apply(message)).then() :
             Mono.empty();
@@ -76,4 +90,7 @@ class PaginatedObject {
         return message.edit(m -> m.setEmbed(pages.get(page)));
     }
 
+    public Snowflake getId() {
+        return message.getId();
+    }
 }

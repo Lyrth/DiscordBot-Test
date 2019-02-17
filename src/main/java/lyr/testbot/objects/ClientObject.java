@@ -2,9 +2,9 @@ package lyr.testbot.objects;
 
 import discord4j.core.DiscordClient;
 import discord4j.core.event.EventDispatcher;
-import discord4j.core.object.entity.ApplicationInfo;
+//import discord4j.core.object.entity.ApplicationInfo;
 import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.GuildChannel;
+//import discord4j.core.object.entity.GuildChannel;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Snowflake;
 import lyr.testbot.handlers.EventHandler;
@@ -31,11 +31,11 @@ public class ClientObject {
     public Snowflake selfId;
 
     private Mono<User> botUser;
-    private Mono<ApplicationInfo> applicationInfo;
+    //private Mono<ApplicationInfo> applicationInfo;
 
     public Flux<Guild> guilds;
 
-    public HashMap<Snowflake,Snowflake> channelToGuildMapping = new HashMap<>();
+    //public HashMap<Snowflake,Snowflake> channelToGuildMapping = new HashMap<>();
 
     private HashMap<Snowflake, GuildSetting> guildSettings;
 
@@ -54,7 +54,7 @@ public class ClientObject {
         botUser = client.getSelf();
         botUser.doOnNext(user -> selfId = user.getId()).block();
         HashMap<Snowflake,GuildSetting> configs = GuildConfig.readAllConfig();
-        guildSettings = (HashMap<Snowflake, GuildSetting>)
+        guildSettings = (HashMap<Snowflake, GuildSetting>)  // TODO
             guilds
                 .map(Guild::getId)
                 .collectMap(
@@ -62,9 +62,9 @@ public class ClientObject {
                     guildId -> /*Value*/ configs.getOrDefault(guildId, new GuildSetting(guildId))
                 ).block();
         botModules = new BotModules();
-        guilds.flatMap(Guild::getChannels)
-            .collectMap(GuildChannel::getId, GuildChannel::getGuildId,() -> channelToGuildMapping)
-            .block();
+        //guilds.flatMap(Guild::getChannels)
+        //    .collectMap(GuildChannel::getId, GuildChannel::getGuildId,() -> channelToGuildMapping)
+        //   .block();
         //applicationInfo = client.getApplicationInfo().block();
         Log.log("> Done client init.");
     }

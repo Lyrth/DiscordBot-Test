@@ -8,6 +8,7 @@ import lyr.testbot.util.Log;
 import lyr.testbot.util.config.BotConfig;
 import lyr.testbot.objects.ClientObject;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -31,6 +32,7 @@ public class Main {
             new DiscordClientBuilder(config.getToken())
                 .setStoreService(new RedisStoreService())
                 .setInitialPresence(Presence.doNotDisturb(Activity.listening("aaaa")))
+                .setEventScheduler(Schedulers.immediate())
                 .build(),
             config);
         Log.log("> | Config done.");
