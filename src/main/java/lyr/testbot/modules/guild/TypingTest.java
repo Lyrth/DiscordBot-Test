@@ -5,13 +5,14 @@ import discord4j.core.object.entity.User;
 import lyr.testbot.templates.GuildModule;
 import lyr.testbot.util.Log;
 import lyr.testbot.util.config.GuildSetting;
+import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 
 public class TypingTest extends GuildModule {
 
-    public void on(TypingStartEvent event){
-        event.getUser().flatMap(User::getPrivateChannel)
+    public Mono<Void> on(TypingStartEvent event){
+        return event.getUser().flatMap(User::getPrivateChannel)
             .flatMap( ch ->
                 ch.createMessage("I saw you typing! On <#" + event.getChannelId().asString() + ">").flatMap( m ->
                     m.edit(msg -> msg.setContent("[REDACTED]"))
@@ -19,7 +20,7 @@ public class TypingTest extends GuildModule {
                 )
             ).doOnError(err ->
                 Log.logfError("REEEE CANNOT SEND MESSAGE TO %s ;-;", event.getUserId().asString())
-            ).subscribe();
+            ).then();
     }
 
     public TypingTest(){}

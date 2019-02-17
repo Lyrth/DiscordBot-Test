@@ -1,45 +1,35 @@
 package lyr.testbot.modules.bot;
 
-import discord4j.core.event.domain.channel.*;
 import discord4j.core.event.domain.lifecycle.*;
-import discord4j.core.event.domain.message.*;
 import lyr.testbot.templates.BotModule;
 import lyr.testbot.util.Log;
+import reactor.core.publisher.Mono;
 
 public class Test extends BotModule {
 
-    public void on(MessageCreateEvent event) {
-
-    }
-
-    public void on(MessageDeleteEvent event) {
-
-    }
-
-    public void on(TextChannelCreateEvent event) {
-
-    }
-
-
-    public void on(ReadyEvent event) {
+    public Mono<Void> on(ReadyEvent event) {
         Log.log("> Ready Event.");
+        return Mono.empty();
     }
 
-
-    public void on(ConnectEvent event) {
+    public Mono<Void> on(ConnectEvent event) {
         Log.logDebug("> Connect Event.");
+        return Mono.empty();
     }
 
-    public void on(ReconnectEvent event) {
+    public Mono<Void> on(ReconnectEvent event) {
         Log.logDebug("> REconnect Event.");
+        return Mono.empty();
     }
 
-    public void on(ReconnectStartEvent event) {
+    public Mono<Void> on(ReconnectStartEvent event) {
         Log.logDebug("> Reconnect Start Event.");
+        return Mono.empty();
     }
 
-    public void on(ReconnectFailEvent event) {
+    public Mono<Void> on(ReconnectFailEvent event) {
         Log.logDebug("> Reconnect FAIL Event.");
+        return Mono.empty();
     }
 
 

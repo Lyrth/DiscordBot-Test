@@ -2,22 +2,23 @@ package lyr.testbot.objects;
 
 import discord4j.core.DiscordClient;
 import discord4j.core.event.EventDispatcher;
-//import discord4j.core.object.entity.ApplicationInfo;
 import discord4j.core.object.entity.Guild;
-//import discord4j.core.object.entity.GuildChannel;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Snowflake;
 import lyr.testbot.handlers.EventHandler;
+import lyr.testbot.modules.BotModules;
 import lyr.testbot.modules.GuildModules;
 import lyr.testbot.util.Log;
 import lyr.testbot.util.config.BotConfig;
-import lyr.testbot.modules.BotModules;
 import lyr.testbot.util.config.GuildConfig;
 import lyr.testbot.util.config.GuildSetting;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
+
+//import discord4j.core.object.entity.ApplicationInfo;
+//import discord4j.core.object.entity.GuildChannel;
 
 public class ClientObject {
     private DiscordClient client;

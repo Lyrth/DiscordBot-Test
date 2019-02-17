@@ -1,6 +1,5 @@
 package lyr.testbot.modules;
 
-import lyr.testbot.main.Main;
 import lyr.testbot.modules.guild.*;
 import lyr.testbot.templates.GuildModule;
 import lyr.testbot.util.Log;
@@ -9,7 +8,6 @@ import reactor.core.publisher.Flux;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 public class GuildModules {
 

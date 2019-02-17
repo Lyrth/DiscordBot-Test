@@ -1,9 +1,9 @@
 package lyr.testbot.commands.general;
 
 import lyr.testbot.enums.CommandType;
+import lyr.testbot.objects.CommandObject;
 import lyr.testbot.objects.builder.Reply;
 import lyr.testbot.templates.Command;
-import lyr.testbot.objects.CommandObject;
 import reactor.core.publisher.Mono;
 
 public class Me extends Command {

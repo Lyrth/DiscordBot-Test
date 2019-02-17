@@ -5,14 +5,17 @@ import discord4j.core.event.domain.message.ReactionRemoveEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.util.Snowflake;
-import lyr.testbot.objects.builder.Reply;
 import lyr.testbot.objects.builder.Embed;
+import lyr.testbot.objects.builder.Reply;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Paginator {
 
@@ -58,20 +61,22 @@ public class Paginator {
             .publish(buttonSet::reactTo);
     }
 
-    public static void onReactRemove(ReactionRemoveEvent e){
-        pagMessages.computeIfPresent(e.getMessageId(), (id,pag) -> {
-            Mono.just(e.getEmoji())
+    public static Mono<Void> onReactRemove(ReactionRemoveEvent e){
+        if (pagMessages.containsKey(e.getMessageId())){
+            final PaginatedObject pag = pagMessages.get(e.getMessageId());
+            return Mono.just(e.getEmoji())
                 .filter(pag::isToggle)
                 .doOnNext(r -> pag.setToggleState(r,false))
-                .flatMap(pag::onReact)
-                .subscribe();
-            return pag;
-        });
+                .flatMap(pag::onReact);
+        } else {
+            return Mono.empty();
+        }
     }
 
-    public static void onReact(ReactionAddEvent e){
-        pagMessages.computeIfPresent(e.getMessageId(), (id,pag) -> {
-            Mono.when(
+    public static Mono<Void> onReact(ReactionAddEvent e){
+        if (pagMessages.containsKey(e.getMessageId())){
+            final PaginatedObject pag = pagMessages.get(e.getMessageId());
+            return Mono.when(
                 e.getMessage()
                     .filter(m -> !pag.isToggle(e.getEmoji()))
                     .flatMap(m -> m.removeReaction(e.getEmoji(),e.getUserId())),
@@ -80,9 +85,10 @@ public class Paginator {
                         if (pag.isToggle(r)) pag.setToggleState(r,true);
                     })
                     .flatMap(pag::onReact)
-            ).subscribe();  // TODO RETURN THIS MONO
-            return pag;
-        });
+            );
+        } else {
+            return Mono.empty();
+        }
     }
 
 }

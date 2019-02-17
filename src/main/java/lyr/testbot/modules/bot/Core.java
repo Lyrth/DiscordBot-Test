@@ -8,10 +8,10 @@ import discord4j.core.event.domain.message.ReactionRemoveEvent;
 import discord4j.core.object.util.Snowflake;
 import lyr.testbot.commands.Commands;
 import lyr.testbot.handlers.CommandHandler;
-import lyr.testbot.main.Main;
 import lyr.testbot.templates.BotModule;
 import lyr.testbot.util.Log;
 import lyr.testbot.util.pagination.Paginator;
+import reactor.core.publisher.Mono;
 
 import java.util.HashSet;
 import java.util.stream.Collectors;
@@ -24,26 +24,25 @@ public class Core extends BotModule {
         commandHandler = new CommandHandler(new Commands().getCommands());
     }
 
-    public void on(MessageCreateEvent event){
-        commandHandler.handle(event)
+    public Mono<Void> on(MessageCreateEvent event){
+        return commandHandler.handle(event)
             .doOnError(err -> {
                 Log.logError(err.getMessage());
                 err.printStackTrace();
-            })
-            .subscribe();
+            });
     }
 
-    public void on(ReactionAddEvent e) {
-        if (e.getUserId().equals(Main.client.selfId)) return;
-        Paginator.onReact(e);
+    public Mono<Void> on(ReactionAddEvent e) {
+        if (e.getUserId().equals(getClient().selfId)) return Mono.empty();
+        return Paginator.onReact(e);
     }
 
-    public void on(ReactionRemoveEvent e) {
-        if (e.getUserId().equals(Main.client.selfId)) return;
-        Paginator.onReactRemove(e);
+    public Mono<Void> on(ReactionRemoveEvent e) {
+        if (e.getUserId().equals(getClient().selfId)) return Mono.empty();
+        return Paginator.onReactRemove(e);
     }
 
-    public void on(ReadyEvent event){
+    public Mono<Void> on(ReadyEvent event){
         Log.logf("> Logged in as %s#%s.", event.getSelf().getUsername(), event.getSelf().getDiscriminator());
 
         int n = event.getGuilds().size();
@@ -52,16 +51,18 @@ public class Core extends BotModule {
         if (ids.size() != n)
             Log.logWarn(">> Warning: Set of IDs not the same size as Set of Guilds in ReadyEvent.");
         // wait for all guilds to be received
-        Main.client.getEventDispatcher().on(GuildCreateEvent.class).take(n).last().subscribe(gce -> {
-            // instantiate each module for each guild
-            Main.client.getGuildSettings().forEach((guildId, setting) -> {
-                if (!ids.contains(guildId)) return;
-                Log.logfDebug("> Setting up modules for guild %s", guildId.asString());
-                Main.client.eventHandler.updateGuildModules(setting);
-            });
-        });
-
-        System.gc();
+        return getClient().getEventDispatcher()
+            .on(GuildCreateEvent.class)
+            .take(n).last()
+            .doOnNext(gce -> {
+                // instantiate each module for each guild
+                getClient().getGuildSettings().forEach((guildId, setting) -> {
+                    if (!ids.contains(guildId)) return;
+                    Log.logfDebug("> Setting up modules for guild %s", guildId.asString());
+                    getClient().eventHandler.updateGuildModules(setting);
+                });
+            })
+            .then(Mono.fromRunnable(System::gc));
     }
 
 }

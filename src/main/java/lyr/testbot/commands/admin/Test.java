@@ -2,9 +2,9 @@ package lyr.testbot.commands.admin;
 
 import discord4j.core.object.entity.User;
 import lyr.testbot.enums.CommandType;
+import lyr.testbot.objects.CommandObject;
 import lyr.testbot.objects.builder.Reply;
 import lyr.testbot.templates.Command;
-import lyr.testbot.objects.CommandObject;
 import reactor.core.publisher.Mono;
 
 public class Test extends Command {

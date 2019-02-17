@@ -4,9 +4,9 @@ import discord4j.core.DiscordClientBuilder;
 import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
 import discord4j.store.redis.RedisStoreService;
+import lyr.testbot.objects.ClientObject;
 import lyr.testbot.util.Log;
 import lyr.testbot.util.config.BotConfig;
-import lyr.testbot.objects.ClientObject;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 

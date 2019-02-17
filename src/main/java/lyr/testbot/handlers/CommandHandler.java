@@ -3,8 +3,8 @@ package lyr.testbot.handlers;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.rest.http.client.ClientException;
 import lyr.testbot.main.Main;
-import lyr.testbot.templates.Command;
 import lyr.testbot.objects.CommandObject;
+import lyr.testbot.templates.Command;
 import reactor.core.publisher.Mono;
 
 import java.util.Collections;

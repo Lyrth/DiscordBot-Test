@@ -6,90 +6,196 @@ import discord4j.core.event.domain.guild.*;
 import discord4j.core.event.domain.lifecycle.*;
 import discord4j.core.event.domain.message.*;
 import discord4j.core.event.domain.role.*;
+import lyr.testbot.event.OneHourEvent;
+import lyr.testbot.event.TenSecondEvent;
+import reactor.core.publisher.Mono;
 
 public abstract class BotModule extends Module {
 
+    public static final Mono<Void> VOID = Mono.empty();
+
+    /** Interval Events **/
+    public Mono<Void> on(TenSecondEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(OneHourEvent e){
+        return VOID;
+    }
+
+
     /** Other Events **/
-    public void on(PresenceUpdateEvent e){}
-    public void on(UserUpdateEvent e){}
-    public void on(VoiceServerUpdateEvent e){}
-    public void on(VoiceStateUpdateEvent e){}
-    public void on(WebhooksUpdateEvent e){}
+    public Mono<Void> on(PresenceUpdateEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(UserUpdateEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(VoiceServerUpdateEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(VoiceStateUpdateEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(WebhooksUpdateEvent e){
+        return VOID;
+    }
 
 
     /** LifecycleEvents **/
-    public void on(ReadyEvent e){}
-    public void on(ResumeEvent e){}
-    public void on(ConnectEvent e){}
-    public void on(DisconnectEvent e){}
-    public void on(ReconnectEvent e){}
-    public void on(ReconnectStartEvent e){}
-    public void on(ReconnectFailEvent e){}
+    public Mono<Void> on(ReadyEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(ResumeEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(ConnectEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(DisconnectEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(ReconnectEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(ReconnectStartEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(ReconnectFailEvent e){
+        return VOID;
+    }
 
 
     /** GuildEvents **/
     // Other
-    public void on(EmojisUpdateEvent e){}
-    public void on(IntegrationsUpdateEvent e){}
+    public Mono<Void> on(EmojisUpdateEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(IntegrationsUpdateEvent e){
+        return VOID;
+    }
 
     // Guild updates
-    public void on(GuildCreateEvent e){}
-    public void on(GuildDeleteEvent e){}
-    public void on(GuildUpdateEvent e){}
+    public Mono<Void> on(GuildCreateEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(GuildDeleteEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(GuildUpdateEvent e){
+        return VOID;
+    }
 
     // Member updates
-    public void on(MemberJoinEvent e){}
-    public void on(MemberLeaveEvent e){}
-    public void on(MemberUpdateEvent e){}
-    public void on(MemberChunkEvent e){}
+    public Mono<Void> on(MemberJoinEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(MemberLeaveEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(MemberUpdateEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(MemberChunkEvent e){
+        return VOID;
+    }
 
     // Bans/Unbans
-    public void on(BanEvent e){}
-    public void on(UnbanEvent e){}
+    public Mono<Void> on(BanEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(UnbanEvent e){
+        return VOID;
+    }
 
 
     /** RoleEvents **/
     // Role updates
-    public void on(RoleCreateEvent e){}
-    public void on(RoleDeleteEvent e){}
-    public void on(RoleUpdateEvent e){}
+    public Mono<Void> on(RoleCreateEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(RoleDeleteEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(RoleUpdateEvent e){
+        return VOID;
+    }
 
 
     /** ChannelEvents **/
     // Other
-    public void on(PinsUpdateEvent e){}
-    public void on(TypingStartEvent e){}
+    public Mono<Void> on(PinsUpdateEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(TypingStartEvent e){
+        return VOID;
+    }
 
     // Private Channels / DMs
-    public void on(PrivateChannelCreateEvent e){}
-    public void on(PrivateChannelDeleteEvent e){}
+    public Mono<Void> on(PrivateChannelCreateEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(PrivateChannelDeleteEvent e){
+        return VOID;
+    }
 
     // Guild Categories
-    public void on(CategoryCreateEvent e){}
-    public void on(CategoryDeleteEvent e){}
-    public void on(CategoryUpdateEvent e){}
+    public Mono<Void> on(CategoryCreateEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(CategoryDeleteEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(CategoryUpdateEvent e){
+        return VOID;
+    }
 
     // Text Channels
-    public void on(TextChannelCreateEvent e){}
-    public void on(TextChannelDeleteEvent e){}
-    public void on(TextChannelUpdateEvent e){}
+    public Mono<Void> on(TextChannelCreateEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(TextChannelDeleteEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(TextChannelUpdateEvent e){
+        return VOID;
+    }
 
     // Voice Channels
-    public void on(VoiceChannelCreateEvent e){}
-    public void on(VoiceChannelDeleteEvent e){}
-    public void on(VoiceChannelUpdateEvent e){}
+    public Mono<Void> on(VoiceChannelCreateEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(VoiceChannelDeleteEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(VoiceChannelUpdateEvent e){
+        return VOID;
+    }
 
 
     /** MessageEvents **/
     // Message updates
-    public void on(MessageCreateEvent e){}
-    public void on(MessageDeleteEvent e){}
-    public void on(MessageUpdateEvent e){}
+    public Mono<Void> on(MessageCreateEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(MessageDeleteEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(MessageUpdateEvent e){
+        return VOID;
+    }
 
-    public void on(ReactionAddEvent e){}
-    public void on(ReactionRemoveEvent e){}
-    public void on(ReactionRemoveAllEvent e){}
+    public Mono<Void> on(ReactionAddEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(ReactionRemoveEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(ReactionRemoveAllEvent e){
+        return VOID;
+    }
 
-    public void on(MessageBulkDeleteEvent e){}
+    public Mono<Void> on(MessageBulkDeleteEvent e){
+        return VOID;
+    }
 
 }
