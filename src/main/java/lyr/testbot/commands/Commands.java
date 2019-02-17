@@ -3,6 +3,7 @@ package lyr.testbot.commands;
 import lyr.testbot.commands.admin.*;
 import lyr.testbot.commands.general.*;
 import lyr.testbot.templates.Command;
+import reactor.core.publisher.Flux;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,14 +14,23 @@ public class Commands {
     private Map<String, Command> commands = new HashMap<>();
 
     public Commands(){
-        add(new Ping());
-        add(new Me());
-        add(new Test());
-        add(new Module());
+        add(
+            // Admin
+            new Module(),
+            new Test(),
+
+            // General
+            new Me(),
+            new Ping()
+        );
     }
 
-    private void add(Command command){
-        commands.put(command.getName(),command);
+    private void add(Command... c){
+        Flux.just(c).doOnNext(command -> {
+            if (!commands.containsKey(command.getName().toLowerCase())) {
+                commands.put(command.getName().toLowerCase(), command);
+            }
+        }).subscribe();
     }
 
     public Map<String, Command> getCommands(){
