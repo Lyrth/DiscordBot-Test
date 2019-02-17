@@ -1,7 +1,14 @@
 package lyr.testbot.event;
 
 public class TenSecondEvent {
-    public TenSecondEvent(){
 
+    private long tick;
+
+    public TenSecondEvent(long tick){
+        this.tick = tick;
+    }
+
+    public long getTick() {
+        return tick;
     }
 }

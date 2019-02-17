@@ -9,10 +9,10 @@ import discord4j.core.event.domain.lifecycle.*;
 import discord4j.core.event.domain.message.*;
 import discord4j.core.event.domain.role.*;
 import lyr.testbot.event.TenSecondEvent;
-import lyr.testbot.main.Main;
 import reactor.core.Disposable;
+import reactor.core.publisher.Flux;
 
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 public abstract class Module {
 
@@ -120,8 +120,8 @@ public abstract class Module {
             case "MessageBulkDeleteEvent":
                 return dispatcher.on(MessageBulkDeleteEvent.class).doOnNext(this::on).subscribe();
             case "TenSecondEvent":
-                return Main.client.eventHandler.scheduler
-                    .schedulePeriodically(()->on(new TenSecondEvent()),10,10, TimeUnit.SECONDS);
+                return Flux.interval(Duration.ofSeconds(10),Duration.ofSeconds(10))
+                    .map(TenSecondEvent::new).doOnNext(this::on).subscribe();
             default:
                 throw new IllegalArgumentException("Event " + eventName + " does not exist.");
         }

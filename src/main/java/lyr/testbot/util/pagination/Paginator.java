@@ -11,8 +11,8 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
+import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 public class Paginator {
 
@@ -46,11 +46,12 @@ public class Paginator {
                     .setEmbed(pages.get(0))))
             .doOnNext(m ->
                 pagMessages.put(m.getId(),
-                    new PaginatedObject(m, pages, pageMessage, buttonSet,
-                        pag -> scheduler.schedule(() -> {
-                            pagMessages.remove(pag.getId());
-                            pag.cancel();
-                        }, CANCEL_DELAY, TimeUnit.SECONDS)
+                    new PaginatedObject(m, pages, pageMessage, buttonSet, pag ->
+                        Mono.delay(Duration.ofSeconds(CANCEL_DELAY))
+                            .map(i -> pag)
+                            .doOnNext(p -> pagMessages.remove(p.getId()))
+                            .flatMap(PaginatedObject::cancel)
+                            .subscribe()
                     )
                 )
             )

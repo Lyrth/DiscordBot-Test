@@ -16,8 +16,8 @@ public class IntervalTest extends GuildModule {
         Main.client.getDiscordClient()
             .getChannelById(Snowflake.of(539743710347395072L))
             .cast(TextChannel.class)
-            .flatMap(ch -> ch.createMessage("Sustain"))
-            .flatMap(m -> m.delete().delaySubscription(Duration.ofSeconds(1)))
+            .flatMap(ch -> ch.createMessage("Sustain " + event.getTick()))
+            .flatMap(m -> m.delete().delaySubscription(Duration.ofSeconds(3)))
             .subscribe();
     }
 

@@ -61,8 +61,8 @@ class PaginatedObject {
         cancelTimer = cancelTask.apply(this);
     }
 
-    public void cancel(){
-        message.removeAllReactions().subscribe();
+    public Mono<Void> cancel(){
+        return message.removeAllReactions();
     }
 
     public Mono<Void> onReact(ReactionEmoji emoji){
