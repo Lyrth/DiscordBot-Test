@@ -21,7 +21,8 @@ public class Commands {
 
             // General
             new Me(),
-            new Ping()
+            new Ping(),
+            new Usage()
         );
     }
 
