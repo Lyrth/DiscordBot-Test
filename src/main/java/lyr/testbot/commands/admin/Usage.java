@@ -11,13 +11,13 @@ public class Usage extends Command {
     public Mono<Reply> execute(CommandObject command){
         return Mono.just(
             Reply.format(
-                "`CPU (System ):` %d\n" +
-                "`CPU (Process):` %d\n" +
+                "`CPU (System ):` %.2f\n" +
+                "`CPU (Process):` %.2f\n" +
                 "`Available Mem:` %d\n" +
                 "`Free Totl Mem:` Physical - %d, Swap - %d\n" +
                 "`  Runtime Mem:` %d/%d, max %d",
-                lyr.testbot.util.Usage.getSystemCpuUsage(),
-                lyr.testbot.util.Usage.getProcessCpuUsage(),
+                lyr.testbot.util.Usage.getSystemCpuUsage()*100,
+                lyr.testbot.util.Usage.getProcessCpuUsage()*100,
                 lyr.testbot.util.Usage.getProcessAvailableMemory(),
                 lyr.testbot.util.Usage.getTotalMemory(), lyr.testbot.util.Usage.getTotalSwapSpace(),
                 lyr.testbot.util.Usage.getRuntimeTotalMemory()-lyr.testbot.util.Usage.getRuntimeFreeMemory(),

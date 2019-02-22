@@ -7,6 +7,8 @@ import discord4j.store.redis.RedisStoreService;
 import lyr.testbot.objects.ClientObject;
 import lyr.testbot.util.Log;
 import lyr.testbot.util.config.BotConfig;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.SynchronousSink;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
@@ -38,25 +40,29 @@ public class Main {
         Log.log("> | Config done.");
 
         int retries = 0;
-        final int maxRetries = 3;
+        final int maxRetries = 4;  // total logins to be attempted
         while (retries < maxRetries) {
-            try {
-                Mono.when(
-                    client.getDiscordClient().login(),
-                    Mono.fromRunnable(client::init))
-                    .block();
-            } catch (Exception e) {
-                if (e.getMessage().matches(".*java\\.net\\..*?Exception.*")) {
-                    retries++;
-                    Log.logWarn("> Trying to log in again. Internet dropped? Retries: " + (maxRetries - retries));
-                    for (AtomicInteger i = new AtomicInteger(3 ^ (retries)); i.get() < 1; i.set(i.get() - 1))
-                        Mono.delay(Duration.ofSeconds(1))
-                            .doOnNext(n -> Log.logfDebug("> Retrying in %s", i.get()))
-                            .block();
-                } else {
-                    retries = 0;
-                }
-            }
+            retries++;
+            Mono.when(client.getDiscordClient().login(), Mono.fromRunnable(client::init))
+                .map(v -> 0)
+                .onErrorReturn(t -> {
+                        Log.logWarn(">> Caught network error.");
+                        return t.toString().matches(".*java\\.net\\..*?Exception.*");
+                    }, retries)
+                .filter(retr -> retr < maxRetries)
+                .flatMap(retr ->
+                    Flux.generate(() -> (int) Math.pow(3,retr),
+                        (Integer s, SynchronousSink<Integer> sink) -> {
+                            sink.next(s--);
+                            if (s < 0) sink.complete();
+                            return s;
+                        })
+                        .delayElements(Duration.ofSeconds(1))
+                        .doOnNext(n -> Log.logfDebug("> Retrying in %s", n))
+                        .last()
+                        .then(Mono.just(retr))
+                )
+                .block();
         }
         Log.log("> Exceeded maximum retries.");
     }

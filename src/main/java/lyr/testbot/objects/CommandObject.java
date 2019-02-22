@@ -8,7 +8,7 @@ public class CommandObject extends MessageObject {
 
     public Mono<Message> message;
 
-    public Mono<String> args;
+    public Mono<CommandArgs> args;
 
     public Mono<MessageChannel> channel;
     public Mono<Guild> guild;
@@ -20,10 +20,11 @@ public class CommandObject extends MessageObject {
 
         id = M.map(Message::getId);
         contents = M.map(m -> m.getContent().orElse(""));
-        args = M.map(m ->m.getContent()
-            .map(s -> s.replaceFirst("(^<@!?\\d+>\\s+\\S+|^\\S+)\\s*",""))
-            .orElse("")
-        );
+        args = M.map(m ->
+            m.getContent()
+                .map(s -> s.replaceFirst("(^<@!?\\d+>\\s+\\S+|^\\S+)\\s*",""))
+                .orElse("")
+            ).map(CommandArgs::new);
         embeds = M.map(Message::getEmbeds);
 
         guildId = Mono.just(event.getGuildId()).map(e -> e.orElse(null));

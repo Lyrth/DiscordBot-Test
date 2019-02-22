@@ -15,7 +15,7 @@ public class Test extends Command {
             command.contents,
             command.args
         ).map(T ->
-            Reply.format("%s, you said `%s`,\n with args `%s`",T.getT1(),T.getT2(),T.getT3())
+            Reply.format("%s, you said `%s`,\n with args `%s`",T.getT1(),T.getT2(),T.getT3().getRaw())
         );
 
         /*
