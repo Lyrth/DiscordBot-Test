@@ -18,11 +18,12 @@ public class Commands {
             // Admin
             new Module(),
             new Test(),
+            new Usage(),
 
             // General
+            new Help(),
             new Me(),
-            new Ping(),
-            new Usage()
+            new Ping()
         );
     }
 

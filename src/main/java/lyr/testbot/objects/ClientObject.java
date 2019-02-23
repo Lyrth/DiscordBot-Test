@@ -5,6 +5,7 @@ import discord4j.core.event.EventDispatcher;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Snowflake;
+import lyr.testbot.commands.Commands;
 import lyr.testbot.handlers.EventHandler;
 import lyr.testbot.modules.BotModules;
 import lyr.testbot.modules.GuildModules;
@@ -24,6 +25,7 @@ public class ClientObject {
     private DiscordClient client;
 
     public BotConfig config;
+    public Commands commands;
     public BotModules botModules;
     public GuildModules availableGuildModules;
     public EventHandler eventHandler;
@@ -45,6 +47,7 @@ public class ClientObject {
         this.client = client;
         this.config = config;
         this.eventDispatcher = client.getEventDispatcher();
+        commands = new Commands();
         availableGuildModules = new GuildModules();
     }
 

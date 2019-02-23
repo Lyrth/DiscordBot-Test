@@ -12,10 +12,15 @@ import reactor.core.publisher.Mono;
 public abstract class Command {
 
     public abstract String getName();
-    protected abstract CommandType getType();
-    protected abstract String getDesc();
-    protected abstract String getUsage();
-    protected abstract int getNumArgs();
+    public abstract CommandType getType();
+    public abstract String getDesc();
+    public abstract String getUsage();
+    public abstract int getNumArgs();
+
+    public String getFormattedUsage(){
+        return getUsage().replaceAll("([(\\[])","`$1")
+            .replaceAll("([)\\]])","$1`");
+    }
 
     public abstract Mono<Reply> execute(CommandObject command);
 
@@ -24,6 +29,9 @@ public abstract class Command {
     }
     protected GuildSetting getGuildSettingsFor(Snowflake guildId){
         return getClient().getGuildSettings().get(guildId);
+    }
+    protected String getPrefix(){
+        return getClient().getBotConfig().getPrefix();
     }
 
 }

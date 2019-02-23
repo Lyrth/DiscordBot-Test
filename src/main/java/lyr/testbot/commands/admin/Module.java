@@ -17,7 +17,7 @@ public class Module extends Command {
     private Reply execute(Guild guild, CommandArgs args){
         if ( args.isEmpty() ||
             (args.getCount() == 1 && args.matchesAt("(enable|disable)",0))){
-            return Reply.with("Usage: " + getUsage());
+            return Reply.with("Usage: " + getFormattedUsage());
         }
         String name;
         if (!(name = getClient().availableGuildModules.getProperName(args.get(0))).isEmpty()) {

@@ -28,7 +28,7 @@ public class CommandArgs {
     }
 
     public boolean isEmpty(){
-        return split.length == 0;
+        return split.length == 1 && split[0].isEmpty();
     }
 
     public int getCount(){
