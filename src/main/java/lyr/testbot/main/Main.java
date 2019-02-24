@@ -21,7 +21,7 @@ public class Main {
 
     public static void main(String args[]) {
         System.setProperty("log4j.skipJansi","false");  // Color support for logging.
-        Log.logfDebug("> Running on Discord4j version %s",
+        Log.logfDebug("Running on Discord4j version %s",
             GitProperties.getProperties().getProperty(GitProperties.GIT_COMMIT_ID_DESCRIBE));
         new Main();
     }
@@ -66,7 +66,7 @@ public class Main {
                                 return s;
                             })
                             .delayElements(Duration.ofSeconds(1))
-                            .doOnNext(n -> Log.logfDebug("> Retrying in %s", n))
+                            .doOnNext(n -> Log.logfDebug("Retrying in %s", n))
                             .last()
                             .then(Mono.just(retr))
                     )

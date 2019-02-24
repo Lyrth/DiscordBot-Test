@@ -83,7 +83,7 @@ public class GuildConfig {
             if ((err & 4) > 0) Log.logError(">>> Cannot modify settings.");
             if ((err & 8) > 0) Log.logfError(">>> Cannot create settings file %s.json.", moduleName);
             if ((err & 12) > 0) return;        // Error
-            Log.logfDebug("> %s config for guild %s updated.", moduleName, guildId);
+            Log.logfDebug("%s config for guild %s updated.", moduleName, guildId);
         });
     }
 
@@ -96,7 +96,7 @@ public class GuildConfig {
         if ((err & 4) > 0) Log.logError(">>> Cannot modify settings.");
         if ((err & 8) > 0) Log.logfError(">>> Cannot create settings file %s.json.", moduleName);
         if ((err & 12) > 0) return;        // Error
-        Log.logfDebug("> %s config for guild %s updated.", moduleName, guildId);
+        Log.logfDebug("%s config for guild %s updated.", moduleName, guildId);
         ;
     }
 
@@ -109,7 +109,7 @@ public class GuildConfig {
         if ((err&4) > 0) Log.logError(">>> Cannot modify config.");
         if ((err&8) > 0) Log.logfError(">>> Cannot create config file for guild %s.", setting.guildId.asString());
         if ((err&12)> 0) return;        // Error
-        Log.logfDebug("> Config for %s updated.", setting.guildId.asString());
+        Log.logfDebug("Config for %s updated.", setting.guildId.asString());
     }
 
 }

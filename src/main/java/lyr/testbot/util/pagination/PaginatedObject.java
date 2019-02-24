@@ -14,7 +14,7 @@ import java.util.function.Function;
 class PaginatedObject {
     private Message message;
     private List<Embed> pages;
-    private String pageMessage;
+    private String messageContent;
     private ButtonSet buttonSet;
 
     private Function<PaginatedObject, Disposable> cancelTask;
@@ -27,10 +27,10 @@ class PaginatedObject {
 
     private int page = 0;
 
-    PaginatedObject(Message m, List<Embed> pages, String pageMessage, ButtonSet buttonSet, Function<PaginatedObject, Disposable> cancelTask){
+    PaginatedObject(Message m, List<Embed> pages, String messageContent, ButtonSet buttonSet, Function<PaginatedObject, Disposable> cancelTask){
         this.message = m;
         this.pages = pages;
-        this.pageMessage = pageMessage;
+        this.messageContent = messageContent;
         this.buttonSet = buttonSet;
         this.cancelTask = cancelTask;
         if (buttonSet == ButtonSet.PAGE_NAV){
@@ -81,13 +81,22 @@ class PaginatedObject {
     public Mono<Message> prev(Message message){
         page--;
         if (page < 0) page = pages.size()-1;
-        return message.edit(m -> m.setEmbed(pages.get(page)));
+        return message.edit(m ->
+            m.setContent(String.format(messageContent,page,pages.size())).setEmbed(pages.get(page)));
     }
 
     public Mono<Message> next(Message message){
         page++;
         if (page > pages.size()-1) page = 0;
-        return message.edit(m -> m.setEmbed(pages.get(page)));
+        return message.edit(m ->
+            m.setContent(String.format(messageContent,page,pages.size())).setEmbed(pages.get(page)));
+    }
+
+    public Mono<Message> jumpToPage(Message message, int page){
+        if (page > pages.size()-1) page = this.page;
+        this.page = page;
+        return message.edit(m ->
+            m.setContent(String.format(messageContent,this.page,pages.size())).setEmbed(pages.get(this.page)));
     }
 
     public Snowflake getId() {

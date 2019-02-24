@@ -13,22 +13,22 @@ public class Test extends BotModule {
     }
 
     public Mono<Void> on(ConnectEvent event) {
-        Log.logDebug("> Connect Event.");
+        Log.logDebug("Connect Event.");
         return Mono.empty();
     }
 
     public Mono<Void> on(ReconnectEvent event) {
-        Log.logDebug("> REconnect Event.");
+        Log.logDebug("REconnect Event.");
         return Mono.empty();
     }
 
     public Mono<Void> on(ReconnectStartEvent event) {
-        Log.logDebug("> Reconnect Start Event.");
+        Log.logDebug("Reconnect Start Event.");
         return Mono.empty();
     }
 
     public Mono<Void> on(ReconnectFailEvent event) {
-        Log.logDebug("> Reconnect FAIL Event.");
+        Log.logDebug("Reconnect FAIL Event.");
         return Mono.empty();
     }
 

@@ -36,13 +36,13 @@ public class SQLInterface {
 
     public SQLInterface() throws Exception {
         try {
-            Log.logDebug("> Initiating database connection.");
+            Log.logDebug("Initiating database connection.");
             dbconn = DriverManager.getConnection(DB_URL,USERNAME,PASSWORD);
 
-            Log.logDebug("> | Database connection established.");
+            Log.logDebug("| Database connection established.");
 
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                Log.log("> Shutting down.");
+                Log.log("Shutting down.");
                 try { if(dbconn!=null) dbconn.close(); } catch(SQLException se){ se.printStackTrace(); }
             }));
 

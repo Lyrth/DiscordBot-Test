@@ -27,7 +27,7 @@ public class BotModules {
         Flux.just(m).doOnNext(module -> {
             if (!botModules.containsKey(module.getName())) {
                 botModules.put(module.getName(), module);
-                Log.logfDebug("> Adding module %s...", module.getName());
+                Log.logfDebug("Adding module %s...", module.getName());
                 Main.client.getEventHandler().registerBotEvent(module);  // TODO: read config en/disable
             }
         }).subscribe();

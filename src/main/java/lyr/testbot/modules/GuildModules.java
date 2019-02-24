@@ -29,7 +29,7 @@ public class GuildModules {
             if (!guildModules.containsKey(module.getName())) {
                 guildModules.put(module.getName(), module);
                 guildModuleNameMap.put(module.getName().toLowerCase(),module.getName());
-                Log.logfDebug("> Adding module %s...", module.getName());
+                Log.logfDebug("Adding module %s...", module.getName());
             }
         }).subscribe();
     }

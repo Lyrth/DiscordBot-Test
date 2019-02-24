@@ -17,7 +17,6 @@ public class Reply implements Consumer<MessageCreateSpec> {
     private Consumer<MessageCreateSpec> messageSpec;
     private Embed embed;
 
-    //Reply(){}
     private Reply(Consumer<MessageCreateSpec> messageSpec){
         this.messageSpec = messageSpec;
         this.embed = Embed.empty();

@@ -57,7 +57,7 @@ public class Core extends BotModule {
                 // instantiate each module for each guild
                 getClient().getGuildSettings().forEach((guildId, setting) -> {
                     if (!ids.contains(guildId)) return;
-                    Log.logfDebug("> Setting up modules for guild %s", guildId.asString());
+                    Log.logfDebug("Setting up modules for guild %s", guildId.asString());
                     getClient().eventHandler.updateGuildModules(setting);
                 });
             })

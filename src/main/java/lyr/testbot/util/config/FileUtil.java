@@ -16,7 +16,7 @@ public class FileUtil {
     public static <T> T readFile(String fileName, Class<T> clazz){
         try {
             String json = new String(Files.readAllBytes(Paths.get(fileName)));
-            Log.logfDebug("> Reading from %s...",fileName);
+            Log.logfDebug("Reading from %s...",fileName);
             return gson.fromJson(json,clazz);
         } catch(Exception e) {
             return null;
@@ -26,7 +26,7 @@ public class FileUtil {
     public static <T> T readFile(String fileName, Type type){
         try {
             String json = new String(Files.readAllBytes(Paths.get(fileName)));
-            Log.logfDebug("> Reading from %s...",fileName);
+            Log.logfDebug("Reading from %s...",fileName);
             return gson.fromJson(json,type);
         } catch(Exception e) {
             return null;

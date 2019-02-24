@@ -24,13 +24,13 @@ public abstract class Command {
 
     public abstract Mono<Reply> execute(CommandObject command);
 
-    protected ClientObject getClient(){
+    protected static ClientObject getClient(){
         return Main.client;
     }
-    protected GuildSetting getGuildSettingsFor(Snowflake guildId){
+    protected static GuildSetting getGuildSettingsFor(Snowflake guildId){
         return getClient().getGuildSettings().get(guildId);
     }
-    protected String getPrefix(){
+    protected static String getPrefix(){
         return getClient().getBotConfig().getPrefix();
     }
 

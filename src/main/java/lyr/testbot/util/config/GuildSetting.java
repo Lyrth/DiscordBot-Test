@@ -28,13 +28,13 @@ public class GuildSetting {
 
     private boolean updateEnabledModules(){
         Main.client.eventHandler.updateGuildModules(this);
-        GuildConfig.updateGuildSettings(this);
+        GuildConfig.updateGuildSettings(this);  // TODO: schedule update on a fixed interval instead & add shutdown hook
         return true;
     }
 
     public void setModulesSettings(HashMap<String, HashMap<String, String>> modulesSettings) {
         this.modulesSettings = modulesSettings;
-        GuildConfig.updateModulesSettings(modulesSettings,guildId.asString());
+        GuildConfig.updateModulesSettings(modulesSettings,guildId.asString());  // TODO: same as above
     }
 
     public boolean isModuleEnabled(String moduleName){
@@ -77,6 +77,7 @@ public class GuildSetting {
             map.put(key,value);
             modulesSettings.put(moduleName,map);
         }
+        // TODO: same as above
         GuildConfig.updateModuleSettings(moduleName, modulesSettings.get(moduleName), guildId.asString());
     }
 }

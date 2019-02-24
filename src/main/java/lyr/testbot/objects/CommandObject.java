@@ -10,7 +10,6 @@ public class CommandObject extends MessageObject {
 
     public Mono<CommandArgs> args;
 
-    public Mono<MessageChannel> channel;
     public Mono<Guild> guild;
 
     public CommandObject(MessageCreateEvent event){
@@ -41,6 +40,6 @@ public class CommandObject extends MessageObject {
     }
 
     public Mono<MessageChannel> getChannel() {
-        return channel = M.flatMap(Message::getChannel);
+        return M.flatMap(Message::getChannel);
     }
 }

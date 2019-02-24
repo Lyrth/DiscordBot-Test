@@ -5,7 +5,6 @@ import lyr.testbot.objects.CommandObject;
 import lyr.testbot.objects.builder.Embed;
 import lyr.testbot.objects.builder.Reply;
 import lyr.testbot.templates.Command;
-import lyr.testbot.util.pagination.Paginator;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
@@ -31,7 +30,6 @@ public class Ping extends Command {
                     "Pong! Took " + (m.getTimestamp().toEpochMilli()-start.get()) + "ms."
                 ))
             )
-            .flatMap(m -> Paginator.paginate(m.getChannel(),pages))
             .thenReturn(Reply.empty());
     }
 

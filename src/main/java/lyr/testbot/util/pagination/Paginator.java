@@ -12,17 +12,15 @@ import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 import java.time.Duration;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Paginator {
 
     public static final long CANCEL_DELAY = 30; // Seconds
 
     // <MessageID,pagobject>
-    private static Map<Snowflake,PaginatedObject> pagMessages = Collections.synchronizedMap(new HashMap<>());
+    private static ConcurrentHashMap<Snowflake,PaginatedObject> pagMessages = new ConcurrentHashMap<>();
 
     private static Scheduler scheduler = Schedulers.single();
 
@@ -30,26 +28,26 @@ public class Paginator {
         return paginate(channel, pages, "");
     }
 
-    public static Mono<Message> paginate(Mono<MessageChannel> channel, List<Embed> pages, String pageMessage){
-        return paginate(channel, pages, pageMessage, ButtonSet.DEFAULT);
+    public static Mono<Message> paginate(Mono<MessageChannel> channel, List<Embed> pages, String messageContent){
+        return paginate(channel, pages, messageContent, ButtonSet.DEFAULT);
     }
 
     public static Mono<Message> paginate(Mono<MessageChannel> channel, List<Embed> pages, ButtonSet buttonSet){
         return paginate(channel, pages, "", buttonSet);
     }
 
-    public static Mono<Message> paginate(Mono<MessageChannel> channel, List<Embed> pages, String pageMessage, ButtonSet buttonSet){
+    public static Mono<Message> paginate(Mono<MessageChannel> channel, List<Embed> pages, String messageContent, ButtonSet buttonSet){
         if (pages.size() < 1) return Mono.empty();
         //pagMessages.put(Snowflake.of(0),new PaginatedObject(null,pages,pageMessage,buttonSet));
 
-        return channel.log("lyr.testbot.util.Log")
+        return channel
             .flatMap(chan ->
                 chan.createMessage(
-                    Reply.format(pageMessage,1,pages.size())
+                    Reply.format(messageContent,1,pages.size())
                     .setEmbed(pages.get(0))))
             .doOnNext(m ->
                 pagMessages.put(m.getId(),
-                    new PaginatedObject(m, pages, pageMessage, buttonSet, pag ->
+                    new PaginatedObject(m, pages, messageContent, buttonSet, pag ->
                         Mono.delay(Duration.ofSeconds(CANCEL_DELAY))
                             .map(i -> pag)
                             .doOnNext(p -> pagMessages.remove(p.getId()))

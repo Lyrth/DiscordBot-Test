@@ -100,4 +100,8 @@ public class ClientObject {
     public HashMap<Snowflake, GuildSetting> getGuildSettings() {
         return guildSettings;
     }
+
+    public Snowflake getId() {
+        return selfId;
+    }
 }

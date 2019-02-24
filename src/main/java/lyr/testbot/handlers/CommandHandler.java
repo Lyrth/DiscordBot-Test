@@ -19,8 +19,8 @@ public class CommandHandler {
 
     public CommandHandler(Map<String, Command> commands) {
         this.commands = commands;
-        prefix = Main.client.config.getPrefix();
-        selfId = Main.client.selfId.asString();
+        prefix = Main.client.getBotConfig().getPrefix();
+        selfId = Main.client.getId().asString();
     }
 
     public Mono<Void> handle(MessageCreateEvent mEvent){

@@ -21,7 +21,6 @@ import java.util.Map;
 
 public class EventHandler {
     private EventDispatcher eventDispatcher;
-    public Scheduler scheduler = Schedulers.single();
 
     // <moduleName, module>
     private HashMap<String, Disposable.Composite>
@@ -33,11 +32,11 @@ public class EventHandler {
 
     public EventHandler(EventDispatcher eventDispatcher) {
         this.eventDispatcher = eventDispatcher;
-        Log.logDebug("> EventHandler ready.");
+        Log.logDebug("EventHandler ready.");
     }
 
     public void registerBotEvent(BotModule module){
-        Log.logfDebug("> | Enabling bot module %s...", module.getName());
+        Log.logfDebug("| Enabling bot module %s...", module.getName());
         activeBotModules.computeIfAbsent(module.getName(), name -> subscribeModule(module));
     }
 
@@ -46,7 +45,7 @@ public class EventHandler {
     }
 
     public void unregisterBotEvent(String moduleName){
-        Log.logfDebug("> Unregistering %s...", moduleName);
+        Log.logfDebug("Unregistering %s...", moduleName);
         activeBotModules.remove(moduleName).dispose();
     }
 
@@ -59,13 +58,13 @@ public class EventHandler {
             if (setting.enabledModules.contains(moduleName)){  // It should be enabled
                 if (activeGuildModules.get(guildId).containsKey(moduleName))  // Already enabled
                     return;
-                Log.logfDebug("> | Enabling module %s...", moduleName);
+                Log.logfDebug("| Enabling module %s...", moduleName);
                 GuildModule guildModule = module.newInstance(setting);
                 activeGuildModules.get(guildId).put(moduleName,subscribeModule(guildModule));
             } else { // Should be disabled.
                 if (!activeGuildModules.get(guildId).containsKey(moduleName))  // Already disabled
                     return;
-                Log.logfDebug("> | Disabling module %s...", moduleName);
+                Log.logfDebug("| Disabling module %s...", moduleName);
                 activeGuildModules.get(guildId).remove(moduleName).dispose();
             }
         });

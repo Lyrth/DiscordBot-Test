@@ -21,6 +21,7 @@ public class Commands {
             new Usage(),
 
             // General
+            new lyr.testbot.commands.general.Commands(),
             new Help(),
             new Me(),
             new Ping()
