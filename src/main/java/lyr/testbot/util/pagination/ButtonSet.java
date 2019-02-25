@@ -32,11 +32,11 @@ public enum ButtonSet {
         return this;
     }
 
-    public Mono<Message> reactTo(Mono<Message> message){
-
-        return Flux.fromIterable(reactions.values())
-            .flatMap(r -> message.doOnNext(Message::removeAllReactions).flatMap(m -> m.addReaction(r)))
-            .then(message);
+    public Mono<Message> reactTo(Message message){
+        return message.removeAllReactions()
+            .thenMany(Flux.fromIterable(reactions.values()))
+            .flatMap(message::addReaction)
+            .then(Mono.just(message));
     }
 
     public ReactionEmoji reaction(String emoji){

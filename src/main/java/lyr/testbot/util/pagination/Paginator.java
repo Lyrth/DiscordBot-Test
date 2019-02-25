@@ -56,7 +56,7 @@ public class Paginator {
                     )
                 )
             )
-            .publish(buttonSet::reactTo);
+            .flatMap(buttonSet::reactTo);
     }
 
     public static Mono<Void> onReactRemove(ReactionRemoveEvent e){
