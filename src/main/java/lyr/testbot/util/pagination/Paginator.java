@@ -77,7 +77,7 @@ public class Paginator {
             return Mono.when(
                 e.getMessage()
                     .filter(m -> !pag.isToggle(e.getEmoji()))
-                    .flatMap(m -> m.removeReaction(e.getEmoji(),e.getUserId())),
+                    .flatMap(m -> m.removeReaction(e.getEmoji(),e.getUserId())),  // TODO: handle missing react remove perms
                 Mono.just(e.getEmoji())
                     .doOnNext(r -> {
                         if (pag.isToggle(r)) pag.setToggleState(r,true);
