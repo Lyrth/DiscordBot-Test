@@ -14,6 +14,7 @@ import reactor.core.scheduler.Schedulers;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 public class Paginator {
 
@@ -23,6 +24,14 @@ public class Paginator {
     private static ConcurrentHashMap<Snowflake,PaginatedObject> pagMessages = new ConcurrentHashMap<>();
 
     private static Scheduler scheduler = Schedulers.single();
+
+    public static void editPaginatedObject(Snowflake messageId, Consumer<PaginatedObject> modifier){
+        modifier.accept(pagMessages.get(messageId));
+    }
+
+    public static void removePaginatedObject(Snowflake messageId){
+        pagMessages.remove(messageId);
+    }
 
     public static Mono<Message> paginate(Mono<MessageChannel> channel, List<Embed> pages){
         return paginate(channel, pages, "");
@@ -50,6 +59,7 @@ public class Paginator {
                     new PaginatedObject(m, pages, messageContent, buttonSet, pag ->
                         Mono.delay(Duration.ofSeconds(CANCEL_DELAY))
                             .map(i -> pag)
+                            .filter(p -> pagMessages.containsKey(p.getId()))
                             .doOnNext(p -> pagMessages.remove(p.getId()))
                             .flatMap(PaginatedObject::cancel)
                             .subscribe()
@@ -74,16 +84,17 @@ public class Paginator {
     public static Mono<Void> onReact(ReactionAddEvent e){
         if (pagMessages.containsKey(e.getMessageId())){
             final PaginatedObject pag = pagMessages.get(e.getMessageId());
-            return Mono.when(
-                e.getMessage()
-                    .filter(m -> !pag.isToggle(e.getEmoji()))
-                    .flatMap(m -> m.removeReaction(e.getEmoji(),e.getUserId())),  // TODO: handle missing react remove perms
-                Mono.just(e.getEmoji())
+            return e.getMessage()
+                    .flatMap(m -> {
+                        if (!pag.isToggle(e.getEmoji()))
+                            return m.removeReaction(e.getEmoji(),e.getUserId());
+                        else return Mono.just(m);
+                    })  // TODO: handle missing react remove perms
+                    .thenReturn(e.getEmoji())
                     .doOnNext(r -> {
                         if (pag.isToggle(r)) pag.setToggleState(r,true);
                     })
-                    .flatMap(pag::onReact)
-            );
+                    .flatMap(pag::onReact);
         } else {
             return Mono.empty();
         }

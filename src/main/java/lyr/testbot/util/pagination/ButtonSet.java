@@ -15,6 +15,7 @@ public enum ButtonSet {
     // "track_previous","play_pause","track_next","stop_button"
     PLAYER("black_left_pointing_double_triangle_with_vertical_bar","black_right_pointing_triangle_with_double_vertical_bar","black_right_pointing_double_triangle_with_vertical_bar","black_square_for_stop"),
     NUM_TEN("one","two","three","four","five","six","seven","eight","nine","keycap_ten"),
+    YES_NO("white_check_mark","x"),
     NONE(),
     ;
     public static final ButtonSet DEFAULT = PAGE_NAV;
@@ -30,6 +31,18 @@ public enum ButtonSet {
             reactions.put(b, StringUtil.getReactionEmoji(b));
         }
         return this;
+    }
+
+    public ButtonSet append(String... buttons){
+        if (reactions == null) reactions = new LinkedHashMap<>();
+        for (String b : buttons) {
+            reactions.put(b, StringUtil.getReactionEmoji(b));
+        }
+        return this;
+    }
+
+    public String[] getButtons(){
+        return reactions.keySet().toArray(new String[0]);
     }
 
     public Mono<Message> reactTo(Message message){

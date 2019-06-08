@@ -4,6 +4,7 @@ import discord4j.core.object.entity.Message;
 import discord4j.core.object.reaction.ReactionEmoji;
 import discord4j.core.object.util.Snowflake;
 import lyr.testbot.objects.builder.Embed;
+import lyr.testbot.util.Log;
 import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
 
@@ -11,8 +12,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
 
-class PaginatedObject {
+public class PaginatedObject {
     private Message message;
+    private Snowflake id;
     private List<Embed> pages;
     private String messageContent;
     private ButtonSet buttonSet;
@@ -21,6 +23,9 @@ class PaginatedObject {
     private Disposable cancelTimer;
 
     private HashMap<ReactionEmoji, Function<Message, Mono<Message>>> actions = new HashMap<>();
+    private Function<Message, Mono<Message>> onCancel = Mono::just;
+
+    boolean canceled = false;
 
     // keyExists : reaction is toggle ; value : toggle state, false: not pressed
     private HashMap<ReactionEmoji,Boolean> toggleReactions = new HashMap<>();
@@ -29,6 +34,7 @@ class PaginatedObject {
 
     PaginatedObject(Message m, List<Embed> pages, String messageContent, ButtonSet buttonSet, Function<PaginatedObject, Disposable> cancelTask){
         this.message = m;
+        this.id = m.getId();
         this.pages = pages;
         this.messageContent = messageContent;
         this.buttonSet = buttonSet;
@@ -62,7 +68,11 @@ class PaginatedObject {
     }
 
     public Mono<Void> cancel(){
-        return message.removeAllReactions();
+        if (canceled) return Mono.empty();
+        canceled = true;
+        Log.log("Cancelling");
+        Paginator.removePaginatedObject(id);
+        return message.removeAllReactions().then(onCancel.apply(message)).then();
     }
 
     public Mono<Void> onReact(ReactionEmoji emoji){
@@ -76,6 +86,10 @@ class PaginatedObject {
         ReactionEmoji reactionEmoji = buttonSet.reaction(reaction);
         if (reactionEmoji == null) return;
         actions.put(reactionEmoji,action);
+    }
+
+    public void setOnCancel(Function<Message, Mono<Message>> onCancel){
+        this.onCancel = onCancel;
     }
 
     public Mono<Message> prev(Message message){
@@ -100,6 +114,6 @@ class PaginatedObject {
     }
 
     public Snowflake getId() {
-        return message.getId();
+        return id;
     }
 }

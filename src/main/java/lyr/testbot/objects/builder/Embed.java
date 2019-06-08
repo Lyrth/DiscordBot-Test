@@ -87,8 +87,18 @@ public class Embed implements Consumer<EmbedCreateSpec> {
         return this;
     }
 
+    public Embed addField(String name, String value){
+        embedSpec = embedSpec.andThen(s -> s.addField(name, value, false));
+        return this;
+    }
+
     @Override
     public void accept(EmbedCreateSpec embedCreateSpec) {
         embedSpec.accept(embedCreateSpec);
+    }
+
+    @Override
+    public Embed clone(){
+        return new Embed(embedSpec);
     }
 }
