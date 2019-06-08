@@ -20,6 +20,8 @@ public class Commands {
             new Test(),
             new Usage(),
 
+            new Shop(),
+
             // General
             new lyr.testbot.commands.general.Commands(),
             new Help(),
