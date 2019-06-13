@@ -4,7 +4,7 @@ import discord4j.core.object.util.Snowflake;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.core.spec.MessageCreateSpec;
 
-import javax.annotation.Nullable;
+import reactor.util.annotation.Nullable;
 import java.awt.Color;
 import java.io.InputStream;
 import java.time.Instant;
