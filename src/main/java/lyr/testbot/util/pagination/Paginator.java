@@ -62,6 +62,7 @@ public class Paginator {
                             .filter(p -> pagMessages.containsKey(p.getId()))
                             .doOnNext(p -> pagMessages.remove(p.getId()))
                             .flatMap(PaginatedObject::cancel)
+                            .onErrorContinue((e,o)->{})
                             .subscribe()
                     )
                 )

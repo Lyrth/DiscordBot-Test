@@ -41,6 +41,9 @@ public class CommandHandler {
                         )
                 )
             )
+            .onErrorResume(e -> mEvent.getMessage().getChannel()
+                    .flatMap(ch -> ch.createMessage(e.getMessage()).retry(3,t -> !(t instanceof ClientException))))
+            .onErrorContinue((e,o)->{})
             .then();
     }
 
