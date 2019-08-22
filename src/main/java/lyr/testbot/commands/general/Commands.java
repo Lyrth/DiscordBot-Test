@@ -2,6 +2,7 @@ package lyr.testbot.commands.general;
 
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.MessageChannel;
+import lyr.testbot.annotations.CommandInfo;
 import lyr.testbot.enums.CommandType;
 import lyr.testbot.objects.CommandArgs;
 import lyr.testbot.objects.CommandObject;
@@ -15,6 +16,13 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
+@CommandInfo(
+    name = "commands",
+    aliases = {"commandlist", "commandslist", "listcommands"},
+    type = CommandType.GENERAL,
+    desc = "Show all commands.",
+    usage = "commands"
+)
 public class Commands extends Command {
 
     public Mono<Reply> execute(CommandObject command){
@@ -71,7 +79,7 @@ public class Commands extends Command {
     public String getUsage(){
         return "commands";
     }
-    public int getNumArgs(){
+    public int getMinArgs(){
         return 0;
     }
 

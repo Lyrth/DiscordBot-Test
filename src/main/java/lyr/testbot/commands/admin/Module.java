@@ -1,6 +1,7 @@
 package lyr.testbot.commands.admin;
 
 import discord4j.core.object.entity.Guild;
+import lyr.testbot.annotations.CommandInfo;
 import lyr.testbot.enums.CommandType;
 import lyr.testbot.objects.CommandArgs;
 import lyr.testbot.objects.CommandObject;
@@ -8,6 +9,14 @@ import lyr.testbot.objects.builder.Reply;
 import lyr.testbot.templates.Command;
 import reactor.core.publisher.Mono;
 
+@CommandInfo(
+    name = "module",
+    aliases = {"modules", "mod"},
+    type = CommandType.ADMIN,
+    desc = "Enable or disable a module.",
+    usage = "module [enable/disable] (moduleName)",
+    minArgs = 1
+)
 public class Module extends Command {
 
     public Mono<Reply> execute(CommandObject command){
@@ -40,21 +49,5 @@ public class Module extends Command {
         }
         return Reply.format("Module **%s** not found.",
             args.getRaw().replaceFirst("^((enable|disable)\\s+)?(\\S+).*", "$3"));
-    }
-
-    public String getName(){
-        return "module";
-    }
-    public CommandType getType(){
-        return CommandType.ADMIN;
-    }
-    public String getDesc(){
-        return "Enable or disable a module.";
-    }
-    public String getUsage(){
-        return "module [enable/disable] (moduleName)";
-    }
-    public int getNumArgs(){
-        return 1;
     }
 }

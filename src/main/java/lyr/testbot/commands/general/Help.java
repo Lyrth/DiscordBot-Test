@@ -1,5 +1,6 @@
 package lyr.testbot.commands.general;
 
+import lyr.testbot.annotations.CommandInfo;
 import lyr.testbot.enums.CommandType;
 import lyr.testbot.objects.CommandArgs;
 import lyr.testbot.objects.CommandObject;
@@ -10,6 +11,13 @@ import reactor.core.publisher.Mono;
 import java.awt.*;
 import java.util.Map;
 
+@CommandInfo(
+    name = "help",
+    type = CommandType.GENERAL,
+    desc = "Show some help about a command.",
+    usage = "help (command name)",
+    minArgs = 1
+)
 public class Help extends Command {
 
     public Mono<Reply> execute(CommandObject command){
@@ -33,21 +41,4 @@ public class Help extends Command {
             return Reply.with("Command **" + args.get(0) + "** does not exist.");
         }
     }
-
-    public String getName(){
-        return "help";
-    }
-    public CommandType getType(){
-        return CommandType.GENERAL;
-    }
-    public String getDesc(){
-        return "Show some help about a command.";
-    }
-    public String getUsage(){
-        return "help (command name)";
-    }
-    public int getNumArgs(){
-        return 1;
-    }
-
 }

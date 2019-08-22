@@ -1,12 +1,19 @@
 package lyr.testbot.commands.admin;
 
 import discord4j.core.object.entity.User;
+import lyr.testbot.annotations.CommandInfo;
 import lyr.testbot.enums.CommandType;
 import lyr.testbot.objects.CommandObject;
 import lyr.testbot.objects.builder.Reply;
 import lyr.testbot.templates.Command;
 import reactor.core.publisher.Mono;
 
+@CommandInfo(
+    name = "test",
+    type = CommandType.ADMIN,
+    desc = "Show some test.",
+    usage = "test"
+)
 public class Test extends Command {
 
     public Mono<Reply> execute(CommandObject command){
@@ -33,21 +40,5 @@ public class Test extends Command {
             .collectList()
             .then(Mono.empty());
             */
-    }
-
-    public String getName(){
-        return "test";
-    }
-    public CommandType getType(){
-        return CommandType.ADMIN;
-    }
-    public String getDesc(){
-        return "Show some test.";
-    }
-    public String getUsage(){
-        return "test";
-    }
-    public int getNumArgs(){
-        return 0;
     }
 }

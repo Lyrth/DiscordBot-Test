@@ -3,6 +3,7 @@ package lyr.testbot.commands.admin;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.User;
+import lyr.testbot.annotations.CommandInfo;
 import lyr.testbot.enums.CommandType;
 import lyr.testbot.objects.CommandObject;
 import lyr.testbot.objects.builder.Embed;
@@ -19,6 +20,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+@CommandInfo(
+    name = "shop",
+    type = CommandType.ADMIN,
+    desc = "Show some shop.",
+    usage = "shop"
+)
 public class Shop extends Command {
 
     public Mono<Reply> execute(CommandObject command){
@@ -88,21 +95,5 @@ public class Shop extends Command {
                 pag.setAction("white_check_mark",msg -> pag.cancel().then(msg.edit(spec -> spec.setEmbed(emb.clone().setDescription("_**Lyrthras** has bought **Potato** for 3 Credits._")))));
                 pag.setAction("x",msg -> pag.cancel().then(msg.delete()).thenReturn(msg));
             }));
-    }
-
-    public String getName(){
-        return "shop";
-    }
-    public CommandType getType(){
-        return CommandType.ADMIN;
-    }
-    public String getDesc(){
-        return "Show some test.";
-    }
-    public String getUsage(){
-        return "shop";
-    }
-    public int getNumArgs(){
-        return 0;
     }
 }

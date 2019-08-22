@@ -1,11 +1,19 @@
 package lyr.testbot.commands.general;
 
+import lyr.testbot.annotations.CommandInfo;
 import lyr.testbot.enums.CommandType;
 import lyr.testbot.objects.CommandObject;
 import lyr.testbot.objects.builder.Reply;
 import lyr.testbot.templates.Command;
 import reactor.core.publisher.Mono;
 
+@CommandInfo(
+    name = "me",
+    aliases = {"profile"},
+    type = CommandType.GENERAL,
+    desc = "Show some info.",
+    usage = "me"
+)
 public class Me extends Command {
 
     public Mono<Reply> execute(CommandObject command){
@@ -21,21 +29,4 @@ public class Me extends Command {
                 member.getJoinTime())
         );
     }
-
-    public String getName(){
-        return "me";
-    }
-    public CommandType getType(){
-        return CommandType.GENERAL;
-    }
-    public String getDesc(){
-        return "Show some info.";
-    }
-    public String getUsage(){
-        return "me";
-    }
-    public int getNumArgs(){
-        return 0;
-    }
-
 }

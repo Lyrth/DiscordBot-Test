@@ -1,5 +1,6 @@
 package lyr.testbot.commands.general;
 
+import lyr.testbot.annotations.CommandInfo;
 import lyr.testbot.enums.CommandType;
 import lyr.testbot.objects.CommandObject;
 import lyr.testbot.objects.builder.Embed;
@@ -11,6 +12,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+@CommandInfo(
+    name = "ping",
+    type = CommandType.GENERAL,
+    desc = "Pings.",
+    usage = "ping"
+)
 public class Ping extends Command {
 
     public Mono<Reply> execute(CommandObject command){
@@ -32,21 +39,4 @@ public class Ping extends Command {
             )
             .thenReturn(Reply.empty());
     }
-
-    public String getName(){
-        return "ping";
-    }
-    public CommandType getType(){
-        return CommandType.GENERAL;
-    }
-    public String getDesc(){
-        return "Pings.";
-    }
-    public String getUsage(){
-        return "ping";
-    }
-    public int getNumArgs(){
-        return 0;
-    }
-
 }

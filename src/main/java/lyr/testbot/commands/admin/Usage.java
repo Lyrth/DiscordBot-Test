@@ -1,11 +1,18 @@
 package lyr.testbot.commands.admin;
 
+import lyr.testbot.annotations.CommandInfo;
 import lyr.testbot.enums.CommandType;
 import lyr.testbot.objects.CommandObject;
 import lyr.testbot.objects.builder.Reply;
 import lyr.testbot.templates.Command;
 import reactor.core.publisher.Mono;
 
+@CommandInfo(
+    name = "usage",
+    type = CommandType.ADMIN,
+    desc = "Show some usage.",
+    usage = "usage"
+)
 public class Usage extends Command {
 
     public Mono<Reply> execute(CommandObject command){
@@ -24,21 +31,5 @@ public class Usage extends Command {
                 lyr.testbot.util.Usage.getRuntimeTotalMemory(),lyr.testbot.util.Usage.getRuntimeMaxMemory()
             )
         );
-    }
-
-    public String getName(){
-        return "usage";
-    }
-    public CommandType getType(){
-        return CommandType.ADMIN;
-    }
-    public String getDesc(){
-        return "Show some usage.";
-    }
-    public String getUsage(){
-        return "usage";
-    }
-    public int getNumArgs(){
-        return 0;
     }
 }
