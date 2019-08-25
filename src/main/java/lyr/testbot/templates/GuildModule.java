@@ -8,8 +8,9 @@ import discord4j.core.event.domain.message.*;
 import discord4j.core.event.domain.role.*;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.util.Snowflake;
-import lyr.testbot.event.OneHourEvent;
-import lyr.testbot.event.TenSecondEvent;
+import lyr.testbot.event.*;
+import lyr.testbot.modules.guild.BadGuildModule;
+import lyr.testbot.util.Log;
 import lyr.testbot.util.config.GuildSetting;
 import reactor.core.publisher.Mono;
 
@@ -19,7 +20,7 @@ public abstract class GuildModule extends Module {
     protected Snowflake guildId;
     protected GuildSetting guildSettings;
 
-    public abstract GuildModule newInstance(GuildSetting guildSettings);
+    //public abstract GuildModule newInstance(GuildSetting guildSettings);
     public GuildModule(GuildSetting guildSettings){
         this.guild = guildSettings.guild;
         this.guildSettings = guildSettings;
@@ -27,13 +28,29 @@ public abstract class GuildModule extends Module {
     }
     public GuildModule(){}
 
-    public static final Mono<Void> VOID = Mono.empty();
+    public GuildModule newInstance(GuildSetting guildSettings){
+        try {
+            return this.getClass()
+                .getConstructor(GuildSetting.class)
+                .newInstance(guildSettings);
+        } catch (Exception e) {
+            Log.logError(">>> An error has occured on GuildModule instantiation.");
+            e.printStackTrace();
+            Log.logError(">>> Module Name: " + this.getName());
+        }
+        return new BadGuildModule();
+    }
+
+    private static final Mono<Void> VOID = Mono.empty();
 
     /** Interval Events **/
     public Mono<Void> on(TenSecondEvent e){
         return VOID;
     }
     public Mono<Void> on(OneHourEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(DailyEvent e){
         return VOID;
     }
 

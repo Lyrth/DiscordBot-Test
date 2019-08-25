@@ -3,7 +3,6 @@ package lyr.testbot.modules.guild;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import lyr.testbot.templates.GuildModule;
 import lyr.testbot.util.Log;
-import lyr.testbot.util.config.GuildSetting;
 import reactor.core.publisher.Mono;
 
 import java.util.Optional;
@@ -31,11 +30,5 @@ public class SettingTest extends GuildModule {
             Log.logDebug("BBB!");
             return Mono.empty();
         }
-    }
-
-    public SettingTest(){}
-    public SettingTest(GuildSetting guildSettings){ super(guildSettings); }
-    public SettingTest newInstance(GuildSetting guildSettings){
-        return new SettingTest(guildSettings);
     }
 }

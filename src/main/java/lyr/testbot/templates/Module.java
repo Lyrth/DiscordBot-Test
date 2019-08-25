@@ -8,15 +8,11 @@ import discord4j.core.event.domain.guild.*;
 import discord4j.core.event.domain.lifecycle.*;
 import discord4j.core.event.domain.message.*;
 import discord4j.core.event.domain.role.*;
-import lyr.testbot.event.OneHourEvent;
-import lyr.testbot.event.TenSecondEvent;
+import lyr.testbot.event.*;
 import lyr.testbot.main.Main;
 import lyr.testbot.objects.ClientObject;
 import reactor.core.Disposable;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.time.Duration;
 
 public abstract class Module {
 
@@ -128,11 +124,11 @@ public abstract class Module {
             case "MessageBulkDeleteEvent":
                 return dispatcher.on(MessageBulkDeleteEvent.class).flatMap(this::on).subscribe();
             case "TenSecondEvent":
-                return Flux.interval(Duration.ofSeconds(1),Duration.ofSeconds(10))
-                    .map(TenSecondEvent::new).flatMap(this::on).subscribe();
+                return TenSecondEvent.onThis().flatMap(this::on).subscribe();
             case "OneHourEvent":
-                return Flux.interval(Duration.ofSeconds(1),Duration.ofHours(1))
-                    .map(OneHourEvent::new).flatMap(this::on).subscribe();
+                return OneHourEvent.onThis().flatMap(this::on).subscribe();
+            case "DailyEvent":
+                return DailyEvent.onThis().flatMap(this::on).subscribe();
             default:
                 throw new IllegalArgumentException("Event " + eventName + " does not exist.");
         }
@@ -141,6 +137,7 @@ public abstract class Module {
     /** Interval Events **/
     abstract Mono<Void> on(TenSecondEvent e);
     abstract Mono<Void> on(OneHourEvent e);
+    abstract Mono<Void> on(DailyEvent e);
 
 
     /** Other Events **/

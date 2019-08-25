@@ -6,8 +6,7 @@ import discord4j.core.event.domain.guild.*;
 import discord4j.core.event.domain.lifecycle.*;
 import discord4j.core.event.domain.message.*;
 import discord4j.core.event.domain.role.*;
-import lyr.testbot.event.OneHourEvent;
-import lyr.testbot.event.TenSecondEvent;
+import lyr.testbot.event.*;
 import reactor.core.publisher.Mono;
 
 public abstract class BotModule extends Module {
@@ -19,6 +18,9 @@ public abstract class BotModule extends Module {
         return VOID;
     }
     public Mono<Void> on(OneHourEvent e){
+        return VOID;
+    }
+    public Mono<Void> on(DailyEvent e){
         return VOID;
     }
 

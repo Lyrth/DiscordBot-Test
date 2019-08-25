@@ -4,7 +4,6 @@ import discord4j.core.event.domain.channel.TypingStartEvent;
 import discord4j.core.object.entity.User;
 import lyr.testbot.templates.GuildModule;
 import lyr.testbot.util.Log;
-import lyr.testbot.util.config.GuildSetting;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
@@ -21,11 +20,5 @@ public class TypingTest extends GuildModule {
             ).doOnError(err ->
                 Log.logfError("REEEE CANNOT SEND MESSAGE TO %s ;-;", event.getUserId().asString())
             ).then();
-    }
-
-    public TypingTest(){}
-    public TypingTest(GuildSetting guildSettings){ super(guildSettings); }
-    public TypingTest newInstance(GuildSetting guildSettings){
-        return new TypingTest(guildSettings);
     }
 }
