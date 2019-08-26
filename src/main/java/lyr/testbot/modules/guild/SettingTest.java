@@ -1,16 +1,20 @@
 package lyr.testbot.modules.guild;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import lyr.testbot.annotations.ModuleInfo;
 import lyr.testbot.templates.GuildModule;
 import lyr.testbot.util.Log;
 import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 
+@ModuleInfo(
+    desc = "Test for settings."
+)
 public class SettingTest extends GuildModule {
 
     public Mono<Void> on(MessageCreateEvent event){
-        if (!event.getMessage().getContent().isPresent()) return Mono.empty();
+        if (!event.getMessage().getContent().isPresent()) return Mono.empty();  // TODO: dedicate command
         String msg = event.getMessage().getContent().get();
 
         String[] split = msg.split(" ");

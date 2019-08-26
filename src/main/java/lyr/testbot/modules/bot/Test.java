@@ -1,10 +1,14 @@
 package lyr.testbot.modules.bot;
 
 import discord4j.core.event.domain.lifecycle.*;
+import lyr.testbot.annotations.ModuleInfo;
 import lyr.testbot.templates.BotModule;
 import lyr.testbot.util.Log;
 import reactor.core.publisher.Mono;
 
+@ModuleInfo(
+    desc = "Test module."
+)
 public class Test extends BotModule {
 
     public Mono<Void> on(ReadyEvent event) {

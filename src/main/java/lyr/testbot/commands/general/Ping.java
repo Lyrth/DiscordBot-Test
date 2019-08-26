@@ -13,10 +13,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 @CommandInfo(
-    name = "ping",
     type = CommandType.GENERAL,
-    desc = "Pings.",
-    usage = "ping"
+    desc = "Pings."
 )
 public class Ping extends Command {
 

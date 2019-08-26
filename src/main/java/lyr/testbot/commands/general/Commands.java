@@ -17,11 +17,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 @CommandInfo(
-    name = "commands",
     aliases = {"commandlist", "commandslist", "listcommands"},
     type = CommandType.GENERAL,
-    desc = "Show all commands.",
-    usage = "commands"
+    desc = "Show all commands."
 )
 public class Commands extends Command {
 

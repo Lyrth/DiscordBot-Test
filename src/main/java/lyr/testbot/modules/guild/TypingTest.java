@@ -2,12 +2,16 @@ package lyr.testbot.modules.guild;
 
 import discord4j.core.event.domain.channel.TypingStartEvent;
 import discord4j.core.object.entity.User;
+import lyr.testbot.annotations.ModuleInfo;
 import lyr.testbot.templates.GuildModule;
 import lyr.testbot.util.Log;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 
+@ModuleInfo(
+    desc = "Test typing. DMs users so this bad lol."
+)
 public class TypingTest extends GuildModule {
 
     public Mono<Void> on(TypingStartEvent event){

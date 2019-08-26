@@ -8,10 +8,8 @@ import lyr.testbot.templates.Command;
 import reactor.core.publisher.Mono;
 
 @CommandInfo(
-    name = "usage",
     type = CommandType.ADMIN,
-    desc = "Show some usage.",
-    usage = "usage"
+    desc = "Show some usage."
 )
 public class Usage extends Command {
 

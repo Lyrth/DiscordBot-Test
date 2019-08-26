@@ -10,7 +10,6 @@ import lyr.testbot.templates.Command;
 import reactor.core.publisher.Mono;
 
 @CommandInfo(
-    name = "module",
     aliases = {"modules", "mod"},
     type = CommandType.ADMIN,
     desc = "Enable or disable a module.",

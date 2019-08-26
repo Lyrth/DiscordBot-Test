@@ -8,16 +8,36 @@ import discord4j.core.event.domain.guild.*;
 import discord4j.core.event.domain.lifecycle.*;
 import discord4j.core.event.domain.message.*;
 import discord4j.core.event.domain.role.*;
+import lyr.testbot.annotations.ModuleInfo;
 import lyr.testbot.event.*;
 import lyr.testbot.main.Main;
 import lyr.testbot.objects.ClientObject;
+import lyr.testbot.objects.annotstore.ModuleInfoObj;
 import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
 
+import java.util.Arrays;
+import java.util.List;
+
+@ModuleInfo(name = "__Module_Base__")
 public abstract class Module {
 
+    protected final ModuleInfoObj moduleInfo = new ModuleInfoObj(this.getClass());
+
     public String getName() {
-        return this.getClass().getSimpleName();
+        return moduleInfo.name();
+    }
+
+    public List<String> getAliases(){
+        return Arrays.asList(moduleInfo.aliases());
+    }
+
+    public String getDesc(){
+        return moduleInfo.desc();
+    }
+
+    public List<Class<Command>> getCommands(){
+        return Arrays.asList(moduleInfo.commands());
     }
 
     protected ClientObject getClient(){

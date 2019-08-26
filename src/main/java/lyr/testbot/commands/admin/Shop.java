@@ -2,14 +2,12 @@ package lyr.testbot.commands.admin;
 
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.MessageChannel;
-import discord4j.core.object.entity.User;
 import lyr.testbot.annotations.CommandInfo;
 import lyr.testbot.enums.CommandType;
 import lyr.testbot.objects.CommandObject;
 import lyr.testbot.objects.builder.Embed;
 import lyr.testbot.objects.builder.Reply;
 import lyr.testbot.templates.Command;
-import lyr.testbot.util.Log;
 import lyr.testbot.util.pagination.ButtonSet;
 import lyr.testbot.util.pagination.PaginatedObject;
 import lyr.testbot.util.pagination.Paginator;
@@ -21,10 +19,8 @@ import java.util.List;
 import java.util.function.Function;
 
 @CommandInfo(
-    name = "shop",
     type = CommandType.ADMIN,
-    desc = "Show some shop.",
-    usage = "shop"
+    desc = "Show some shop."
 )
 public class Shop extends Command {
 

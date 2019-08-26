@@ -9,10 +9,8 @@ import lyr.testbot.templates.Command;
 import reactor.core.publisher.Mono;
 
 @CommandInfo(
-    name = "test",
     type = CommandType.ADMIN,
-    desc = "Show some test.",
-    usage = "test"
+    desc = "Show some test."
 )
 public class Test extends Command {
 

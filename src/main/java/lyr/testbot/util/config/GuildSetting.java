@@ -23,7 +23,7 @@ public class GuildSetting {
 
     public GuildSetting(Snowflake guildId){
         this.guildId = guildId;
-        this.guild = Main.client.guilds.filter(guild -> guildId.equals(guild.getId())).single();
+        this.guild = Main.client.guilds.filter(guild -> guildId.equals(guild.getId())).next();
     }
 
     private boolean updateEnabledModules(){
@@ -49,7 +49,7 @@ public class GuildSetting {
         return enabledModules.remove(moduleName) && updateEnabledModules();
     }
 
-    // returns: true if module just activated, false if not.
+    // returns: true if module just activated, false if we disabled it.
     public boolean toggleModule(String moduleName){
         if(isModuleEnabled(moduleName)){
             disableModule(moduleName);

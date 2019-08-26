@@ -8,11 +8,9 @@ import lyr.testbot.templates.Command;
 import reactor.core.publisher.Mono;
 
 @CommandInfo(
-    name = "me",
     aliases = {"profile"},
     type = CommandType.GENERAL,
-    desc = "Show some info.",
-    usage = "me"
+    desc = "Show some info."
 )
 public class Me extends Command {
 

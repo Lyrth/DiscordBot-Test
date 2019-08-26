@@ -12,7 +12,6 @@ import java.awt.*;
 import java.util.Map;
 
 @CommandInfo(
-    name = "help",
     type = CommandType.GENERAL,
     desc = "Show some help about a command.",
     usage = "help (command name)",

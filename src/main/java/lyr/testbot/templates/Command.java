@@ -6,13 +6,16 @@ import lyr.testbot.enums.CommandType;
 import lyr.testbot.main.Main;
 import lyr.testbot.objects.ClientObject;
 import lyr.testbot.objects.CommandObject;
+import lyr.testbot.objects.annotstore.CommandInfoObj;
 import lyr.testbot.objects.builder.Reply;
 import lyr.testbot.util.config.GuildSetting;
 import reactor.core.publisher.Mono;
 
+import java.lang.annotation.Inherited;
 import java.util.Arrays;
 import java.util.List;
 
+@CommandInfo(name = "__Command_Base__")
 public abstract class Command {
 
 //    public abstract String getName();
@@ -22,7 +25,7 @@ public abstract class Command {
 //    public abstract String getUsage();
 //    public abstract int getMinArgs();
 
-    protected CommandInfo commandInfo = this.getClass().getAnnotation(CommandInfo.class);
+    protected final CommandInfoObj commandInfo = new CommandInfoObj(this.getClass());
 
     public String getName(){
         return commandInfo.name();
