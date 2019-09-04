@@ -5,6 +5,7 @@ import discord4j.rest.http.client.ClientException;
 import lyr.testbot.main.Main;
 import lyr.testbot.objects.CommandObject;
 import lyr.testbot.templates.Command;
+import lyr.testbot.util.Log;
 import reactor.core.publisher.Mono;
 
 import java.util.Collections;
@@ -44,6 +45,10 @@ public class CommandHandler {
             .onErrorResume(e -> mEvent.getMessage().getChannel()
                     .flatMap(ch -> ch.createMessage(e.getMessage()).retry(3,t -> !(t instanceof ClientException))))
             .onErrorContinue((e,o)->{})
+            .doOnError(err -> {
+                Log.logError(err.getMessage());
+                err.printStackTrace();
+            })
             .then();
     }
 

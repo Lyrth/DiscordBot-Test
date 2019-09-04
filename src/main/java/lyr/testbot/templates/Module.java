@@ -143,12 +143,14 @@ public abstract class Module {
                 return dispatcher.on(ReactionRemoveAllEvent.class).flatMap(this::on).subscribe();
             case "MessageBulkDeleteEvent":
                 return dispatcher.on(MessageBulkDeleteEvent.class).flatMap(this::on).subscribe();
+
             case "TenSecondEvent":
                 return TenSecondEvent.onThis().flatMap(this::on).subscribe();
             case "OneHourEvent":
                 return OneHourEvent.onThis().flatMap(this::on).subscribe();
             case "DailyEvent":
                 return DailyEvent.onThis().flatMap(this::on).subscribe();
+
             default:
                 throw new IllegalArgumentException("Event " + eventName + " does not exist.");
         }

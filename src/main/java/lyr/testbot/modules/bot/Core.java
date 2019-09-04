@@ -8,7 +8,6 @@ import discord4j.core.event.domain.message.ReactionRemoveEvent;
 import discord4j.core.object.util.Snowflake;
 import lyr.testbot.annotations.ModuleInfo;
 import lyr.testbot.handlers.CommandHandler;
-import lyr.testbot.main.Main;
 import lyr.testbot.templates.BotModule;
 import lyr.testbot.util.Log;
 import lyr.testbot.util.config.GuildConfig;
@@ -32,11 +31,7 @@ public class Core extends BotModule {
     }
 
     public Mono<Void> on(MessageCreateEvent event){
-        return commandHandler.handle(event)
-            .doOnError(err -> {
-                Log.logError(err.getMessage());
-                err.printStackTrace();
-            });
+        return commandHandler.handle(event);
     }
 
     public Mono<Void> on(ReactionAddEvent e) {
@@ -74,7 +69,7 @@ public class Core extends BotModule {
 
     public Mono<Void> on(GuildCreateEvent e) {
         Log.log("> New guild: ID " + e.getGuild().getId().asString() + ", Name: " + e.getGuild().getName());
-        Main.client.getGuildSettings().computeIfAbsent(e.getGuild().getId(), id -> {
+        getClient().getGuildSettings().computeIfAbsent(e.getGuild().getId(), id -> {
             GuildSetting setting = new GuildSetting(id);
             GuildConfig.updateGuildSettings(setting);
             return setting;

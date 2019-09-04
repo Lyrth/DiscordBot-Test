@@ -14,6 +14,8 @@ import lyr.testbot.util.Log;
 import lyr.testbot.util.config.GuildSetting;
 import reactor.core.publisher.Mono;
 
+import java.util.Optional;
+
 public abstract class GuildModule extends Module {
 
     protected Mono<Guild> guild;
@@ -21,24 +23,41 @@ public abstract class GuildModule extends Module {
     protected GuildSetting guildSettings;
 
     //public abstract GuildModule newInstance(GuildSetting guildSettings);
-    public GuildModule(GuildSetting guildSettings){
+    public GuildModule(){}
+
+    GuildModule setGuildSettings(GuildSetting guildSettings){
         this.guild = guildSettings.guild;
         this.guildSettings = guildSettings;
         this.guildId = guildSettings.guildId;
+        return this;
     }
-    public GuildModule(){}
 
     public GuildModule newInstance(GuildSetting guildSettings){
         try {
             return this.getClass()
-                .getConstructor(GuildSetting.class)
-                .newInstance(guildSettings);
+                .getConstructor()
+                .newInstance()
+                .setGuildSettings(guildSettings);
         } catch (Exception e) {
             Log.logError(">>> An error has occured on GuildModule instantiation.");
             e.printStackTrace();
             Log.logError(">>> Module Name: " + this.getName());
+            return new BadGuildModule();
         }
-        return new BadGuildModule();
+    }
+
+    protected String getSetting(String key){
+        return guildSettings.getModuleSetting(this.getName(), key);
+    }
+
+    protected String getSettingOrDefault(String key, String defaultValue){
+        return Optional.ofNullable(getSetting(key))
+            .filter(s -> !s.isEmpty())
+            .orElse(defaultValue);
+    }
+
+    protected void setSetting(String key, String value){
+        guildSettings.setModuleSetting(this.getName(), key, value);
     }
 
     private static final Mono<Void> VOID = Mono.empty();
