@@ -11,8 +11,6 @@ import lyr.testbot.util.ReflectionUtil;
 import lyr.testbot.util.config.GuildSetting;
 import reactor.core.Disposable;
 import reactor.core.Disposables;
-import reactor.core.scheduler.Scheduler;
-import reactor.core.scheduler.Schedulers;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -73,6 +71,9 @@ public class EventHandler {
     private Disposable.Composite subscribeModule(Module module){
         List<Method> methods = ReflectionUtil.getDeclaredMethodsByName(module.getClass(),"on");
         Disposable.Composite subscribers = Disposables.composite();
+        // automatically add command handling
+        if (module.getCommands().size() > 0)
+            subscribers.add(module.subscribeTo(eventDispatcher,"HandleCommand"));
         for (Method m : methods){
             subscribers.add(
                 module.subscribeTo(eventDispatcher,m.getParameterTypes()[0].getSimpleName())

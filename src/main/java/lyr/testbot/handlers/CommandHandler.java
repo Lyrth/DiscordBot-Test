@@ -64,7 +64,7 @@ public class CommandHandler {
     }
 
     public Optional<Command> getCommand(String name) {
-        return Optional.ofNullable(commands.get(name));
+        return Optional.ofNullable(commands.get(name.toLowerCase()));
     }
 
     public Map<String, Command> getCommands() {

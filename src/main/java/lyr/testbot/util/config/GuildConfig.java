@@ -52,7 +52,11 @@ public class GuildConfig {
     @SuppressWarnings("unchecked")  // Gson casts to HashMap<String,String> just fine
     public static HashMap<String,HashMap<String,String>> readModulesSettings(String guildDir){
         HashMap<String,HashMap<String,String>> map = new HashMap<>();
-        Map<String, GuildModule> availableGuildModules = Main.client.availableGuildModules.get();
+        Map<String, GuildModule> availableGuildModules;
+        if (Main.client.availableGuildModules != null)
+            availableGuildModules = Main.client.availableGuildModules.get();
+        else
+            availableGuildModules = new HashMap<>();
 
         String[] files = FileUtil.listFiles(guildDir + "/" + MODULE_CONFIG_DIR);
         if (files == null){  // modules dir doesn't exist

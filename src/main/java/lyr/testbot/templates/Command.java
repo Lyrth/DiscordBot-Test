@@ -11,19 +11,12 @@ import lyr.testbot.objects.builder.Reply;
 import lyr.testbot.util.config.GuildSetting;
 import reactor.core.publisher.Mono;
 
-import java.lang.annotation.Inherited;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @CommandInfo(name = "__Command_Base__")
 public abstract class Command {
-
-//    public abstract String getName();
-//    public abstract String[] getAliases();
-//    public abstract CommandType getType();
-//    public abstract String getDesc();
-//    public abstract String getUsage();
-//    public abstract int getMinArgs();
 
     protected final CommandInfoObj commandInfo = new CommandInfoObj(this.getClass());
 
@@ -54,6 +47,20 @@ public abstract class Command {
     public String getFormattedUsage(){
         return getUsage().replaceAll("([(\\[])","`$1")
             .replaceAll("([)\\]])","$1`");
+    }
+
+    public static String getSetting(Snowflake guildId, String module, String key){
+        return getGuildSettingsFor(guildId).getModuleSetting(module, key);
+    }
+
+    protected String getSettingOrDefault(Snowflake guildId, String module, String key, String defaultValue){
+        return Optional.ofNullable(getSetting(guildId, module, key))
+            .filter(s -> !s.isEmpty())
+            .orElse(defaultValue);
+    }
+
+    protected void setSetting(Snowflake guildId, String module, String key, String value){
+        getGuildSettingsFor(guildId).setModuleSetting(module, key, value);
     }
 
     protected static ClientObject getClient(){

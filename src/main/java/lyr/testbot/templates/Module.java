@@ -10,19 +10,40 @@ import discord4j.core.event.domain.message.*;
 import discord4j.core.event.domain.role.*;
 import lyr.testbot.annotations.ModuleInfo;
 import lyr.testbot.event.*;
+import lyr.testbot.handlers.CommandHandler;
 import lyr.testbot.main.Main;
 import lyr.testbot.objects.ClientObject;
 import lyr.testbot.objects.annotstore.ModuleInfoObj;
+import lyr.testbot.util.Log;
 import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @ModuleInfo(name = "__Module_Base__")
 public abstract class Module {
 
+    private CommandHandler commandHandler;
     protected final ModuleInfoObj moduleInfo = new ModuleInfoObj(this.getClass());
+
+
+    {
+        Map<String,Command> commands = new HashMap<>();
+        try {
+            for (Class<Command> command : moduleInfo.commands()) {
+                Command com = command.newInstance();
+                Log.logDebug(com.getName());
+                commands.put(com.getName().toLowerCase(), com);
+            }
+        } catch (Exception e) {
+            Log.logError(">>> Module base class initialization fail.");
+            e.printStackTrace();
+        }
+        commandHandler = new CommandHandler(commands);
+    }
 
     public String getName() {
         return moduleInfo.name();
@@ -42,6 +63,10 @@ public abstract class Module {
 
     protected ClientObject getClient(){
         return Main.client;
+    }
+
+    private Mono<Void> handleCommands(MessageCreateEvent event){
+        return commandHandler.handle(event);
     }
 
     public Disposable subscribeTo(EventDispatcher dispatcher, String eventName){
@@ -150,6 +175,9 @@ public abstract class Module {
                 return OneHourEvent.onThis().flatMap(this::on).subscribe();
             case "DailyEvent":
                 return DailyEvent.onThis().flatMap(this::on).subscribe();
+
+            case "HandleCommand":
+                return dispatcher.on(MessageCreateEvent.class).flatMap(this::handleCommands).subscribe();
 
             default:
                 throw new IllegalArgumentException("Event " + eventName + " does not exist.");

@@ -48,7 +48,6 @@ public class ClientObject {
         this.config = config;
         this.eventDispatcher = client.getEventDispatcher();
         commands = new Commands();
-        availableGuildModules = new GuildModules();
     }
 
     public void init(){
@@ -57,6 +56,7 @@ public class ClientObject {
         guilds = client.getGuilds();
         botUser = client.getSelf();
         botUser.doOnNext(user -> selfId = user.getId()).block();
+        availableGuildModules = new GuildModules();
         HashMap<Snowflake,GuildSetting> configs = GuildConfig.readAllConfig();
         guildSettings = (HashMap<Snowflake, GuildSetting>)  // TODO
             guilds
@@ -71,6 +71,7 @@ public class ClientObject {
         //   .block();
         //applicationInfo = client.getApplicationInfo().block();
         Log.log("> Done client init.");
+        // TODO: Shutdown Hook
     }
 
     public DiscordClient getDiscordClient() {

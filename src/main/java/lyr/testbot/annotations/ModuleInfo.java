@@ -11,6 +11,6 @@ public @interface ModuleInfo {
     String name() default "\0";
     String[] aliases() default {};  // used for module command
     String desc() default "";
-    Class<Command>[] commands() default {};
+    Class<? extends Command>[] commands() default {};
     boolean essential() default false;
 }
