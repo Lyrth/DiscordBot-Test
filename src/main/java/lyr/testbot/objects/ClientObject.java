@@ -18,7 +18,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
 
-//import discord4j.core.object.entity.ApplicationInfo;
+import discord4j.core.object.entity.ApplicationInfo;
 //import discord4j.core.object.entity.GuildChannel;
 
 public class ClientObject {
@@ -32,9 +32,11 @@ public class ClientObject {
     private EventDispatcher eventDispatcher;
 
     public Snowflake selfId;
+    public Snowflake ownerId;
 
     private Mono<User> botUser;
-    //private Mono<ApplicationInfo> applicationInfo;
+    private Mono<User> owner;
+    private Mono<ApplicationInfo> applicationInfo;
 
     public Flux<Guild> guilds;
 
@@ -54,10 +56,17 @@ public class ClientObject {
         Log.log("> Doing client init things.");
         this.eventHandler = new EventHandler(eventDispatcher);
         guilds = client.getGuilds();
+
         botUser = client.getSelf();
         botUser.doOnNext(user -> selfId = user.getId()).block();
+
+        applicationInfo = client.getApplicationInfo();
+        owner = applicationInfo.flatMap(ApplicationInfo::getOwner);
+        ownerId = applicationInfo.map(ApplicationInfo::getOwnerId).block();
+
         availableGuildModules = new GuildModules();
         HashMap<Snowflake,GuildSetting> configs = GuildConfig.readAllConfig();
+        botModules = new BotModules();
         guildSettings = (HashMap<Snowflake, GuildSetting>)  // TODO
             guilds
                 .map(Guild::getId)
@@ -65,13 +74,15 @@ public class ClientObject {
                     guildId -> /* Key */ guildId,
                     guildId -> /*Value*/ configs.getOrDefault(guildId, new GuildSetting(guildId))
                 ).block();
-        botModules = new BotModules();
         //guilds.flatMap(Guild::getChannels)
         //    .collectMap(GuildChannel::getId, GuildChannel::getGuildId,() -> channelToGuildMapping)
         //   .block();
-        //applicationInfo = client.getApplicationInfo().block();
         Log.log("> Done client init.");
         // TODO: Shutdown Hook
+    }
+
+    public void shutdown(){
+        System.exit(0);
     }
 
     public DiscordClient getDiscordClient() {
@@ -92,6 +103,14 @@ public class ClientObject {
 
     public Mono<User> getBotUser() {
         return botUser;
+    }
+
+    public Mono<User> getOwner() {
+        return owner;
+    }
+
+    public Mono<ApplicationInfo> getApplicationInfo() {
+        return applicationInfo;
     }
 
     public Flux<Guild> getGuilds() {

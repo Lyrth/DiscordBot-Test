@@ -1,7 +1,9 @@
 package lyr.testbot.handlers;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Member;
 import discord4j.rest.http.client.ClientException;
+import lyr.testbot.enums.CommandType;
 import lyr.testbot.main.Main;
 import lyr.testbot.objects.CommandObject;
 import lyr.testbot.templates.Command;
@@ -44,9 +46,8 @@ public class CommandHandler {
             )
             .onErrorResume(e -> mEvent.getMessage().getChannel()
                     .flatMap(ch -> ch.createMessage(e.getMessage()).retry(3,t -> !(t instanceof ClientException))))
-            .onErrorContinue((e,o)->{})
             .doOnError(err -> {
-                Log.logError(err.getMessage());
+                Log.logError(">>> CommandHandler Error: " + err.getMessage());
                 err.printStackTrace();
             })
             .then();
@@ -56,6 +57,16 @@ public class CommandHandler {
         return mEvent.getMessage().getContent()
             .map(c -> c.startsWith(prefix)||c.startsWith("<@!"+selfId+"> ")||c.startsWith("<@"+selfId+"> "))
             .orElse(false);
+    }
+
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    private boolean allowed(Optional<Member> member, Command cmd){
+        if (!member.isPresent()){
+            return true;                       // TODO
+        }
+        if (cmd.getType() == CommandType.OWNER){
+            return member.get().getId().equals(Main.client.ownerId);
+        }
     }
 
     private String getCommandName(String content) {
