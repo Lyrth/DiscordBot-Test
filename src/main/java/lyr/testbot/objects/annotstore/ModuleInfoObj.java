@@ -10,7 +10,7 @@ public class ModuleInfoObj implements ModuleInfo {
     private final String name;
     private final String[] aliases;
     private final String desc;
-    private final Class<Command>[] commands;
+    private final Class<? extends Command>[] commands;
     private final boolean essential;
 
     public ModuleInfoObj(final Class<? extends Module> module){
@@ -34,7 +34,7 @@ public class ModuleInfoObj implements ModuleInfo {
         return desc;
     }
 
-    public Class<Command>[] commands() {
+    public Class<? extends Command>[] commands() {
         return commands;
     }
 

@@ -33,7 +33,7 @@ public abstract class Module {
     {
         Map<String,Command> commands = new HashMap<>();
         try {
-            for (Class<Command> command : moduleInfo.commands()) {
+            for (Class<? extends Command> command : moduleInfo.commands()) {
                 Command com = command.newInstance();
                 Log.logDebug(com.getName());
                 commands.put(com.getName().toLowerCase(), com);
@@ -57,7 +57,7 @@ public abstract class Module {
         return moduleInfo.desc();
     }
 
-    public List<Class<Command>> getCommands(){
+    public List<Class<? extends Command>> getCommands(){
         return Arrays.asList(moduleInfo.commands());
     }
 

@@ -67,6 +67,7 @@ public class CommandHandler {
         if (cmd.getType() == CommandType.OWNER){
             return member.get().getId().equals(Main.client.ownerId);
         }
+        return false;
     }
 
     private String getCommandName(String content) {
