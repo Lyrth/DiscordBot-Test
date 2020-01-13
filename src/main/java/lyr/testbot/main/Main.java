@@ -74,7 +74,7 @@ public class Main {
             return new RedisStoreService();
         } catch (RedisException e) {
             Log.logWarn(">> Redis store service error! Using JdkStoreService instead.");
-            e.printStackTrace();
+            Log.logDebug(e.toString());
             return new JdkStoreService();
         }
     }

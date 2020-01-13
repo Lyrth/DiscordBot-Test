@@ -1,21 +1,27 @@
 package lyr.testbot.objects;
 
+import com.sedmelluq.discord.lavaplayer.format.StandardAudioDataFormats;
+import com.sedmelluq.discord.lavaplayer.player.*;
+import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
+import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
+import com.sedmelluq.discord.lavaplayer.track.*;
+import com.sedmelluq.discord.lavaplayer.track.playback.*;
 import discord4j.core.DiscordClient;
 import discord4j.core.event.EventDispatcher;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Snowflake;
+import discord4j.voice.AudioProvider;
 import lyr.testbot.commands.Commands;
 import lyr.testbot.handlers.EventHandler;
 import lyr.testbot.modules.BotModules;
 import lyr.testbot.modules.GuildModules;
 import lyr.testbot.util.Log;
-import lyr.testbot.util.config.BotConfig;
-import lyr.testbot.util.config.GuildConfig;
-import lyr.testbot.util.config.GuildSetting;
+import lyr.testbot.util.config.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 
 import discord4j.core.object.entity.ApplicationInfo;
@@ -40,10 +46,13 @@ public class ClientObject {
 
     public Flux<Guild> guilds;
 
+    public AudioPlayerManager playerManager;  // TODO: unclutter audio player things
+    public AudioPlayer player;
+    public AudioProvider provider;
+
     //public HashMap<Snowflake,Snowflake> channelToGuildMapping = new HashMap<>();
 
     private HashMap<Snowflake, GuildSetting> guildSettings;
-
 
     public ClientObject(DiscordClient client, BotConfig config){
         this.client = client;
@@ -54,6 +63,13 @@ public class ClientObject {
 
     public void init(){
         Log.log("> Doing client init things.");
+
+        playerManager = new DefaultAudioPlayerManager();
+        playerManager.getConfiguration().setFrameBufferFactory(NonAllocatingAudioFrameBuffer::new);
+        AudioSourceManagers.registerRemoteSources(playerManager);
+        player = playerManager.createPlayer();
+        provider = new LavaplayerAudioProvider(player);
+
         this.eventHandler = new EventHandler(eventDispatcher);
         guilds = client.getGuilds();
 
@@ -123,5 +139,56 @@ public class ClientObject {
 
     public Snowflake getId() {
         return selfId;
+    }
+
+
+    public static class LavaplayerAudioProvider extends AudioProvider {
+
+        private final AudioPlayer player;
+        private final MutableAudioFrame frame = new MutableAudioFrame();
+
+        public LavaplayerAudioProvider(AudioPlayer player) {
+            super(ByteBuffer.allocate(StandardAudioDataFormats.DISCORD_OPUS.maximumChunkSize()));
+            this.player = player;
+            this.frame.setBuffer(getBuffer());
+        }
+
+        @Override
+        public boolean provide() {
+            boolean didProvide = player.provide(frame);
+            if (didProvide) {
+                getBuffer().flip();
+            }
+            return didProvide;
+        }
+    }
+
+    public static class MyAudioLoadResultHandler implements AudioLoadResultHandler {
+
+        private final AudioPlayer player;
+
+        public MyAudioLoadResultHandler(AudioPlayer player) {
+            this.player = player;
+        }
+
+        @Override
+        public void trackLoaded(AudioTrack track) {
+            player.playTrack(track);
+        }
+
+        @Override
+        public void playlistLoaded(AudioPlaylist playlist) {
+
+        }
+
+        @Override
+        public void noMatches() {
+
+        }
+
+        @Override
+        public void loadFailed(FriendlyException exception) {
+
+        }
     }
 }

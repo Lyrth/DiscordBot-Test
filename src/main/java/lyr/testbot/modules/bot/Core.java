@@ -44,6 +44,8 @@ public class Core extends BotModule {
         return Paginator.onReactRemove(e);
     }
 
+
+    // TODO: Sometimes GuildCreateEvent fires first before ReadyEvent, causing this to halt
     public Mono<Void> on(ReadyEvent event){
         Log.logf("> Logged in as %s#%s.", event.getSelf().getUsername(), event.getSelf().getDiscriminator());
 

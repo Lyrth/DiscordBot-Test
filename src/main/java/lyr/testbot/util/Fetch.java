@@ -25,21 +25,22 @@ public class Fetch {
         return u.getAvatarUrl(Image.Format.WEB_P).orElse(
             u.getAvatarUrl(Image.Format.GIF).orElse(
                 u.getAvatarUrl(Image.Format.PNG).orElse(
-                            u.getAvatarUrl(Image.Format.JPEG).orElse(u.getDefaultAvatarUrl())
+                    u.getAvatarUrl(Image.Format.JPEG).orElse(u.getDefaultAvatarUrl())
                 )
             )
         );
     }
     public static String fetchAvatar(User u){
         return u.getAvatarUrl(Image.Format.WEB_P).orElse(
-                u.getAvatarUrl(Image.Format.GIF).orElse(
-                        u.getAvatarUrl(Image.Format.PNG).orElse(
-                                u.getAvatarUrl(Image.Format.JPEG).orElse(u.getDefaultAvatarUrl())
-                        )
+            u.getAvatarUrl(Image.Format.GIF).orElse(
+                u.getAvatarUrl(Image.Format.PNG).orElse(
+                    u.getAvatarUrl(Image.Format.JPEG).orElse(u.getDefaultAvatarUrl())
                 )
+            )
         );
     }
 
+    // TODO: fetch using reactor netty
 
     public static Optional<String> fetchHttp(String url){
         try {

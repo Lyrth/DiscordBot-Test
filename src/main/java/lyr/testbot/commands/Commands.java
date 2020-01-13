@@ -2,6 +2,7 @@ package lyr.testbot.commands;
 
 import lyr.testbot.commands.admin.*;
 import lyr.testbot.commands.general.*;
+import lyr.testbot.commands.music.*;
 import lyr.testbot.templates.Command;
 import reactor.core.publisher.Flux;
 
@@ -19,6 +20,7 @@ public class Commands {
             new Module(),
             new Test(),
             new Usage(),
+            new Gc(),
 
             new Shop(),
 
@@ -26,7 +28,12 @@ public class Commands {
             new lyr.testbot.commands.general.Commands(),
             new Help(),
             new Me(),
-            new Ping()
+            new Ping(),
+
+            // Music
+            new Join(),
+            new Play(),
+            new Stop()
         );
     }
 

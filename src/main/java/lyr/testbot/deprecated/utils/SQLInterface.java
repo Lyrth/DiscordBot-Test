@@ -1,4 +1,6 @@
-package lyr.testbot.util;
+package lyr.testbot.deprecated.utils;
+
+import lyr.testbot.util.Log;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

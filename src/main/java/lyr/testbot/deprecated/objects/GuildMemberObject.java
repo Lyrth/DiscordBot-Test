@@ -1,4 +1,4 @@
-package lyr.testbot.objects.deprecated;
+package lyr.testbot.deprecated.objects;
 
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
