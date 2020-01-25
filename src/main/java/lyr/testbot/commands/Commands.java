@@ -42,7 +42,7 @@ public class Commands {
             if (!commands.containsKey(command.getName().toLowerCase())) {
                 commands.put(command.getName().toLowerCase(), command);
             }
-        }).subscribe();
+        }).subscribe();    // TODO: subscribe!!!
     }
 
     public Map<String, Command> getCommands(){

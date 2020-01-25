@@ -28,6 +28,9 @@
         <Logger name="discord4j.core" level="debug">
             <AppenderRef ref="debug"/>
         </Logger>
+        <Logger name="discord4j.rest" level="debug">
+            <AppenderRef ref="debug"/>
+        </Logger>
         <Logger name="reactor.netty" level="error">
             <AppenderRef ref="debug"/>
         </Logger>
@@ -39,6 +42,9 @@
         </Logger>
         <Logger name="reactor.netty.resources.PooledConnectionProvider" level="error">
 
+        </Logger>
+        <Logger name="reactorLog" level="trace">
+            <AppenderRef ref="debug"/>
         </Logger>
         <Root level="info">
             <!-- <AppenderRef ref="console" /> -->

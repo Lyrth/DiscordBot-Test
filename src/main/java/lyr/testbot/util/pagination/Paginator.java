@@ -101,7 +101,7 @@ public class Paginator {
                 .onErrorResume(ClientException.class,
                     t -> Mono.just(">>> Paginator onReact error:")
                         .map(s -> s + t.getMessage())
-                        .doOnNext(Log::logError)
+                        .doOnNext(Log::error)
                         .doOnNext(s -> t.printStackTrace())
                         .then()
                 );

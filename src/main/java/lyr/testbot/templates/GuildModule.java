@@ -39,9 +39,9 @@ public abstract class GuildModule extends Module {
                 .newInstance()
                 .setGuildSettings(guildSettings);
         } catch (Exception e) {
-            Log.logError(">>> An error has occured on GuildModule instantiation.");
+            Log.error(">>> An error has occured on GuildModule instantiation.");
             e.printStackTrace();
-            Log.logError(">>> Module Name: " + this.getName());
+            Log.error(">>> Module Name: " + this.getName());
             return new BadGuildModule();
         }
     }

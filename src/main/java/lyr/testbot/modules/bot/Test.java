@@ -12,27 +12,27 @@ import reactor.core.publisher.Mono;
 public class Test extends BotModule {
 
     public Mono<Void> on(ReadyEvent event) {
-        Log.log("> Ready Event.");
+        Log.info("> Ready Event.");
         return Mono.empty();
     }
 
     public Mono<Void> on(ConnectEvent event) {
-        Log.logDebug("Connect Event.");
+        Log.debug("Connect Event.");
         return Mono.empty();
     }
 
     public Mono<Void> on(ReconnectEvent event) {
-        Log.logDebug("REconnect Event.");
+        Log.debug("REconnect Event.");
         return Mono.empty();
     }
 
     public Mono<Void> on(ReconnectStartEvent event) {
-        Log.logDebug("Reconnect Start Event.");
+        Log.debug("Reconnect Start Event.");
         return Mono.empty();
     }
 
     public Mono<Void> on(ReconnectFailEvent event) {
-        Log.logDebug("Reconnect FAIL Event.");
+        Log.debug("Reconnect FAIL Event.");
         return Mono.empty();
     }
 

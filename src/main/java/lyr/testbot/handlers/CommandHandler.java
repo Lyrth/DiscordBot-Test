@@ -2,10 +2,13 @@ package lyr.testbot.handlers;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Member;
+import discord4j.core.object.entity.User;
+import discord4j.core.object.util.Snowflake;
 import discord4j.rest.http.client.ClientException;
 import lyr.testbot.enums.CommandType;
 import lyr.testbot.main.Main;
 import lyr.testbot.objects.CommandObject;
+import lyr.testbot.objects.builder.Reply;
 import lyr.testbot.templates.Command;
 import lyr.testbot.util.Log;
 import reactor.core.publisher.Mono;
@@ -18,65 +21,70 @@ public class CommandHandler {
 
     private final Map<String, Command> commands;
     private String prefix;
-    private String selfId;
+    private Mono<Snowflake> selfId;
 
     public CommandHandler(Map<String, Command> commands) {
         this.commands = commands;
         prefix = Main.client.getBotConfig().getPrefix();
-        selfId = Main.client.getId().asString();
+        selfId = Main.client.getId();
     }
 
     public Mono<Void> handle(MessageCreateEvent mEvent){
         return Mono.just(mEvent)
-            .filter(this::shouldHandle)
+            .filterWhen(this::shouldHandle)
             .flatMap(event ->
-                Mono.justOrEmpty(
-                    event.getMessage().getContent()
-                        .map(this::getCommandName)
-                        .flatMap(this::getCommand)    // Optional<Command>
-                )
-                .flatMap(cmd ->
-                    event.getMessage().getChannel()
-                        .flatMap(ch ->
-                            cmd.execute(new CommandObject(event))
-                                .filter(r -> !r.isEmpty())
-                                .flatMap(r -> ch.createMessage(r).retry(3,t -> !(t instanceof ClientException)))
-                        )
-                )
+                Mono.justOrEmpty(event.getMessage().getContent())
+                    .flatMap(this::getCommandName)
+                    .flatMap(this::getCommand)
+                    .flatMap(cmd ->
+                        event.getMessage().getChannel()
+                            .flatMap(ch ->
+                                cmd.execute(new CommandObject(event))
+                                    .filter(Reply::isNotEmpty)
+                                    .flatMap(r -> ch.createMessage(r).retry(3,t -> !(t instanceof ClientException)))
+                            )
+                    )
             )
             .onErrorResume(e -> mEvent.getMessage().getChannel()
-                    .flatMap(ch -> ch.createMessage(e.getMessage()).retry(3,t -> !(t instanceof ClientException))))
+                .flatMap(ch -> ch.createMessage(e.getMessage()).retry(3,t -> !(t instanceof ClientException))))
             .doOnError(err -> {
-                Log.logError(">>> CommandHandler Error: " + err.getMessage());
+                Log.error(">>> CommandHandler Error: " + err.getMessage());
                 err.printStackTrace();
-            })
+            })//.log("reactorLog", Level.FINEST, true)
             .then();
     }
 
-    private boolean shouldHandle(MessageCreateEvent mEvent) {
-        return mEvent.getMessage().getContent()
-            .map(c -> c.startsWith(prefix)||c.startsWith("<@!"+selfId+"> ")||c.startsWith("<@"+selfId+"> "))
-            .orElse(false);
+    private Mono<Boolean> shouldHandle(MessageCreateEvent e) {
+        return Mono.justOrEmpty(e.getMessage().getContent())
+            .zipWith(selfId)
+            .map(tup ->
+                tup.getT1().matches(String.format("(\\Q%s\\E|<@!?%s>\\s+?)(.+)",prefix,tup.getT2().asString()))
+            );
     }
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    private boolean allowed(Optional<Member> member, Command cmd){
-        if (!member.isPresent()){
-            return true;                       // TODO
-        }
-        if (cmd.getType() == CommandType.OWNER){
-            return member.get().getId().equals(Main.client.ownerId);
-        }
-        return false;
+    private Mono<Boolean> allowed(Optional<Member> member, Optional<User> user, Command cmd){
+        return Mono.just(cmd.getType())
+            .filter(CommandType.OWNER::equals)   // if for owner only
+            .flatMap(t -> Main.client.getOwnerId())
+            .map(id ->
+                user.map(u -> u.getId().equals(id))
+                    .orElse(member.map(m -> m.getId().equals(id))
+                        .orElse(false))
+            )
+            .switchIfEmpty(
+                Mono.just(false)    // TODO: check perms
+            );
     }
 
-    private String getCommandName(String content) {
-        return content.replaceFirst("(^<@!?"+selfId+">\\s+?|^\\Q"+prefix+"\\E)(\\S+).*$","$2");
-            //.substring(content.matches("^<@!?"+selfId+">\\s+?.*") ? 0 : prefixLength);
+    private Mono<String> getCommandName(String content) {
+        return selfId
+            .map(Snowflake::asString)
+            .map(id -> content.replaceFirst("(^\\Q"+prefix+"\\E|^<@!?"+id+">\\s+)(\\S+).*$","$2"));
     }
 
-    public Optional<Command> getCommand(String name) {
-        return Optional.ofNullable(commands.get(name.toLowerCase()));
+    public Mono<Command> getCommand(String name) {
+        return Mono.justOrEmpty(commands.get(name.toLowerCase()));
     }
 
     public Map<String, Command> getCommands() {

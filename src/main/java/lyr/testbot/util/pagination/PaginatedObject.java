@@ -70,7 +70,7 @@ public class PaginatedObject {
     public Mono<Void> cancel(){
         if (canceled) return Mono.empty();
         canceled = true;
-        Log.log("Cancelling");
+        Log.info("Cancelling");
         Paginator.removePaginatedObject(id);
         return message.removeAllReactions().then(onCancel.apply(message)).then();
     }

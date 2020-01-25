@@ -35,11 +35,11 @@ public abstract class Module {
         try {
             for (Class<? extends Command> command : moduleInfo.commands()) {
                 Command com = command.newInstance();
-                Log.logDebug(com.getName());
+                Log.debug(com.getName());
                 commands.put(com.getName().toLowerCase(), com);
             }
         } catch (Exception e) {
-            Log.logError(">>> Module base class initialization fail.");
+            Log.error(">>> Module base class initialization fail.");
             e.printStackTrace();
         }
         commandHandler = new CommandHandler(commands);
@@ -68,8 +68,8 @@ public abstract class Module {
     private Mono<Void> handleCommands(MessageCreateEvent event){
         return commandHandler.handle(event);
     }
-
-    public Disposable subscribeTo(EventDispatcher dispatcher, String eventName){
+    
+    public Disposable subscribeTo(EventDispatcher dispatcher, String eventName){  // TODO: replace subscribes
         switch (eventName) {
             case "PresenceUpdateEvent":
                 return dispatcher.on(PresenceUpdateEvent.class).flatMap(this::on).subscribe();
@@ -155,7 +155,8 @@ public abstract class Module {
                 return dispatcher.on(VoiceChannelUpdateEvent.class).flatMap(this::on).subscribe();
 
             case "MessageCreateEvent":
-                return dispatcher.on(MessageCreateEvent.class).flatMap(this::on).subscribe();
+                return dispatcher.on(MessageCreateEvent.class)
+                    .doOnNext(r -> Log.debug("M")).flatMap(this::on).subscribe();
             case "MessageDeleteEvent":
                 return dispatcher.on(MessageDeleteEvent.class).flatMap(this::on).subscribe();
             case "MessageUpdateEvent":

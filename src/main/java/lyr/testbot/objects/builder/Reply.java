@@ -60,6 +60,10 @@ public class Reply implements Consumer<MessageCreateSpec> {
         return embed.isEmpty() && messageSpec.equals(EMPTY);
     }
 
+    public boolean isNotEmpty(){
+        return !isEmpty();
+    }
+
     public Reply setContent(String content) {
         messageSpec.andThen(s -> s.setContent(content));
         return this;

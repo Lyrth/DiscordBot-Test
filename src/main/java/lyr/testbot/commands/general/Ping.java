@@ -6,6 +6,7 @@ import lyr.testbot.objects.CommandObject;
 import lyr.testbot.objects.builder.Embed;
 import lyr.testbot.objects.builder.Reply;
 import lyr.testbot.templates.Command;
+import lyr.testbot.util.Log;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
@@ -32,7 +33,8 @@ public class Ping extends Command {
             .flatMap(m -> m)
             .flatMap(m ->
                 m.edit(s -> s.setContent(
-                    "Pong! Took " + (m.getTimestamp().toEpochMilli()-start.get()) + "ms."
+                    "Pong! Took " + (m.getTimestamp().toEpochMilli()-start.get()) + "ms. " +
+                        "Websocket: " + getClient().getDiscordClient().getResponseTime() + "ms."
                 ))
             )
             .thenReturn(Reply.empty());

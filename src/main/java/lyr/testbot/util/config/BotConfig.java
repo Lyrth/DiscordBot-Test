@@ -28,28 +28,28 @@ public class BotConfig {
     public static BotConfig readConfig(){
         BotConfig config = FileUtil.readFile(CONFIG_FILE,BotConfig.class);
         if (config == null) {
-            Log.log("> No config detected, creating one.");
+            Log.info("> No config detected, creating one.");
             FileUtil.createDir(ROOT_FILE_FOLDER);
             config = new BotConfig("",";");
             if (!FileUtil.createFile(CONFIG_FILE,config)) {
-                Log.logfError(">>> Cannot create config file %s.", CONFIG_FILE);
+                Log.errorFormat(">>> Cannot create config file %s.", CONFIG_FILE);
                 return null;
             }
         }
         if (config.getToken().isEmpty())
-            Log.logfError(">>> Please update %s to include the bot token.",CONFIG_FILE);
+            Log.errorFormat(">>> Please update %s to include the bot token.",CONFIG_FILE);
         return config;
 
     }
 
     public void updateConfig(){
         int err = FileUtil.updateFile(CONFIG_FILE,this);
-        if ((err&1) > 0) Log.logWarn(">> Cannot delete backup config.");
-        if ((err&2) > 0) Log.logWarn(">> Cannot rename config. Overwriting.");
-        if ((err&4) > 0) Log.logError(">>> Cannot modify config.");
-        if ((err&8) > 0) Log.logfError(">>> Cannot create config file %s.",CONFIG_FILE);
+        if ((err&1) > 0) Log.warn(">> Cannot delete backup config.");
+        if ((err&2) > 0) Log.warn(">> Cannot rename config. Overwriting.");
+        if ((err&4) > 0) Log.error(">>> Cannot modify config.");
+        if ((err&8) > 0) Log.errorFormat(">>> Cannot create config file %s.",CONFIG_FILE);
         if ((err&12)> 0) return;        // Error
-        Log.log("> Bot config updated.");
+        Log.info("> Bot config updated.");
     }
 
     public String getToken(){

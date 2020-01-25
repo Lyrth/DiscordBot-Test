@@ -55,7 +55,7 @@ public class Fetch {
             }
             return Optional.of(result.toString());
         } catch (Exception e){
-            Log.logError(e);
+            Log.error(e);
             return Optional.empty();
         }
     }

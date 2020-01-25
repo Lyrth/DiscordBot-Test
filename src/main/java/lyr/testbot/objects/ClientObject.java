@@ -37,8 +37,8 @@ public class ClientObject {
     public EventHandler eventHandler;
     private EventDispatcher eventDispatcher;
 
-    public Snowflake selfId;
-    public Snowflake ownerId;
+    public Mono<Snowflake> selfId;
+    public Mono<Snowflake> ownerId;
 
     private Mono<User> botUser;
     private Mono<User> owner;
@@ -62,7 +62,17 @@ public class ClientObject {
     }
 
     public void init(){
-        Log.log("> Doing client init things.");
+        Log.info("> Doing client init things.");
+
+        botUser = client.getSelf();
+        selfId = botUser.map(User::getId).cache();
+
+        applicationInfo = client.getApplicationInfo();
+        owner = applicationInfo.flatMap(ApplicationInfo::getOwner);
+        ownerId = applicationInfo.map(ApplicationInfo::getOwnerId).cache();
+
+        this.eventHandler = new EventHandler(eventDispatcher);
+        guilds = client.getGuilds();
 
         playerManager = new DefaultAudioPlayerManager();
         playerManager.getConfiguration().setFrameBufferFactory(NonAllocatingAudioFrameBuffer::new);
@@ -70,20 +80,11 @@ public class ClientObject {
         player = playerManager.createPlayer();
         provider = new LavaplayerAudioProvider(player);
 
-        this.eventHandler = new EventHandler(eventDispatcher);
-        guilds = client.getGuilds();
-
-        botUser = client.getSelf();
-        botUser.doOnNext(user -> selfId = user.getId()).block();
-
-        applicationInfo = client.getApplicationInfo();
-        owner = applicationInfo.flatMap(ApplicationInfo::getOwner);
-        ownerId = applicationInfo.map(ApplicationInfo::getOwnerId).block();
-
         availableGuildModules = new GuildModules();
-        HashMap<Snowflake,GuildSetting> configs = GuildConfig.readAllConfig();
+        HashMap<Snowflake,GuildSetting> configs = GuildConfig.readAllConfig();   // TODO bloccing io
         botModules = new BotModules();
-        guildSettings = (HashMap<Snowflake, GuildSetting>)  // TODO
+
+        guildSettings = (HashMap<Snowflake, GuildSetting>)  // TODO fix this shiz
             guilds
                 .map(Guild::getId)
                 .collectMap(
@@ -93,7 +94,7 @@ public class ClientObject {
         //guilds.flatMap(Guild::getChannels)
         //    .collectMap(GuildChannel::getId, GuildChannel::getGuildId,() -> channelToGuildMapping)
         //   .block();
-        Log.log("> Done client init.");
+        Log.info("> Done client init.");
         // TODO: Shutdown Hook
     }
 
@@ -125,6 +126,14 @@ public class ClientObject {
         return owner;
     }
 
+    public Mono<Snowflake> getId() {
+        return selfId;
+    }
+
+    public Mono<Snowflake> getOwnerId() {
+        return ownerId;
+    }
+
     public Mono<ApplicationInfo> getApplicationInfo() {
         return applicationInfo;
     }
@@ -137,9 +146,6 @@ public class ClientObject {
         return guildSettings;
     }
 
-    public Snowflake getId() {
-        return selfId;
-    }
 
 
     public static class LavaplayerAudioProvider extends AudioProvider {

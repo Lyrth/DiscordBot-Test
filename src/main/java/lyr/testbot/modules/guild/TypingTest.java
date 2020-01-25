@@ -22,7 +22,7 @@ public class TypingTest extends GuildModule {
                         .delaySubscription(Duration.ofSeconds(15))
                 )
             ).doOnError(err ->
-                Log.logfError("REEEE CANNOT SEND MESSAGE TO %s ;-;", event.getUserId().asString())
+                Log.errorFormat("REEEE CANNOT SEND MESSAGE TO %s ;-;", event.getUserId().asString())
             ).then();
     }
 }
