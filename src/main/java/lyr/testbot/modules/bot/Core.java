@@ -13,7 +13,9 @@ import lyr.testbot.util.Log;
 import lyr.testbot.util.config.GuildConfig;
 import lyr.testbot.util.config.GuildSetting;
 import lyr.testbot.util.pagination.Paginator;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -64,24 +66,28 @@ public class Core extends BotModule {
         return getClient().getEventDispatcher()
             .on(GuildCreateEvent.class)
             .take(n).last()
-            .doOnNext(gce -> {
-                // instantiate each module for each guild
-                getClient().getGuildSettings().forEach((guildId, setting) -> {
-                    if (!ids.contains(guildId)) return;
-                    Log.debugFormat("Setting up modules for guild %s", guildId.asString());
-                    getClient().eventHandler.updateGuildModules(setting);
-                });
-            })
-            .then(Mono.fromRunnable(System::gc));
+            .thenMany(Flux.fromIterable(getClient().getGuildSettings().entrySet()))
+            .flatMap(entry ->
+                Mono.just(entry.getKey())
+                    .filter(ids::contains)
+                    .doOnNext(id -> Log.debugFormat("Setting up modules for guild %s", id.asString()))
+                    .flatMap($ -> getClient().eventHandler.updateGuildModules(entry.getValue()))
+            )
+            .then(Mono.fromRunnable(System::gc).publishOn(Schedulers.elastic()).then());
     }
 
     public Mono<Void> on(GuildCreateEvent e) {
-        Log.info("> New guild: ID " + e.getGuild().getId().asString() + ", Name: " + e.getGuild().getName());
-        getClient().getGuildSettings().computeIfAbsent(e.getGuild().getId(), id -> {
-            GuildSetting setting = new GuildSetting(id);
-            GuildConfig.updateGuildSettings(setting);
-            return setting;
-        });
-        return Mono.empty();
+        return Mono.fromRunnable(() ->
+                Log.info("> New guild: ID " + e.getGuild().getId().asString() + ", Name: " + e.getGuild().getName())
+            )
+            .thenReturn(getClient().getGuildSettings())
+            .filter(gs -> !gs.containsKey(e.getGuild().getId()))    // if absent
+            .flatMap(gs -> {
+                GuildSetting setting = new GuildSetting(e.getGuild().getId());
+                return GuildConfig.updateGuildSettings(setting)
+                    .thenReturn(setting)
+                    .doOnNext(s -> gs.put(e.getGuild().getId(), s));
+            })
+            .then();
     }
 }

@@ -11,6 +11,8 @@ import lyr.testbot.util.ReflectionUtil;
 import lyr.testbot.util.config.GuildSetting;
 import reactor.core.Disposable;
 import reactor.core.Disposables;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -48,27 +50,28 @@ public class EventHandler {
     }
 
 
-    public void updateGuildModules(GuildSetting setting){
-        Map<String, GuildModule> availableGuildModules = Main.client.availableGuildModules.get();
+    public Mono<Void> updateGuildModules(GuildSetting setting){
         Snowflake guildId = setting.guildId;
-        activeGuildModules.computeIfAbsent(guildId, (id) -> new HashMap<>());
-        availableGuildModules.forEach((moduleName,module) -> {
-            if (setting.enabledModules.contains(moduleName)){  // It should be enabled
-                if (activeGuildModules.get(guildId).containsKey(moduleName))  // Already enabled
-                    return;
-                Log.debugFormat("| Enabling module %s...", moduleName);
-                GuildModule guildModule = module.newInstance(setting);
-                activeGuildModules.get(guildId).put(moduleName,subscribeModule(guildModule));
-            } else { // Should be disabled.
-                if (!activeGuildModules.get(guildId).containsKey(moduleName))  // Already disabled
-                    return;
-                Log.debugFormat("| Disabling module %s...", moduleName);
-                activeGuildModules.get(guildId).remove(moduleName).dispose();
-            }
-        });
+        return Mono.fromRunnable(() -> activeGuildModules.computeIfAbsent(guildId, (id) -> new HashMap<>()))
+            .thenMany(Flux.fromIterable(Main.client.availableGuildModules.get().entrySet()))
+            .doOnNext(entry -> {
+                if (setting.enabledModules.contains(entry.getKey())){  // It should be enabled
+                    if (activeGuildModules.get(guildId).containsKey(entry.getKey()))  // Already enabled
+                        return;
+                    Log.debugFormat("| Enabling module %s...", entry.getKey());
+                    GuildModule guildModule = entry.getValue().newInstance(setting);
+                    activeGuildModules.get(guildId).put(entry.getKey(),subscribeModule(guildModule));
+                } else { // Should be disabled.
+                    if (!activeGuildModules.get(guildId).containsKey(entry.getKey()))  // Already disabled
+                        return;
+                    Log.debugFormat("| Disabling module %s...", entry.getKey());
+                    activeGuildModules.get(guildId).remove(entry.getKey()).dispose();
+                }
+            })
+            .then();
     }
 
-    private Disposable.Composite subscribeModule(Module module){
+    private Disposable.Composite subscribeModule(Module module){  // TODO: no more subscribe
         List<Method> methods = ReflectionUtil.getDeclaredMethodsByName(module.getClass(),"on");
         Disposable.Composite subscribers = Disposables.composite();
         // automatically add command handling

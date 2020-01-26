@@ -59,8 +59,8 @@ public abstract class Command {
             .orElse(defaultValue);
     }
 
-    protected void setSetting(Snowflake guildId, String module, String key, String value){
-        getGuildSettingsFor(guildId).setModuleSetting(module, key, value);
+    protected Mono<Void> setSetting(Snowflake guildId, String module, String key, String value){
+        return getGuildSettingsFor(guildId).setModuleSetting(module, key, value);
     }
 
     protected static ClientObject getClient(){

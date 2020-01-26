@@ -3,11 +3,16 @@ package lyr.testbot.util.config;
 
 import discord4j.core.object.util.Snowflake;
 import lyr.testbot.main.Main;
+import lyr.testbot.modules.GuildModules;
 import lyr.testbot.templates.GuildModule;
 import lyr.testbot.util.Log;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class GuildConfig {
 
@@ -15,6 +20,7 @@ public class GuildConfig {
     private static final String GUILD_CONFIG_FILENAME = "guild.json";
     private static final String MODULE_CONFIG_DIR = "modules";
 
+    /*
     public static HashMap<Snowflake, GuildSetting> readAllConfig(){
         HashMap<Snowflake,GuildSetting> map = new HashMap<>();
 
@@ -47,8 +53,49 @@ public class GuildConfig {
         }
         return map;
     }
+     */
+
+    public static Mono<HashMap<Snowflake, GuildSetting>> readAllConfig(){
+        ConcurrentHashMap<Snowflake,GuildSetting> map = new ConcurrentHashMap<>();
+
+        return FileUtil.isDirectory(GUILDS_FOLDER)
+            .filter(exists -> !exists)   // if not exists,
+            .doOnNext($ -> Log.info("> No 'guilds' folder found. Creating one."))
+            .flatMap($ -> FileUtil.createDir(GUILDS_FOLDER))
+            .map($ -> map)
+            .switchIfEmpty(FileUtil.listDirsF(GUILDS_FOLDER)    // else
+                .parallel()
+                .runOn(Schedulers.parallel())
+                .map(Snowflake::of)
+                .doOnError($ -> Log.warnFormat(">> Folder %s isn't a valid guild folder!"))
+                .flatMap(guildId -> {
+                    final String guildDir = String.format("%s/%s",GUILDS_FOLDER,guildId.asString());
+                    final String configFile = String.format("%s/%s",guildDir,GUILD_CONFIG_FILENAME);
+                    return FileUtil.readFileM(configFile, GuildSetting.class)
+                        .switchIfEmpty(Mono.fromRunnable(() ->
+                                Log.infoFormat("> Creating new config for guild %s...", guildId.asString())
+                            )
+                            .then(FileUtil.createDir(guildDir))
+                            .map($ -> new GuildSetting(guildId))
+                            .filterWhen(gs -> FileUtil.createFileM(configFile,gs).thenReturn(true).onErrorReturn(false))
+                            .doOnError(err -> Log.errorFormat(">>> Cannot create config file for guild %s.", guildId.asString()))
+                        )
+                        .zipWith(readModulesSettings(guildDir), (gs, ms) ->
+                            Mono.fromCallable(() -> map.put(guildId,gs))
+                                .then(gs.setModulesSettings(ms))
+                        )
+                        .flatMap(v -> v)
+                        .thenReturn(map);
+                })
+                .sequential()
+                .last()
+            )
+            .map(HashMap::new);
+    }
+
 
     //   ModuleName, <SettingKey, SettingValue>
+    /*
     @SuppressWarnings("unchecked")  // Gson casts to HashMap<String,String> just fine
     public static HashMap<String,HashMap<String,String>> readModulesSettings(String guildDir){
         HashMap<String,HashMap<String,String>> map = new HashMap<>();
@@ -75,45 +122,71 @@ public class GuildConfig {
         }
         return map;
     }
+    */
+
 
     //   ModuleName, <SettingKey, SettingValue>
-    public static void updateModulesSettings(HashMap<String,HashMap<String,String>> settings, String guildId){
-        final String dir = String.format("%s/%s/%s", GUILDS_FOLDER, guildId, MODULE_CONFIG_DIR);
-        FileUtil.createDir(dir);  // make sure dir exists
-        settings.forEach((moduleName,map) -> {
-            int err = FileUtil.updateFile(String.format("%s/%s.json",dir,moduleName), map);
-            if ((err & 1) > 0) Log.warnFormat(">> Cannot delete backup %s settings file for %s.",moduleName,guildId);
-            if ((err & 2) > 0) Log.warn(">> Cannot rename settings. Overwriting.");
-            if ((err & 4) > 0) Log.error(">>> Cannot modify settings.");
-            if ((err & 8) > 0) Log.errorFormat(">>> Cannot create settings file %s.json.", moduleName);
-            if ((err & 12) > 0) return;        // Error
-            Log.debugFormat("%s config for guild %s updated.", moduleName, guildId);
-        });
-    }
+    @SuppressWarnings("unchecked")  // Gson casts to HashMap<String,String> just fine
+    public static Mono<HashMap<String,HashMap<String,String>>> readModulesSettings(String guildDir){
+        ConcurrentHashMap<String,HashMap<String,String>> map = new ConcurrentHashMap<>();
 
-    public static void updateModuleSettings(String moduleName, HashMap<String,String> settings, String guildId){
-        final String dir = String.format("%s/%s/%s", GUILDS_FOLDER, guildId, MODULE_CONFIG_DIR);
-        FileUtil.createDir(dir);  // make sure dir exists
-        int err = FileUtil.updateFile(String.format("%s/%s.json",dir,moduleName), settings);
-        if ((err & 1) > 0) Log.warnFormat(">> Cannot delete backup %s settings file for %s.",moduleName,guildId);
-        if ((err & 2) > 0) Log.warn(">> Cannot rename settings. Overwriting.");
-        if ((err & 4) > 0) Log.error(">>> Cannot modify settings.");
-        if ((err & 8) > 0) Log.errorFormat(">>> Cannot create settings file %s.json.", moduleName);
-        if ((err & 12) > 0) return;        // Error
-        Log.debugFormat("%s config for guild %s updated.", moduleName, guildId);
+        Mono<Map<String, GuildModule>> agm = Mono.justOrEmpty(Main.client.availableGuildModules)
+            .map(GuildModules::get)
+            .switchIfEmpty(Mono.just(new HashMap<>()));
+
+        return FileUtil.isDirectory(guildDir + "/" + MODULE_CONFIG_DIR)
+            .filter(exists -> !exists)   // if not exists,
+            .doOnNext($ -> Log.infoFormat("> Creating modules config dir at %s...", guildDir))
+            .flatMap($ -> FileUtil.createDir(guildDir + "/" + MODULE_CONFIG_DIR))
+            .map($ -> map)
+            .switchIfEmpty(FileUtil.listFilesF(guildDir + "/" + MODULE_CONFIG_DIR)    // else
+                .parallel()
+                .runOn(Schedulers.parallel())
+                .flatMap(file -> {
+                    String moduleName = file.replaceAll(".*?([^\\\\/]+).json$","$1");
+                    return agm
+                        .filter(gm -> gm.containsKey(moduleName))    // if contains
+                        .flatMap(gm ->
+                            FileUtil.readFileM(String.format("%s/%s/%s",guildDir,MODULE_CONFIG_DIR,file), HashMap.class)
+                        )
+                        .map(settings -> (HashMap<String,String>) settings)
+                        .doOnNext(settings -> map.put(moduleName,settings));
+                })
+                .sequential()
+                .last()
+                .thenReturn(map)
+            )
+            .map(HashMap::new)
         ;
     }
 
-    public static void updateGuildSettings(GuildSetting setting){
+    //   ModuleName, <SettingKey, SettingValue>
+    public static Mono<Void> updateModulesSettings(HashMap<String,HashMap<String,String>> settings, String guildId){
+        final String dir = String.format("%s/%s/%s", GUILDS_FOLDER, guildId, MODULE_CONFIG_DIR);
+        return FileUtil.createDir(dir)
+            .thenMany(Flux.fromIterable(settings.entrySet()))
+            .flatMap(entry ->
+                FileUtil.updateFileM(String.format("%s/%s.json",dir,entry.getKey()), entry.getValue())
+                    .doOnNext($ -> Log.debugFormat("%s config for guild %s updated.", entry.getKey(), guildId))
+                    .doOnError(t -> Log.errorFormat(">>> %s config update for guild %s failed!", entry.getKey(), guildId))
+            )
+            .then();
+    }
+
+    public static Mono<Void> updateModuleSettings(String moduleName, HashMap<String,String> settings, String guildId){
+        final String dir = String.format("%s/%s/%s", GUILDS_FOLDER, guildId, MODULE_CONFIG_DIR);
+        return FileUtil.createDir(dir)
+            .doOnNext($ -> Log.debugFormat("%s config for guild %s updated.", moduleName, guildId))
+            .doOnError(t -> Log.errorFormat(">>> %s config update for guild %s failed!", moduleName, guildId))
+            .then();
+    }
+
+    public static Mono<Void> updateGuildSettings(GuildSetting setting){
         final String dir = String.format("%s/%s", GUILDS_FOLDER, setting.guildId.asString());
-        FileUtil.createDir(dir);  // make sure dir exists
-        int err = FileUtil.updateFile(String.format("%s/%s",dir,GUILD_CONFIG_FILENAME), setting);
-        if ((err&1) > 0) Log.warnFormat(">> Cannot delete backup config for guild %s.", setting.guildId.asString());
-        if ((err&2) > 0) Log.warnFormat(">> Cannot rename config for guild %s. Overwriting.", setting.guildId.asString());
-        if ((err&4) > 0) Log.error(">>> Cannot modify config.");
-        if ((err&8) > 0) Log.errorFormat(">>> Cannot create config file for guild %s.", setting.guildId.asString());
-        if ((err&12)> 0) return;        // Error
-        Log.debugFormat("Config for %s updated.", setting.guildId.asString());
+        return FileUtil.createDir(dir)
+            .doOnNext($ -> Log.debugFormat("Config for guild %s updated.", setting.guildId.asString()))
+            .doOnError(t -> Log.errorFormat(">>> Config update for guild %s failed!", setting.guildId.asString()))
+            .then();
     }
 
 }

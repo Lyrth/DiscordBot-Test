@@ -2,6 +2,7 @@ package lyr.testbot.util.config;
 
 import com.google.gson.annotations.SerializedName;
 import lyr.testbot.util.Log;
+import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
 
@@ -25,31 +26,25 @@ public class BotConfig {
         this.prefix = prefix;
     }
 
-    public static BotConfig readConfig(){
-        BotConfig config = FileUtil.readFile(CONFIG_FILE,BotConfig.class);
-        if (config == null) {
-            Log.info("> No config detected, creating one.");
-            FileUtil.createDir(ROOT_FILE_FOLDER);
-            config = new BotConfig("",";");
-            if (!FileUtil.createFile(CONFIG_FILE,config)) {
-                Log.errorFormat(">>> Cannot create config file %s.", CONFIG_FILE);
-                return null;
-            }
-        }
-        if (config.getToken().isEmpty())
-            Log.errorFormat(">>> Please update %s to include the bot token.",CONFIG_FILE);
-        return config;
-
+    public static Mono<BotConfig> readConfig(){
+        return FileUtil.readFileM(CONFIG_FILE,BotConfig.class)
+            .switchIfEmpty(Mono.fromRunnable(() -> Log.info("> No config detected, creating one."))
+                .then(FileUtil.createDir(ROOT_FILE_FOLDER))
+                .map($ -> new BotConfig("",";"))
+                .filterWhen(cfg -> FileUtil.createFileM(CONFIG_FILE,cfg).thenReturn(true).onErrorReturn(false))
+                .doOnError($ -> Log.errorFormat(">>> Cannot create config file %s.", CONFIG_FILE))
+            )
+            .doOnNext(cfg -> {
+                if (cfg.getToken().isEmpty())
+                    Log.errorFormat(">>> Please update %s to include the bot token.",CONFIG_FILE);
+            });
     }
 
-    public void updateConfig(){
-        int err = FileUtil.updateFile(CONFIG_FILE,this);
-        if ((err&1) > 0) Log.warn(">> Cannot delete backup config.");
-        if ((err&2) > 0) Log.warn(">> Cannot rename config. Overwriting.");
-        if ((err&4) > 0) Log.error(">>> Cannot modify config.");
-        if ((err&8) > 0) Log.errorFormat(">>> Cannot create config file %s.",CONFIG_FILE);
-        if ((err&12)> 0) return;        // Error
-        Log.info("> Bot config updated.");
+    public Mono<Void> updateConfig(){
+        return FileUtil.updateFileM(CONFIG_FILE,this)
+            .doOnNext($ -> Log.info("> Bot config updated."))
+            .doOnError($ -> Log.error(">>> Bot config update error!"))
+            .then();
     }
 
     public String getToken(){

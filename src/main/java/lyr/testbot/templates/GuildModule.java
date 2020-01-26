@@ -56,8 +56,8 @@ public abstract class GuildModule extends Module {
             .orElse(defaultValue);
     }
 
-    protected void setSetting(String key, String value){
-        guildSettings.setModuleSetting(this.getName(), key, value);
+    protected Mono<Void> setSetting(String key, String value){
+        return guildSettings.setModuleSetting(this.getName(), key, value);
     }
 
     private static final Mono<Void> VOID = Mono.empty();

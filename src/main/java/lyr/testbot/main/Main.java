@@ -34,7 +34,7 @@ public class Main {
         Log.info("> Starting...");
         Log.debugFormat("Running on Discord4j version %s",
             GitProperties.getProperties().getProperty(GitProperties.GIT_COMMIT_ID_DESCRIBE));
-        BotConfig config = BotConfig.readConfig();
+        BotConfig config = BotConfig.readConfig();    // TODO : 1
         if (config == null || config.getToken().isEmpty()) return;
 
         client = new ClientObject(

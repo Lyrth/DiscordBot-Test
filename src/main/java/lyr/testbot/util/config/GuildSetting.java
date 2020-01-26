@@ -26,38 +26,44 @@ public class GuildSetting {
         this.guild = Main.client.guilds.filter(guild -> guildId.equals(guild.getId())).next();
     }
 
-    private boolean updateEnabledModules(){
-        Main.client.eventHandler.updateGuildModules(this);
-        GuildConfig.updateGuildSettings(this);  // TODO: schedule update on a fixed interval instead & add shutdown hook
-        return true;
+    private Mono<Boolean> updateEnabledModules(){
+        return Main.client.eventHandler.updateGuildModules(this)
+            .then(GuildConfig.updateGuildSettings(this))
+            .thenReturn(true);  // TODO: schedule update on a fixed interval instead & add shutdown hook
     }
 
-    public void setModulesSettings(HashMap<String, HashMap<String, String>> modulesSettings) {
-        this.modulesSettings = modulesSettings;
-        GuildConfig.updateModulesSettings(modulesSettings,guildId.asString());  // TODO: same as above
+    public Mono<Void> setModulesSettings(HashMap<String, HashMap<String, String>> modulesSettings) {
+        return Mono.fromCallable(() -> this.modulesSettings = modulesSettings)
+            .flatMap(set -> GuildConfig.updateModulesSettings(set,guildId.asString()));  // TODO: same as above)
     }
 
     public boolean isModuleEnabled(String moduleName){
         return enabledModules.contains(moduleName);
     }
 
-    public boolean enableModule(String moduleName){
-        return enabledModules.add(moduleName) && updateEnabledModules();
+    public Mono<Boolean> enableModule(String moduleName){
+        return Mono.fromCallable(() -> enabledModules.add(moduleName))
+            .filter(b -> b)
+            .filterWhen($ -> updateEnabledModules())
+            .map($ -> true)
+            .switchIfEmpty(Mono.just(false));
     }
 
-    public boolean disableModule(String moduleName){
-        return enabledModules.remove(moduleName) && updateEnabledModules();
+    public Mono<Boolean> disableModule(String moduleName){
+        return Mono.fromCallable(() -> enabledModules.remove(moduleName))
+            .filter(b -> b)
+            .filterWhen($ -> updateEnabledModules())
+            .map($ -> true)
+            .switchIfEmpty(Mono.just(false));
     }
 
     // returns: true if module just activated, false if we disabled it.
-    public boolean toggleModule(String moduleName){
-        if(isModuleEnabled(moduleName)){
-            disableModule(moduleName);
-            return false;
-        } else {
-            enableModule(moduleName);
-            return true;
-        }
+    public Mono<Boolean> toggleModule(String moduleName){
+        return Mono.just(moduleName)
+            .filter(this::isModuleEnabled)
+            .flatMap(this::disableModule)
+            .map($ -> false)
+            .switchIfEmpty(enableModule(moduleName).thenReturn(true));
     }
 
     public boolean hasModuleSettings(String moduleName){
@@ -69,15 +75,16 @@ public class GuildSetting {
         return modulesSettings.get(moduleName).get(key);
     }
 
-    public void setModuleSetting(String moduleName, String key, String value){
-        if (hasModuleSettings(moduleName)) {
-            modulesSettings.get(moduleName).put(key,value);
-        } else {
-            HashMap<String,String> map = new HashMap<>();
-            map.put(key,value);
-            modulesSettings.put(moduleName,map);
-        }
-        // TODO: same as above
-        GuildConfig.updateModuleSettings(moduleName, modulesSettings.get(moduleName), guildId.asString());
+    public Mono<Void> setModuleSetting(String moduleName, String key, String value){
+        return Mono.fromRunnable(() -> {
+                if (hasModuleSettings(moduleName)) {
+                    modulesSettings.get(moduleName).put(key,value);
+                } else {
+                    HashMap<String,String> map = new HashMap<>();
+                    map.put(key,value);
+                    modulesSettings.put(moduleName,map);
+                }
+            })
+            .then(GuildConfig.updateModuleSettings(moduleName, modulesSettings.get(moduleName), guildId.asString())); // TODO: same as above
     }
 }

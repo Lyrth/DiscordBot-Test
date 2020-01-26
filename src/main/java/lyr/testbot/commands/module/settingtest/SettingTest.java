@@ -23,7 +23,7 @@ public class SettingTest extends Command {
         if (args.isEmpty()){
             return Reply.with(getSettingOrDefault(guildId,"SettingTest", "value", "Empty."));
         } else {
-            setSetting(guildId, "SettingTest", "value", args.get(0));
+            setSetting(guildId, "SettingTest", "value", args.get(0));  // TODO, new as Mono now
             return Reply.with("Set!");
         }
     }
