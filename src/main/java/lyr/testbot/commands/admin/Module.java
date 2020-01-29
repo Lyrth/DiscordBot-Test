@@ -28,7 +28,7 @@ public class Module extends Command {
             return Reply.with("Usage: " + getFormattedUsage());
         }
         String name;
-        if (!(name = getClient().availableGuildModules.getProperName(args.get(0))).isEmpty()) {    // TODO: fix this
+        if (!(name = getClient().availableGuildModules.getProperName(args.get(0))).isEmpty()) {    // TODO: 2 fix this
             return getGuildSettingsFor(guild.getId())
                 .toggleModule(name) ?
                     Reply.format("Module **%s** enabled.", name) :
