@@ -30,7 +30,7 @@ public class BotConfig {
         return FileUtil.readFileM(CONFIG_FILE,BotConfig.class)
             .switchIfEmpty(Mono.fromRunnable(() -> Log.info("> No config detected, creating one."))
                 .then(FileUtil.createDir(ROOT_FILE_FOLDER))
-                .map($ -> new BotConfig("",";"))
+                .thenReturn(new BotConfig("",";"))
                 .filterWhen(cfg -> FileUtil.createFileM(CONFIG_FILE,cfg).thenReturn(true).onErrorReturn(false))
                 .doOnError($ -> Log.errorFormat(">>> Cannot create config file %s.", CONFIG_FILE))
             )

@@ -13,7 +13,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 @CommandInfo(name = "__Command_Base__")
 public abstract class Command {
@@ -49,14 +48,12 @@ public abstract class Command {
             .replaceAll("([)\\]])","$1`");
     }
 
-    public static String getSetting(Snowflake guildId, String module, String key){
+    public static Mono<String> getSetting(Snowflake guildId, String module, String key){
         return getGuildSettingsFor(guildId).getModuleSetting(module, key);
     }
 
-    protected String getSettingOrDefault(Snowflake guildId, String module, String key, String defaultValue){
-        return Optional.ofNullable(getSetting(guildId, module, key))
-            .filter(s -> !s.isEmpty())
-            .orElse(defaultValue);
+    protected Mono<String> getSettingOrDefault(Snowflake guildId, String module, String key, String defaultValue){
+        return getSetting(guildId, module, key).defaultIfEmpty(defaultValue);
     }
 
     protected Mono<Void> setSetting(Snowflake guildId, String module, String key, String value){

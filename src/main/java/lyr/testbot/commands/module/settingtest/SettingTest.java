@@ -16,12 +16,12 @@ import reactor.core.publisher.Mono;
 public class SettingTest extends Command {
 
     public Mono<Reply> execute(CommandObject command){
-        return Mono.zip(command.args, command.guildId, this::execute);
+        return Mono.zip(command.args, command.guildId, this::execute);  // would not run when no guildId
     }
 
     private Reply execute(CommandArgs args, Snowflake guildId){
         if (args.isEmpty()){
-            return Reply.with(getSettingOrDefault(guildId,"SettingTest", "value", "Empty."));
+            return Reply.with(getSettingOrDefault(guildId,"SettingTest", "value", "Empty."));  // TODO: MONO TOO
         } else {
             setSetting(guildId, "SettingTest", "value", args.get(0));  // TODO, new as Mono now
             return Reply.with("Set!");

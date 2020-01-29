@@ -8,6 +8,7 @@ import discord4j.core.object.util.Snowflake;
 import discord4j.rest.http.client.ClientException;
 import lyr.testbot.objects.builder.Embed;
 import lyr.testbot.objects.builder.Reply;
+import lyr.testbot.util.FuncUtil;
 import lyr.testbot.util.Log;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
@@ -18,7 +19,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
-public class Paginator {
+public class Paginator {  // TODO: needs refactor!
 
     public static final long CANCEL_DELAY = 30; // Seconds
 
@@ -60,11 +61,11 @@ public class Paginator {
                 pagMessages.put(m.getId(),
                     new PaginatedObject(m, pages, messageContent, buttonSet, pag ->
                         Mono.delay(Duration.ofSeconds(CANCEL_DELAY))
-                            .map(i -> pag)
+                            .thenReturn(pag)
                             .filter(p -> pagMessages.containsKey(p.getId()))
                             .doOnNext(p -> pagMessages.remove(p.getId()))
                             .flatMap(PaginatedObject::cancel)
-                            .onErrorContinue((e,o)->{})
+                            .onErrorContinue(FuncUtil::noop)
                             .subscribe()
                     )
                 )
@@ -99,7 +100,7 @@ public class Paginator {
                     })
                     .flatMap(pag::onReact)
                 .onErrorResume(ClientException.class,
-                    t -> Mono.just(">>> Paginator onReact error:")
+                    t -> Mono.just(">>> Paginator onReact error: ")
                         .map(s -> s + t.getMessage())
                         .doOnNext(Log::error)
                         .doOnNext(s -> t.printStackTrace())

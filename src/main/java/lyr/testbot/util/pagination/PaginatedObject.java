@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
 
-public class PaginatedObject {
+public class PaginatedObject {  // TODO: needs refactor!~
     private Message message;
     private Snowflake id;
     private List<Embed> pages;

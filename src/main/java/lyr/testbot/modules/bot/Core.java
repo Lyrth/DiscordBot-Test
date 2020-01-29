@@ -40,14 +40,14 @@ public class Core extends BotModule {
     public Mono<Void> on(ReactionAddEvent e) {
         return getClient().getId()
             .filter(id -> !e.getUserId().equals(id))
-            .map(id -> e)
+            .map($ -> e)
             .flatMap(Paginator::onReact);
     }
 
     public Mono<Void> on(ReactionRemoveEvent e) {
         return getClient().getId()
             .filter(id -> !e.getUserId().equals(id))
-            .map(id -> e)
+            .map($ -> e)
             .flatMap(Paginator::onReactRemove);
     }
 

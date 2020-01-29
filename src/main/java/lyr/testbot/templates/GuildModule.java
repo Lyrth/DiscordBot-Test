@@ -14,8 +14,6 @@ import lyr.testbot.util.Log;
 import lyr.testbot.util.config.GuildSetting;
 import reactor.core.publisher.Mono;
 
-import java.util.Optional;
-
 public abstract class GuildModule extends Module {
 
     protected Mono<Guild> guild;
@@ -39,21 +37,19 @@ public abstract class GuildModule extends Module {
                 .newInstance()
                 .setGuildSettings(guildSettings);
         } catch (Exception e) {
-            Log.error(">>> An error has occured on GuildModule instantiation.");
+            Log.error(">>> An error has occurred on GuildModule instantiation.");
             e.printStackTrace();
             Log.error(">>> Module Name: " + this.getName());
             return new BadGuildModule();
         }
     }
 
-    protected String getSetting(String key){
+    protected Mono<String> getSetting(String key){
         return guildSettings.getModuleSetting(this.getName(), key);
     }
 
-    protected String getSettingOrDefault(String key, String defaultValue){
-        return Optional.ofNullable(getSetting(key))
-            .filter(s -> !s.isEmpty())
-            .orElse(defaultValue);
+    protected Mono<String> getSettingOrDefault(String key, String defaultValue){
+        return getSetting(key).defaultIfEmpty(defaultValue);
     }
 
     protected Mono<Void> setSetting(String key, String value){

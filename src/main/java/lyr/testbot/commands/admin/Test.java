@@ -16,7 +16,7 @@ public class Test extends Command {
 
     public Mono<Reply> execute(CommandObject command){
         return Mono.zip(
-            command.user.map(ou -> ou.map(User::getMention).orElse("")),
+            command.user.map(User::getMention).defaultIfEmpty(""),
             command.contents,
             command.args
         ).map(T ->

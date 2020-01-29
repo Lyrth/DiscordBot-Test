@@ -3,7 +3,6 @@ package lyr.testbot.modules;
 import lyr.testbot.modules.guild.*;
 import lyr.testbot.templates.GuildModule;
 import lyr.testbot.util.Log;
-import reactor.core.publisher.Flux;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,13 +24,12 @@ public class GuildModules {
     }
 
     private void add(GuildModule... m){
-        Flux.just(m).doOnNext(module -> {
+        for(GuildModule module : m)
             if (!guildModules.containsKey(module.getName())) {
                 guildModules.put(module.getName(), module);
                 guildModuleNameMap.put(module.getName().toLowerCase(),module.getName());
                 Log.debugFormat("Adding module %s...", module.getName());
             }
-        }).subscribe();    // TODO: yeet this subscribe?!?!?!
     }
 
     public Map<String, GuildModule> get(){

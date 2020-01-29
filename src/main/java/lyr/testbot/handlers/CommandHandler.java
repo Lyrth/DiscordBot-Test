@@ -57,9 +57,7 @@ public class CommandHandler {
     private Mono<Boolean> shouldHandle(MessageCreateEvent e) {
         return Mono.justOrEmpty(e.getMessage().getContent())
             .zipWith(selfId)
-            .map(tup ->
-                tup.getT1().matches(String.format("(\\Q%s\\E|<@!?%s>\\s+?)(.+)",prefix,tup.getT2().asString()))
-            );
+            .map(tup -> tup.getT1().matches(String.format("(\\Q%s\\E|<@!?%s>\\s+?)(.+)",prefix,tup.getT2().asString())));
     }
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")

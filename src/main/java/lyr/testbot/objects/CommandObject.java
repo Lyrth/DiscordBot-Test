@@ -18,7 +18,7 @@ public class CommandObject extends MessageObject {
         message = M;
 
         id = M.map(Message::getId);
-        contents = M.map(m -> m.getContent().orElse(""));
+        contents = M.flatMap(m -> Mono.justOrEmpty(m.getContent()));
         args = M.map(m ->
             m.getContent()
                 .map(s -> s.replaceFirst("(^<@!?\\d+>\\s+\\S+|^\\S+)\\s*",""))
@@ -26,13 +26,13 @@ public class CommandObject extends MessageObject {
             ).map(CommandArgs::new);
         embeds = M.map(Message::getEmbeds);
 
-        guildId = Mono.just(event.getGuildId()).map(e -> e.orElse(null));
+        guildId = Mono.justOrEmpty(event.getGuildId());
         channelId = Mono.just(event.getMessage().getChannelId());
 
         guild = M.flatMap(Message::getGuild);
-        author = member = Mono.just(event.getMember()).map(e -> e.orElse(null));
-        user = M.map(Message::getAuthor);
-        userId = M.map(m -> m.getAuthor().map(User::getId).orElse(null));
+        author = member = Mono.justOrEmpty(event.getMember());
+        user = M.flatMap(m -> Mono.justOrEmpty(m.getAuthor()));
+        userId = M.flatMap(m -> Mono.justOrEmpty(m.getAuthor().map(User::getId)));
     }
 
     public Mono<Guild> getGuild() {

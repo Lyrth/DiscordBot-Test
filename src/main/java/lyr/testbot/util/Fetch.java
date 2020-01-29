@@ -2,21 +2,12 @@ package lyr.testbot.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Image;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.time.Duration;
-import java.util.Optional;
 
 
 public class Fetch {
@@ -42,7 +33,7 @@ public class Fetch {
     public static Mono<String> fetchHttp(String url, boolean noCache){
         return client.baseUrl(url)
             .get()
-            .responseSingle((r,b) -> b.asString())
+            .responseSingle(($,b) -> b.asString())
             .cache($ -> noCache ? Duration.ZERO : CACHE_DURATION,
                 $ -> Duration.ZERO,
                 () -> noCache ? Duration.ZERO : CACHE_DURATION);

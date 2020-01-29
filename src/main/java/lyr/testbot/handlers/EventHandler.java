@@ -17,7 +17,6 @@ import reactor.core.publisher.Mono;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class EventHandler {
     private EventDispatcher eventDispatcher;
@@ -37,7 +36,7 @@ public class EventHandler {
 
     public void registerBotEvent(BotModule module){
         Log.debugFormat("| Enabling bot module %s...", module.getName());
-        activeBotModules.computeIfAbsent(module.getName(), name -> subscribeModule(module));
+        activeBotModules.computeIfAbsent(module.getName(), $ -> subscribeModule(module));
     }
 
     public void unregisterBotEvent(BotModule module){
@@ -52,7 +51,7 @@ public class EventHandler {
 
     public Mono<Void> updateGuildModules(GuildSetting setting){
         Snowflake guildId = setting.guildId;
-        return Mono.fromRunnable(() -> activeGuildModules.computeIfAbsent(guildId, (id) -> new HashMap<>()))
+        return Mono.fromRunnable(() -> activeGuildModules.computeIfAbsent(guildId, $ -> new HashMap<>()))
             .thenMany(Flux.fromIterable(Main.client.availableGuildModules.get().entrySet()))
             .doOnNext(entry -> {
                 if (setting.enabledModules.contains(entry.getKey())){  // It should be enabled

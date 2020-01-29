@@ -23,8 +23,8 @@ public class StringUtil {
             String emoji = name.replaceFirst("<:(\\w+):\\d+>","$1");
             return ReactionEmoji.of(id,emoji,false);
         } else if (name.matches("<a:\\w+:\\d+>")){              //animated
-            long id = Long.parseLong(name.replaceFirst("<:\\w+:(\\d+)>","$1"));  // This shouldn't error
-            String emoji = name.replaceFirst("<:(\\w+):\\d+>","$1");
+            long id = Long.parseLong(name.replaceFirst("<a:\\w+:(\\d+)>","$1"));  // This shouldn't error
+            String emoji = name.replaceFirst("<a:(\\w+):\\d+>","$1");
             return ReactionEmoji.of(id,emoji,true);
         } else {
             return ReactionEmoji.unicode(getUnicodeEmoji(name));

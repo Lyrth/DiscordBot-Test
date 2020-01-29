@@ -20,6 +20,10 @@ import java.time.Duration;
 
 public class Main {
 
+    public static final int MAX_RETRIES = 64;
+    public static final double WAIT_FACTOR = 2.0;
+    public static final double MAX_WAIT_SECONDS = 1800.0;  // 30 mins
+
     public static ClientObject client;
 
     public static void main(String[] args) {
@@ -46,28 +50,26 @@ public class Main {
             config);
         Log.info("> | Config done.");
 
-        final int maxRetries = 64;
-        final double waitFactor = 2.0;
-        final double maxWaitSeconds = 1800.0;  // 30 mins
-
         Mono.whenDelayError(
-            client.getDiscordClient().login()
-                .retryWhen(f -> f.zipWith(Flux.range(1,maxRetries), (t,i) -> {
-                        if (i < maxRetries && t.getClass().getName().contains("java.net."))
-                            return i;
-                        else throw Exceptions.propagate(new IllegalStateException("Network retries exhausted.",t));
-                    })
-                    .map(i -> Math.pow(waitFactor+((Math.random()-0.5d)/2),i))
-                    .map(i -> i < maxWaitSeconds ? i : maxWaitSeconds+((Math.random()-0.5d)*4))
-                    .doOnNext(d -> Log.warnFormat(">> Caught network error. Retrying in %.2fs...\n",d))
-                    .map(d -> (int)(d*1000))
-                    .flatMap(d -> Mono.delay(Duration.ofMillis(d)))
-                ),
+            client.getDiscordClient().login().retryWhen(this::handleRetry),
             Mono.fromRunnable(client::init)
         ).doOnError(t -> {
             Log.error(">>> Fatal error: " + t.getMessage());
             t.printStackTrace();
         }).doOnNext(v -> Log.info("> Shutting down.")).block();
+    }
+
+    private Flux<Long> handleRetry(Flux<Throwable> f){
+        return f.zipWith(Flux.range(1, MAX_RETRIES), (t, i) -> {
+                if (i < MAX_RETRIES && t.getClass().getName().contains("java.net."))
+                    return i;
+                else throw Exceptions.propagate(new IllegalStateException("Network retries exhausted.",t));
+            })
+            .map(i -> Math.pow(WAIT_FACTOR +((Math.random()-0.5d)/2),i))
+            .map(i -> i < MAX_WAIT_SECONDS ? i : MAX_WAIT_SECONDS +((Math.random()-0.5d)*4))
+            .doOnNext(d -> Log.warnFormat(">> Caught network error. Retrying in %.2fs...\n",d))
+            .map(d -> (int)(d*1000))
+            .flatMap(d -> Mono.delay(Duration.ofMillis(d)));
     }
 
     private StoreService getStoreService(){

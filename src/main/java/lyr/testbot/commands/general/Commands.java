@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 )
 public class Commands extends Command {
 
-    public Mono<Reply> execute(CommandObject command){
+    public Mono<Reply> execute(CommandObject command){  // TODO: refactor, mono
         return command.args.flatMap(args -> execute(args, command.getChannel())).thenReturn(Reply.empty());
     }
 

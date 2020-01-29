@@ -6,7 +6,6 @@ import discord4j.core.object.util.Snowflake;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.Optional;
 
 public abstract class MessageObject {
 
@@ -19,7 +18,7 @@ public abstract class MessageObject {
     public Mono<Snowflake> channelId;
     public Mono<Snowflake> guildId;
     public Mono<Member> member,author;
-    public Mono<Optional<User>> user;
+    public Mono<User> user;
     public Mono<Snowflake> userId;
 
     MessageObject(){}
@@ -28,14 +27,14 @@ public abstract class MessageObject {
         M = message;
 
         id = message.map(Message::getId);
-        contents = message.map(m -> m.getContent().orElse(null));
+        contents = message.flatMap(m -> Mono.justOrEmpty(m.getContent()));
         embeds = message.map(Message::getEmbeds);
 
         channelId = message.map(Message::getChannelId);
         // guildId
         member = author = message.flatMap(Message::getAuthorAsMember);
-        user = message.map(Message::getAuthor);
-        userId = message.map(m -> m.getAuthor().map(User::getId).orElse(null));
+        user = message.flatMap(m -> Mono.justOrEmpty(m.getAuthor()));
+        userId = message.flatMap(m -> Mono.justOrEmpty(m.getAuthor().map(User::getId)));
     }
 
 }

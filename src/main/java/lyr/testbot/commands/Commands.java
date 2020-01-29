@@ -4,7 +4,6 @@ import lyr.testbot.commands.admin.*;
 import lyr.testbot.commands.general.*;
 import lyr.testbot.commands.music.*;
 import lyr.testbot.templates.Command;
-import reactor.core.publisher.Flux;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,11 +37,10 @@ public class Commands {
     }
 
     private void add(Command... c){
-        Flux.just(c).doOnNext(command -> {
+        for(Command command : c)
             if (!commands.containsKey(command.getName().toLowerCase())) {
                 commands.put(command.getName().toLowerCase(), command);
             }
-        }).subscribe();    // TODO: subscribe!!!
     }
 
     public Map<String, Command> getCommands(){

@@ -46,7 +46,7 @@ public class GuildSetting {
             .filter(b -> b)
             .filterWhen($ -> updateEnabledModules())
             .map($ -> true)
-            .switchIfEmpty(Mono.just(false));
+            .defaultIfEmpty(false);
     }
 
     public Mono<Boolean> disableModule(String moduleName){
@@ -54,7 +54,7 @@ public class GuildSetting {
             .filter(b -> b)
             .filterWhen($ -> updateEnabledModules())
             .map($ -> true)
-            .switchIfEmpty(Mono.just(false));
+            .defaultIfEmpty(false);
     }
 
     // returns: true if module just activated, false if we disabled it.
@@ -66,25 +66,26 @@ public class GuildSetting {
             .switchIfEmpty(enableModule(moduleName).thenReturn(true));
     }
 
-    public boolean hasModuleSettings(String moduleName){
-        return modulesSettings.get(moduleName) != null; //&& !modulesSettings.get(moduleName).isEmpty(); // possible that a module has no settings
+    public Mono<Boolean> hasModuleSettings(String moduleName){
+        return Mono.fromCallable(() -> modulesSettings.get(moduleName) != null);
+        //&& !modulesSettings.get(moduleName).isEmpty();  // possible that a module has no settings
     }
 
-    public String getModuleSetting(String moduleName, String key){
-        if (!hasModuleSettings(moduleName)) return null;
-        return modulesSettings.get(moduleName).get(key);
+    public Mono<String> getModuleSetting(String moduleName, String key){
+        return Mono.fromCallable(() -> modulesSettings.get(moduleName))
+            .map(m -> m.get(key));
     }
 
     public Mono<Void> setModuleSetting(String moduleName, String key, String value){
-        return Mono.fromRunnable(() -> {
-                if (hasModuleSettings(moduleName)) {
-                    modulesSettings.get(moduleName).put(key,value);
-                } else {
-                    HashMap<String,String> map = new HashMap<>();
-                    map.put(key,value);
-                    modulesSettings.put(moduleName,map);
-                }
-            })
-            .then(GuildConfig.updateModuleSettings(moduleName, modulesSettings.get(moduleName), guildId.asString())); // TODO: same as above
+        return Mono.just(moduleName)
+            .filterWhen(this::hasModuleSettings)
+            .map(modulesSettings::get)
+            .doOnNext(map -> map.put(key,value))
+            .switchIfEmpty(
+                Mono.just(new HashMap<String,String>())
+                    .doOnNext(map -> map.put(key,value))
+                    .doOnNext(map -> modulesSettings.put(moduleName,map))
+            )
+            .flatMap(map -> GuildConfig.updateModuleSettings(moduleName, map, guildId.asString()));  // TODO: same as above
     }
 }

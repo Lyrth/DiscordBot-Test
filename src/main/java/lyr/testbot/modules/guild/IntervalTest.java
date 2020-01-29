@@ -15,7 +15,7 @@ import java.time.Duration;
 public class IntervalTest extends GuildModule {
 
     public Mono<Void> on(TenSecondEvent event){
-        if (event.getTick() % 3 != 0) return Mono.empty();  // do this every 30 seconds
+        if (event.getTick() % 6 != 0) return Mono.empty();  // do this every 60 seconds
         return getClient().getDiscordClient()
             .getChannelById(Snowflake.of(539743710347395072L))
             .cast(TextChannel.class)
