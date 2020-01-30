@@ -1,7 +1,7 @@
 package lyr.testbot.util;
 
 public class FuncUtil {
-    public static <T> T it(T t){
+    public static <T> T it(T t){  // TODO: Probably bugged with JDK 8, move to JDK 9.
         return t;
     }
 
