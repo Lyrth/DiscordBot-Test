@@ -1,6 +1,7 @@
 package lyr.testbot.commands;
 
 import lyr.testbot.commands.admin.*;
+import lyr.testbot.commands.admin.Module;  // Since upgrade to JDK 11, "Module" is now part of java.lang.
 import lyr.testbot.commands.general.*;
 import lyr.testbot.commands.music.*;
 import lyr.testbot.templates.Command;

@@ -6,7 +6,17 @@ import org.slf4j.LoggerFactory;
 public class Log {
 
     private static final Logger logger = LoggerFactory.getLogger(Log.class);
-    private static final int LEN = 27; // Class name length in Debug logs.
+    private static final int LEN = 47; // Class name length in Debug logs.
+
+    public static void screamA(Object... o){
+        info("AAAAA");
+    }
+    public static void screamB(Object... o){
+        info("BBBBB");
+    }
+    public static void screamC(Object... o){
+        info("CCCCC");
+    }
 
     public static void print(String str) {
         logger.info(str);
@@ -37,31 +47,37 @@ public class Log {
         logger.info(String.format(str,o));
     }
 
-
+    private static Exception stackTrace(Exception e){
+        StackTraceElement element = e.getStackTrace()[1];
+        String formatted = String.format("at %s", element.getClassName());
+        String detail = String.format("%s(%s:%d)",
+            element.getMethodName(),
+            element.getFileName(),
+            element.getLineNumber()
+        );
+        return new Exception(StringUtil.truncLast(formatted,LEN-detail.length()) + detail);
+    }
+    
+    
     /**
      Debug-level
      */
     public static void debug(Object o){
-        logger.debug(o.toString(),
-            new Exception(
-                StringUtil.trunc(new Exception().getStackTrace()[1].getClassName().trim(),LEN)));
+        logger.debug(o.toString(),stackTrace(new Exception()));
     }
 
     public static void debug(Iterable<Object> arr){
         for (Object val : arr)
-            logger.debug(val.toString(),new Exception(
-                StringUtil.trunc(new Exception().getStackTrace()[1].getClassName().trim(),LEN)));
+            logger.debug(val.toString(),stackTrace(new Exception()));
     }
 
     public static void debug(Object... oo){
         for (Object o : oo)
-            logger.debug(o.toString(),new Exception(
-                StringUtil.trunc(new Exception().getStackTrace()[1].getClassName().trim(),LEN)));
+            logger.debug(o.toString(),stackTrace(new Exception()));
     }
 
     public static void debugFormat(String str, Object... o){
-        logger.debug(String.format(str,o),new Exception(
-                StringUtil.trunc(new Exception().getStackTrace()[1].getClassName().trim(),LEN)));
+        logger.debug(String.format(str,o),stackTrace(new Exception()));
     }
 
 
@@ -69,25 +85,21 @@ public class Log {
      Trace-level
      */
     public static void trace(Object o){
-        logger.trace(o.toString(),new Exception(
-                StringUtil.trunc(new Exception().getStackTrace()[1].getClassName().trim(),LEN)));
+        logger.trace(o.toString(),stackTrace(new Exception()));
     }
 
     public static void trace(Iterable<Object> arr){
         for (Object val : arr)
-            logger.trace(val.toString(),new Exception(
-                StringUtil.trunc(new Exception().getStackTrace()[1].getClassName().trim(),LEN)));
+            logger.trace(val.toString(),stackTrace(new Exception()));
     }
 
     public static void trace(Object... oo){
         for (Object o : oo)
-            logger.trace(o.toString(),new Exception(
-                StringUtil.trunc(new Exception().getStackTrace()[1].getClassName().trim(),LEN)));
+            logger.trace(o.toString(),stackTrace(new Exception()));
     }
 
     public static void traceFormat(String str, Object... o){
-        logger.trace(String.format(str,o),new Exception(
-                StringUtil.trunc(new Exception().getStackTrace()[1].getClassName().trim(),LEN)));
+        logger.trace(String.format(str,o),stackTrace(new Exception()));
     }
 
 
@@ -95,25 +107,21 @@ public class Log {
      Warn-level
      */
     public static void warn(Object o){
-        logger.warn(o.toString(),new Exception(
-                StringUtil.trunc(new Exception().getStackTrace()[1].getClassName().trim(),LEN)));
+        logger.warn(o.toString(),stackTrace(new Exception()));
     }
 
     public static void warn(Iterable<Object> arr){
         for (Object val : arr)
-            logger.warn(val.toString(),new Exception(
-                StringUtil.trunc(new Exception().getStackTrace()[1].getClassName().trim(),LEN)));
+            logger.warn(val.toString(),stackTrace(new Exception()));
     }
 
     public static void warn(Object... oo){
         for (Object o : oo)
-            logger.warn(o.toString(),new Exception(
-                StringUtil.trunc(new Exception().getStackTrace()[1].getClassName().trim(),LEN)));
+            logger.warn(o.toString(),stackTrace(new Exception()));
     }
 
     public static void warnFormat(String str, Object... o){
-        logger.warn(String.format(str,o),new Exception(
-                StringUtil.trunc(new Exception().getStackTrace()[1].getClassName().trim(),LEN)));
+        logger.warn(String.format(str,o),stackTrace(new Exception()));
     }
 
 
@@ -121,25 +129,21 @@ public class Log {
      Error-level
      */
     public static void error(Object o){
-        logger.error(o.toString(),new Exception(
-                StringUtil.trunc(new Exception().getStackTrace()[1].getClassName().trim(),LEN)));
+        logger.error(o.toString(),stackTrace(new Exception()));
     }
 
     public static void error(Iterable<Object> arr){
         for (Object val : arr)
-            logger.error(val.toString(),new Exception(
-                StringUtil.trunc(new Exception().getStackTrace()[1].getClassName().trim(),LEN)));
+            logger.error(val.toString(),stackTrace(new Exception()));
     }
 
     public static void error(Object... oo){
         for (Object o : oo)
-            logger.error(o.toString(),new Exception(
-                StringUtil.trunc(new Exception().getStackTrace()[1].getClassName().trim(),LEN)));
+            logger.error(o.toString(),stackTrace(new Exception()));
     }
 
     public static void errorFormat(String str, Object... o){
-        logger.error(String.format(str,o),new Exception(
-                StringUtil.trunc(new Exception().getStackTrace()[1].getClassName().trim(),LEN)));
+        logger.error(String.format(str,o),stackTrace(new Exception()));
     }
 
 }

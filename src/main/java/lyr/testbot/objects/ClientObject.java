@@ -25,6 +25,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 
 import discord4j.core.object.entity.ApplicationInfo;
+import reactor.util.function.Tuple2;
 //import discord4j.core.object.entity.GuildChannel;
 
 public class ClientObject {
@@ -52,7 +53,7 @@ public class ClientObject {
 
     //public HashMap<Snowflake,Snowflake> channelToGuildMapping = new HashMap<>();
 
-    private HashMap<Snowflake, GuildSetting> guildSettings;
+    private Mono<HashMap<Snowflake, GuildSetting>> guildSettings;
 
     public ClientObject(DiscordClient client, BotConfig config){
         this.client = client;
@@ -81,16 +82,17 @@ public class ClientObject {
         provider = new LavaplayerAudioProvider(player);
 
         availableGuildModules = new GuildModules();
-        HashMap<Snowflake,GuildSetting> configs = GuildConfig.readAllConfig();   // TODO bloccing io
+        Mono<HashMap<Snowflake,GuildSetting>> configs = GuildConfig.readAllConfig();   // TODO bloccing io
         botModules = new BotModules();
 
-        guildSettings = (HashMap<Snowflake, GuildSetting>)  // TODO fix this shiz
-            guilds
-                .map(Guild::getId)
-                .collectMap(
-                    guildId -> /* Key */ guildId,
-                    guildId -> /*Value*/ configs.getOrDefault(guildId, new GuildSetting(guildId))
-                ).block();
+        guildSettings = guilds.map(Guild::getId)
+            .zipWith(configs.cache().repeat())
+            .collectMap(    //// TODO : CollectMap broken!!! Only puts one
+                Tuple2::getT1,  /* Key */
+                tup -> tup.getT2().getOrDefault(tup.getT1(), new GuildSetting(tup.getT1()))  /*Value*/
+            )
+            .map(HashMap::new);
+
         //guilds.flatMap(Guild::getChannels)
         //    .collectMap(GuildChannel::getId, GuildChannel::getGuildId,() -> channelToGuildMapping)
         //   .block();
@@ -142,7 +144,7 @@ public class ClientObject {
         return guilds;
     }
 
-    public HashMap<Snowflake, GuildSetting> getGuildSettings() {
+    public Mono<HashMap<Snowflake, GuildSetting>> getGuildSettings() {
         return guildSettings;
     }
 

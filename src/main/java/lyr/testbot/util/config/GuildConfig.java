@@ -9,7 +9,6 @@ import lyr.testbot.util.FuncUtil;
 import lyr.testbot.util.Log;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -63,18 +62,18 @@ public class GuildConfig {
         Function<Snowflake,Mono<Void>> read = guildId -> {
             final String guildDir = String.format("%s/%s",GUILDS_FOLDER,guildId.asString());
             final String configFile = String.format("%s/%s",guildDir,GUILD_CONFIG_FILENAME);
-            return FileUtil.readFileM(configFile, GuildSetting.class)
+            return FileUtil.readFile(configFile, GuildSetting.class)
                 .switchIfEmpty(Mono.fromRunnable(() ->
                         Log.infoFormat("> Creating new config for guild %s...", guildId.asString())
                     )
                     .then(FileUtil.createDir(guildDir))
                     .map($ -> new GuildSetting(guildId))
-                    .filterWhen(gs -> FileUtil.createFileM(configFile,gs).thenReturn(true).onErrorReturn(false))
+                    .filterWhen(gs -> FileUtil.createFile(configFile,gs).thenReturn(true).onErrorReturn(false))
                     .doOnError(err -> Log.errorFormat(">>> Cannot create config file for guild %s.", guildId.asString()))
                 )
                 .zipWith(readModulesSettings(guildDir), (gs, ms) ->
                     Mono.fromCallable(() -> map.put(guildId,gs))
-                        .then(gs.setModulesSettings(ms))
+                        .then(gs.setModulesSettings(ms))                 // TODO: WHY NEED TO REWRITE ?!?!??!?!??!?
                 )
                 .flatMap(FuncUtil::it);
         };
@@ -84,14 +83,14 @@ public class GuildConfig {
             .doOnNext($ -> Log.info("> No 'guilds' folder found. Creating one."))
             .flatMap($ -> FileUtil.createDir(GUILDS_FOLDER))
             .map($ -> map)
-            .switchIfEmpty(FileUtil.listDirsF(GUILDS_FOLDER)    // else
-                .parallel()
-                .runOn(Schedulers.parallel())
+            .switchIfEmpty(FileUtil.listDirs(GUILDS_FOLDER)    // else
+                //.parallel()
+                //.runOn(Schedulers.parallel())
                 .map(Snowflake::of)
                 .doOnError($ -> Log.warnFormat(">> Folder %s isn't a valid guild folder!"))
                 .flatMap(read)
-                .sequential()
-                .last()
+                //.sequential()
+                .then()
                 .thenReturn(map)
             )
             .map(HashMap::new);
@@ -143,10 +142,14 @@ public class GuildConfig {
             return agm
                 .filter(gm -> gm.containsKey(moduleName))    // if contains
                 .flatMap(gm ->
-                    FileUtil.readFileM(String.format("%s/%s/%s",guildDir,MODULE_CONFIG_DIR,file), HashMap.class)
+                    FileUtil.readFile(String.format("%s/%s/%s",guildDir,MODULE_CONFIG_DIR,file), HashMap.class)
                 )
-                .map(settings -> (HashMap<String,String>) settings)
-                .doOnNext(settings -> map.put(moduleName,settings));
+                .map(settings ->
+                    (HashMap<String,String>) settings)
+                .doOnNext(settings ->
+                    map.put(moduleName
+                        ,settings
+                    ));
         };
 
         return FileUtil.isDirectory(guildDir + "/" + MODULE_CONFIG_DIR)
@@ -155,12 +158,12 @@ public class GuildConfig {
             .flatMap($ -> FileUtil.createDir(guildDir + "/" + MODULE_CONFIG_DIR))
             .map($ -> map)
             .switchIfEmpty(    // else
-                FileUtil.listFilesF(guildDir + "/" + MODULE_CONFIG_DIR)
-                    .parallel()
-                    .runOn(Schedulers.parallel())
+                FileUtil.listFiles(guildDir + "/" + MODULE_CONFIG_DIR)
+                    //.parallel()
+                    //.runOn(Schedulers.parallel())
                     .flatMap(read)
-                    .sequential()
-                    .last()
+                    //.sequential()
+                    .then()
                     .thenReturn(map)
             )
             .map(HashMap::new)
@@ -173,7 +176,7 @@ public class GuildConfig {
         return FileUtil.createDir(dir)
             .thenMany(Flux.fromIterable(settings.entrySet()))
             .flatMap(entry ->
-                FileUtil.updateFileM(String.format("%s/%s.json",dir,entry.getKey()), entry.getValue())
+                FileUtil.updateFile(String.format("%s/%s.json",dir,entry.getKey()), entry.getValue())
                     .doOnNext($ -> Log.debugFormat("%s config for guild %s updated.", entry.getKey(), guildId))
                     .doOnError($ -> Log.errorFormat(">>> %s config update for guild %s failed!", entry.getKey(), guildId))
             )
@@ -183,7 +186,7 @@ public class GuildConfig {
     public static Mono<Void> updateModuleSettings(String moduleName, HashMap<String,String> settings, String guildId){
         final String dir = String.format("%s/%s/%s", GUILDS_FOLDER, guildId, MODULE_CONFIG_DIR);
         return FileUtil.createDir(dir)
-            .then(FileUtil.updateFileM(String.format("%s/%s.json",dir,moduleName), settings))
+            .then(FileUtil.updateFile(String.format("%s/%s.json",dir,moduleName), settings))
             .doOnNext($ -> Log.debugFormat("%s config for guild %s updated.", moduleName, guildId))
             .doOnError($ -> Log.errorFormat(">>> %s config update for guild %s failed!", moduleName, guildId))
             .then();
@@ -192,7 +195,7 @@ public class GuildConfig {
     public static Mono<Void> updateGuildSettings(GuildSetting setting){
         final String dir = String.format("%s/%s", GUILDS_FOLDER, setting.guildId.asString());
         return FileUtil.createDir(dir)
-            .then(FileUtil.updateFileM(String.format("%s/%s",dir,GUILD_CONFIG_FILENAME), setting))
+            .then(FileUtil.updateFile(String.format("%s/%s",dir,GUILD_CONFIG_FILENAME), setting))
             .doOnNext($ -> Log.debugFormat("Config for guild %s updated.", setting.guildId.asString()))
             .doOnError($ -> Log.errorFormat(">>> Config update for guild %s failed!", setting.guildId.asString()))
             .then();

@@ -33,12 +33,10 @@ public class Main {
     private Main(){
         System.setProperty("log4j.skipJansi","false");  // Color support for logging.
 
-        // TODO: do IO on boundedElastic schedulers within reactive publishers
-
         Log.info("> Starting...");
         Log.debugFormat("Running on Discord4j version %s",
             GitProperties.getProperties().getProperty(GitProperties.GIT_COMMIT_ID_DESCRIBE));
-        BotConfig config = BotConfig.readConfig();    // TODO : 1 fix this
+        BotConfig config = BotConfig.readConfig().block();    // TODO : no blocking.
         if (config == null || config.getToken().isEmpty()) return;
 
         client = new ClientObject(

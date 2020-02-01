@@ -13,6 +13,10 @@ public class StringUtil {
         return StringUtils.abbreviateMiddle(str,"...",maxWidth);
     }
 
+    public static String truncLast(String str, int maxWidth){
+        return StringUtils.abbreviate(str, maxWidth);
+    }
+
     public static String getUnicodeEmoji(String name){
         return Optional.ofNullable(EmojiManager.getForAlias(name)).map(Emoji::getUnicode).orElse(name);
     }

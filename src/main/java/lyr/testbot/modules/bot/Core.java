@@ -9,15 +9,16 @@ import discord4j.core.object.util.Snowflake;
 import lyr.testbot.annotations.ModuleInfo;
 import lyr.testbot.handlers.CommandHandler;
 import lyr.testbot.templates.BotModule;
+import lyr.testbot.util.FuncUtil;
 import lyr.testbot.util.Log;
 import lyr.testbot.util.config.GuildConfig;
 import lyr.testbot.util.config.GuildSetting;
 import lyr.testbot.util.pagination.Paginator;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
@@ -66,7 +67,7 @@ public class Core extends BotModule {
         return getClient().getEventDispatcher()
             .on(GuildCreateEvent.class)
             .take(n).last()
-            .thenMany(Flux.fromIterable(getClient().getGuildSettings().entrySet()))
+            .thenMany(getClient().getGuildSettings().map(HashMap::entrySet).flatMapIterable(FuncUtil::it))
             .flatMap(entry ->
                 Mono.just(entry.getKey())
                     .filter(ids::contains)
@@ -80,7 +81,7 @@ public class Core extends BotModule {
         return Mono.fromRunnable(() ->
                 Log.info("> New guild: ID " + e.getGuild().getId().asString() + ", Name: " + e.getGuild().getName())
             )
-            .thenReturn(getClient().getGuildSettings())
+            .then(getClient().getGuildSettings())
             .filter(gs -> !gs.containsKey(e.getGuild().getId()))    // if absent
             .flatMap(gs -> {
                 GuildSetting setting = new GuildSetting(e.getGuild().getId());

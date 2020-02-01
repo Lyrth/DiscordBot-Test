@@ -34,7 +34,7 @@ public abstract class Module {
         Map<String,Command> commands = new HashMap<>();
         try {
             for (Class<? extends Command> command : moduleInfo.commands()) {
-                Command com = command.newInstance();
+                Command com = command.getDeclaredConstructor().newInstance();
                 Log.debug(com.getName());
                 commands.put(com.getName().toLowerCase(), com);
             }
@@ -155,8 +155,7 @@ public abstract class Module {
                 return dispatcher.on(VoiceChannelUpdateEvent.class).flatMap(this::on).subscribe();
 
             case "MessageCreateEvent":
-                return dispatcher.on(MessageCreateEvent.class)
-                    .doOnNext(r -> Log.debug("M")).flatMap(this::on).subscribe();
+                return dispatcher.on(MessageCreateEvent.class).flatMap(this::on).subscribe();
             case "MessageDeleteEvent":
                 return dispatcher.on(MessageDeleteEvent.class).flatMap(this::on).subscribe();
             case "MessageUpdateEvent":

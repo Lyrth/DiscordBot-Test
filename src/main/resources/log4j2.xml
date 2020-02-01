@@ -2,13 +2,13 @@
 <Configuration status="INFO">
     <Appenders>
         <Console name="utillog" target="SYSTEM_OUT">
-            <PatternLayout pattern="%highlight{[%-5level]} %style{%d{HH:mm:ss.SSS}}{dim,white} %style{(LogUtil)}{blue}%style{%-28throwable{short.message}}{cyan}  %highlight{%msg}%n" />
+            <PatternLayout pattern="%highlight{[%-5level]} %style{%d{HH:mm:ss.SSS}}{dim,white} %style{(Util)}{blue}%style{%-48throwable{short.message}}{cyan}  %highlight{%msg}%n" />
         </Console>
         <Console name="debug" target="SYSTEM_OUT">
-            <PatternLayout pattern="%highlight{[%-5level]} %style{%d{HH:mm:ss.SSS} %-38c %msg%n%throwable{short.lineNumber}}{dim,white}" />
+            <PatternLayout pattern="%highlight{[%-5level]} %style{%d{HH:mm:ss.SSS} %-55c %msg%n%throwable{short.lineNumber}}{dim,white}" />
         </Console>
         <Console name="err" target="SYSTEM_OUT">
-            <PatternLayout pattern="%highlight{[%-5level]} %style{%d{HH:mm:ss.SSS} %-38c %msg%n%throwable}{dim,white}" />
+            <PatternLayout pattern="%highlight{[%-5level]} %style{%d{HH:mm:ss.SSS} %-55c %msg%n%throwable}{dim,white}" />
         </Console>
         <!--
         <Console name="console2" target="SYSTEM_OUT">%d{HH:mm:ss.SSS}
@@ -25,10 +25,10 @@
         <Logger name="lyr.testbot.util.Log" level="debug">
             <AppenderRef ref="utillog"/>
         </Logger>
-        <Logger name="discord4j.core" level="debug">
+        <Logger name="discord4j.core" level="info">
             <AppenderRef ref="debug"/>
         </Logger>
-        <Logger name="discord4j.rest" level="debug">
+        <Logger name="discord4j.rest" level="info">
             <AppenderRef ref="debug"/>
         </Logger>
         <Logger name="reactor.netty" level="error">

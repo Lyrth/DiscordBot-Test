@@ -32,8 +32,10 @@ public class Fetch {
 
     public static Mono<String> fetchHttp(String url, boolean noCache){
         return client.baseUrl(url)
-            .get()
-            .responseSingle(($,b) -> b.asString())
+            .get()  /* .responseSingle((resp, bytes) -> {}) */
+            .responseContent()
+            .aggregate()
+            .asString()
             .cache($ -> noCache ? Duration.ZERO : CACHE_DURATION,
                 $ -> Duration.ZERO,
                 () -> noCache ? Duration.ZERO : CACHE_DURATION);

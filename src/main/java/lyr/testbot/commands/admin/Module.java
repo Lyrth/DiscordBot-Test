@@ -8,6 +8,7 @@ import lyr.testbot.objects.CommandObject;
 import lyr.testbot.objects.builder.Reply;
 import lyr.testbot.templates.Command;
 import lyr.testbot.util.FuncUtil;
+import lyr.testbot.util.Log;
 import reactor.core.publisher.Mono;
 
 @CommandInfo(
@@ -33,11 +34,12 @@ public class Module extends Command {
             .filter(name -> !name.isEmpty())
             .flatMap(name ->
                 getGuildSettingsFor(guild.getId())
-                    .toggleModule(name)
+                    .flatMap(stg -> stg.toggleModule(name))
                     .filter(FuncUtil::it)
                     .map($ -> "enabled")
                     .defaultIfEmpty("disabled")
-                    .map(state -> Reply.format("Module **%s** %s.", name, state))
+                    .map(state -> Reply.format("Module **%s** %s.", name, state)
+                )
             )
             .switchIfEmpty(
                 Mono.just(getClient().availableGuildModules.getProperName(args.get(1)))
@@ -45,14 +47,14 @@ public class Module extends Command {
                     .flatMap(name -> {
                         if (args.equalsAt("enable",0)) {
                             return getGuildSettingsFor(guild.getId())
-                                .enableModule(name)
+                                .flatMap(stg -> stg.enableModule(name))
                                 .filter(FuncUtil::it)
                                 .map($ -> "enabled")
                                 .defaultIfEmpty("was already enabled")
                                 .map(state -> Reply.format("Module **%s** %s.", name, state));
                         } else if (args.equalsAt("disable",0)) {
                             return getGuildSettingsFor(guild.getId())
-                                .disableModule(name)
+                                .flatMap(stg -> stg.disableModule(name))
                                 .filter(FuncUtil::it)
                                 .map($ -> "disabled")
                                 .defaultIfEmpty("was already disabled")
@@ -60,6 +62,10 @@ public class Module extends Command {
                         } else return Mono.empty();
                     })
             )
+            .doOnError(t -> {
+                Log.error(">>>> ERROR! "+t);
+                t.printStackTrace();
+            })
             .defaultIfEmpty(Reply.format("Module **%s** not found.",
                 args.getRaw().replaceFirst("^((enable|disable)\\s+)?(\\S+).*", "$3")));
     }

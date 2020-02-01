@@ -6,6 +6,7 @@ import lyr.testbot.util.FuncUtil;
 import lyr.testbot.util.Log;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -13,28 +14,30 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class FileUtil {
+public class FileUtil {    // TODO: boundedElastic once Reactor version is bumped
 
-    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();  // TODO: Cached files!
+    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    private HashMap<String,Mono<?>> cache = new HashMap<>();
+    private HashMap<String,Mono<?>> cache = new HashMap<>();    // TODO: Cached files!
 
-    public static <T> Mono<T> readFileM(String fileName, Class<T> clazz){
+    public static <T> Mono<T> readFile(String fileName, Class<T> clazz){
         return Mono.using(() -> Files.readAllBytes(Paths.get(fileName)), Mono::just, FuncUtil::noop)
+            .subscribeOn(Schedulers.elastic())
             .map(String::new)
             .doOnNext($ -> Log.debugFormat("Reading from %s...",fileName))
             .map(json -> gson.fromJson(json,clazz))
             .onErrorResume($ -> Mono.empty());
     }
 
-    public static <T> Mono<T> createFileM(String fileName, T t){
+    public static <T> Mono<T> createFile(String fileName, T t){
         return Mono.using(
-            () -> new PrintStream(fileName),
-            ps -> Mono.fromRunnable(() -> ps.print(gson.toJson(t))).thenReturn(t),
-            PrintStream::close);
+                () -> new PrintStream(fileName),
+                ps -> Mono.fromRunnable(() -> ps.print(gson.toJson(t))).thenReturn(t),
+                PrintStream::close)
+            .subscribeOn(Schedulers.elastic());
     }
 
-    public static <T> Mono<T> updateFileM(String fileName, T t){
+    public static <T> Mono<T> updateFile(String fileName, T t){
         return Mono.fromCallable(() -> {
                 File current = new File(fileName);
                 File backup  = new File(fileName + ".bak");
@@ -49,16 +52,19 @@ public class FileUtil {
                 }
                 return 0;
             })
-            .then(createFileM(fileName,t));
+            .subscribeOn(Schedulers.elastic())
+            .then(createFile(fileName,t));
     }
-    public static Flux<String> listFilesF(String path){
+    public static Flux<String> listFiles(String path){
         return Mono.fromCallable(() -> new File(path).list((cur, name) -> new File(cur, name).isFile()))
+            .subscribeOn(Schedulers.elastic())
             .map(Arrays::asList)
             .flatMapIterable(FuncUtil::it);
     }
 
-    public static Flux<String> listDirsF(String path){
+    public static Flux<String> listDirs(String path){
         return Mono.fromCallable(() -> new File(path).list((cur, name) -> new File(cur, name).isDirectory()))
+            .subscribeOn(Schedulers.elastic())
             .map(Arrays::asList)
             .flatMapIterable(FuncUtil::it)
             .doOnError($ -> Log.error(">>> listDirs failed!"))
@@ -67,6 +73,7 @@ public class FileUtil {
 
     public static Mono<Boolean> isDirectory(String path){
         return Mono.fromCallable(() -> new File(path).isDirectory())
+            .subscribeOn(Schedulers.elastic())
             .doOnError($ -> Log.error(">>> isDirectory failed!"))
             .doOnError(Throwable::printStackTrace)
             .onErrorReturn(false);
@@ -74,6 +81,7 @@ public class FileUtil {
 
     public static Mono<Boolean> createDir(String path){
         return Mono.fromCallable(() -> new File(path).mkdirs())
+            .subscribeOn(Schedulers.elastic())
             .doOnError($ -> Log.error(">>> createDir failed!"))
             .doOnError(Throwable::printStackTrace)
             .onErrorReturn(false);

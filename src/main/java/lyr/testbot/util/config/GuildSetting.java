@@ -3,6 +3,7 @@ package lyr.testbot.util.config;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.util.Snowflake;
 import lyr.testbot.main.Main;
+import lyr.testbot.util.Log;
 import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
@@ -73,6 +74,7 @@ public class GuildSetting {
 
     public Mono<String> getModuleSetting(String moduleName, String key){
         return Mono.fromCallable(() -> modulesSettings.get(moduleName))
+            .doOnNext(Log::screamB)
             .map(m -> m.get(key));
     }
 

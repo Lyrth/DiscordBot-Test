@@ -8,6 +8,7 @@ import lyr.testbot.objects.ClientObject;
 import lyr.testbot.objects.CommandObject;
 import lyr.testbot.objects.annotstore.CommandInfoObj;
 import lyr.testbot.objects.builder.Reply;
+import lyr.testbot.util.Log;
 import lyr.testbot.util.config.GuildSetting;
 import reactor.core.publisher.Mono;
 
@@ -49,7 +50,7 @@ public abstract class Command {
     }
 
     public static Mono<String> getSetting(Snowflake guildId, String module, String key){
-        return getGuildSettingsFor(guildId).getModuleSetting(module, key);
+        return getGuildSettingsFor(guildId).flatMap(set -> set.getModuleSetting(module, key));
     }
 
     protected Mono<String> getSettingOrDefault(Snowflake guildId, String module, String key, String defaultValue){
@@ -57,14 +58,16 @@ public abstract class Command {
     }
 
     protected Mono<Void> setSetting(Snowflake guildId, String module, String key, String value){
-        return getGuildSettingsFor(guildId).setModuleSetting(module, key, value);
+        return getGuildSettingsFor(guildId).flatMap(set -> set.setModuleSetting(module, key, value));
     }
 
     protected static ClientObject getClient(){
         return Main.client;
     }
-    protected static GuildSetting getGuildSettingsFor(Snowflake guildId){
-        return getClient().getGuildSettings().get(guildId);
+    protected static Mono<GuildSetting> getGuildSettingsFor(Snowflake guildId){
+        return getClient().getGuildSettings().doOnNext(Log::debug).doOnNext(Log::screamA)
+            .map(map ->
+                map.getOrDefault(guildId, new GuildSetting(guildId)));
     }
     protected static String getPrefix(){
         return getClient().getBotConfig().getPrefix();

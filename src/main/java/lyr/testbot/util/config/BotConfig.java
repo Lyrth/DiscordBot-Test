@@ -27,11 +27,11 @@ public class BotConfig {
     }
 
     public static Mono<BotConfig> readConfig(){
-        return FileUtil.readFileM(CONFIG_FILE,BotConfig.class)
+        return FileUtil.readFile(CONFIG_FILE,BotConfig.class)
             .switchIfEmpty(Mono.fromRunnable(() -> Log.info("> No config detected, creating one."))
                 .then(FileUtil.createDir(ROOT_FILE_FOLDER))
                 .thenReturn(new BotConfig("",";"))
-                .filterWhen(cfg -> FileUtil.createFileM(CONFIG_FILE,cfg).thenReturn(true).onErrorReturn(false))
+                .filterWhen(cfg -> FileUtil.createFile(CONFIG_FILE,cfg).thenReturn(true).onErrorReturn(false))
                 .doOnError($ -> Log.errorFormat(">>> Cannot create config file %s.", CONFIG_FILE))
             )
             .doOnNext(cfg -> {
@@ -41,7 +41,7 @@ public class BotConfig {
     }
 
     public Mono<Void> updateConfig(){
-        return FileUtil.updateFileM(CONFIG_FILE,this)
+        return FileUtil.updateFile(CONFIG_FILE,this)
             .doOnNext($ -> Log.info("> Bot config updated."))
             .doOnError($ -> Log.error(">>> Bot config update error!"))
             .then();
