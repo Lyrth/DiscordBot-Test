@@ -87,7 +87,7 @@ public class ClientObject {
 
         guildSettings = guilds.map(Guild::getId)
             .zipWith(configs.cache().repeat())
-            .collectMap(    //// TODO : CollectMap broken!!! Only puts one
+            .collectMap(
                 Tuple2::getT1,  /* Key */
                 tup -> tup.getT2().getOrDefault(tup.getT1(), new GuildSetting(tup.getT1()))  /*Value*/
             )

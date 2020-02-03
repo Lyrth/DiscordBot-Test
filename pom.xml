@@ -11,7 +11,7 @@
     <!--  Compiler level, versions  -->
     <properties>
         <bot.name>DiscordBotTest</bot.name>
-        <bot.version>0.9.4-j11</bot.version>
+        <bot.version>0.9.4a1-j11</bot.version>
 
         <bot.main-class>lyr.testbot.main.Main</bot.main-class>
 

@@ -30,31 +30,37 @@ public class Main {
         new Main();
     }
 
+    private Mono<Void> setup(){
+        return Mono.fromRunnable(() -> {
+            System.setProperty("log4j.skipJansi", "false");  // Color support for logging.
+            Log.info("> Starting...");
+            Log.debugFormat("Running on Discord4j version %s",
+                GitProperties.getProperties().getProperty(GitProperties.GIT_COMMIT_ID_DESCRIBE));
+        });
+    }
+
     private Main(){
-        System.setProperty("log4j.skipJansi","false");  // Color support for logging.
-
-        Log.info("> Starting...");
-        Log.debugFormat("Running on Discord4j version %s",
-            GitProperties.getProperties().getProperty(GitProperties.GIT_COMMIT_ID_DESCRIBE));
-        BotConfig config = BotConfig.readConfig().block();    // TODO : no blocking.
-        if (config == null || config.getToken().isEmpty()) return;
-
-        client = new ClientObject(
-            new DiscordClientBuilder(config.getToken())
-                .setStoreService(getStoreService())
-                .setInitialPresence(Presence.doNotDisturb(Activity.listening("aaaa")))
-                .setEventScheduler(Schedulers.immediate())
-                .build(),
-            config);
-        Log.info("> | Config done.");
-
-        Mono.whenDelayError(
-            client.getDiscordClient().login().retryWhen(this::handleRetry),
-            Mono.fromRunnable(client::init)
-        ).doOnError(t -> {
-            Log.error(">>> Fatal error: " + t.getMessage());
-            t.printStackTrace();
-        }).doOnNext(v -> Log.info("> Shutting down.")).block();
+        setup().then(BotConfig.readConfig())
+            .filter(cfg -> !cfg.getToken().isEmpty())
+            .map(cfg -> new ClientObject(
+                new DiscordClientBuilder(cfg.getToken())
+                    .setStoreService(getStoreService())
+                    .setInitialPresence(Presence.doNotDisturb(Activity.listening("aaaa")))
+                    .setEventScheduler(Schedulers.immediate())
+                    .build(),
+                cfg))
+            .doOnNext(cli -> client = cli)
+            .doOnNext($ -> Log.info("> | Config done."))
+            .flatMap($ -> Mono.whenDelayError(        // .flatMap and not .then so these won't run when empty.
+                client.getDiscordClient().login().retryWhen(this::handleRetry),
+                Mono.fromRunnable(client::init)
+            ))
+            .doOnError(t -> {
+                Log.error(">>> Fatal error: " + t.getMessage());
+                t.printStackTrace();
+            })
+            .doOnNext($ -> Log.info("> Shutting down."))
+            .block();
     }
 
     private Flux<Long> handleRetry(Flux<Throwable> f){
@@ -63,7 +69,7 @@ public class Main {
                     return i;
                 else throw Exceptions.propagate(new IllegalStateException("Network retries exhausted.",t));
             })
-            .map(i -> Math.pow(WAIT_FACTOR +((Math.random()-0.5d)/2),i))
+            .map(i -> Math.pow(WAIT_FACTOR + ((Math.random()-0.5d)/2),i))
             .map(i -> i < MAX_WAIT_SECONDS ? i : MAX_WAIT_SECONDS +((Math.random()-0.5d)*4))
             .doOnNext(d -> Log.warnFormat(">> Caught network error. Retrying in %.2fs...\n",d))
             .map(d -> (int)(d*1000))
