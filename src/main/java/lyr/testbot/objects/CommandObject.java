@@ -18,7 +18,7 @@ public class CommandObject extends MessageObject {
         message = M;
 
         id = M.map(Message::getId);
-        contents = M.flatMap(m -> Mono.justOrEmpty(m.getContent()));
+        contents = message.flatMap(m -> Mono.justOrEmpty(m.getContent()));
         args = M.map(m ->
             m.getContent()
                 .map(s -> s.replaceFirst("(^<@!?\\d+>\\s+\\S+|^\\S+)\\s*",""))

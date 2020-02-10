@@ -31,8 +31,8 @@ public class Main {
     }
 
     private Mono<Void> setup(){
+        System.setProperty("log4j.skipJansi", "false");  // Color support for logging.
         return Mono.fromRunnable(() -> {
-            System.setProperty("log4j.skipJansi", "false");  // Color support for logging.
             Log.info("> Starting...");
             Log.debugFormat("Running on Discord4j version %s",
                 GitProperties.getProperties().getProperty(GitProperties.GIT_COMMIT_ID_DESCRIBE));

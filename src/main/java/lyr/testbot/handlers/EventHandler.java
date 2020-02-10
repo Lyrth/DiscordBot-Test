@@ -1,6 +1,7 @@
 package lyr.testbot.handlers;
 
 import discord4j.core.event.EventDispatcher;
+import discord4j.core.event.domain.Event;
 import discord4j.core.object.util.Snowflake;
 import lyr.testbot.main.Main;
 import lyr.testbot.templates.BotModule;
@@ -17,6 +18,8 @@ import reactor.core.publisher.Mono;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 public class EventHandler {
     private EventDispatcher eventDispatcher;
@@ -83,7 +86,42 @@ public class EventHandler {
         }
         return subscribers;
     }
-    
+
+    ConcurrentHashMap<
+        Flux<? extends Event>,
+        ConcurrentHashMap<
+            String,
+            Function<? extends Event,Mono<Void>>
+            >
+        > thing;
+
+    public void registerBotEvent1(BotModule module){
+        Log.debugFormat("| Enabling bot module %s...", module.getName());
+        activeBotModules.computeIfAbsent(module.getName(), $ -> subscribeModule(module));
+
+        List<Method> methods = ReflectionUtil.getDeclaredMethodsByName(module.getClass(),"on");
+        if (module.getCommands().size() > 0);
+
+
+
+    }
+
+    private Disposable.Composite subscribeModule1(Module module){  // TODO: no more subscribe
+        List<Method> methods = ReflectionUtil.getDeclaredMethodsByName(module.getClass(),"on");
+        Disposable.Composite subscribers = Disposables.composite();
+        // automatically add command handling
+        if (module.getCommands().size() > 0)
+            subscribers.add(module.subscribeTo(eventDispatcher,"HandleCommand"));
+        for (Method m : methods){
+            thing.computeIfAbsent(eventDispatcher.on((Class<? extends Event>)m.getParameterTypes()[0]), e -> new ConcurrentHashMap<>());
+            subscribers.add(
+                module.subscribeTo(eventDispatcher,m.getParameterTypes()[0].getSimpleName())
+            );
+        }
+        return subscribers;
+    }
+
+
 
 
 }
